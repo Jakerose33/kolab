@@ -43,10 +43,11 @@
     --input: 0 0% 96%;
     --ring: 0 0% 8%;
     
-    /* Gradients - Subtle and minimal */
-    --gradient-primary: linear-gradient(135deg, hsl(0 0% 8%), hsl(0 0% 15%));
+    /* Gradients - Vibrant and dynamic */
+    --gradient-primary: linear-gradient(135deg, hsl(280 100% 70%), hsl(260 100% 75%), hsl(240 100% 80%));
     --gradient-accent: linear-gradient(135deg, hsl(210 100% 56%), hsl(210 80% 48%));
     --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 98%));
+    --gradient-hero: linear-gradient(135deg, hsl(280 100% 70%) 0%, hsl(260 100% 75%) 25%, hsl(240 100% 80%) 50%, hsl(200 100% 75%) 75%, hsl(40 100% 70%) 100%);
     
     /* Shadows - Clean and minimal */
     --shadow-sm: 0 1px 2px hsl(0 0% 8% / 0.05);

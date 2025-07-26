@@ -26,6 +26,7 @@ import {
   Search
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import EventMap from "@/components/EventMap";
 
 // Mock data for events
 const mockEvents = [
@@ -185,30 +186,36 @@ export default function Index() {
       />
 
       {/* Hero Section */}
-      <section className="relative py-16 bg-gradient-subtle">
-        <div className="container px-4">
-          <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-primary bg-clip-text text-transparent">
-              Collaborate. Create. Connect.
+      <section className="relative min-h-screen flex items-center justify-center bg-gradient-hero overflow-hidden">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="container px-4 relative z-10">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-6xl md:text-8xl font-bold mb-8 text-white tracking-tight">
+              KOLAB
             </h1>
-            <p className="text-xl text-muted-foreground mb-8">
-              Join meaningful collaborative events where creativity meets community. 
-              Discover workshops, networking sessions, and creative partnerships.
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white/90">
+              WHERE YOUR CITY COMES ALIVE
+            </h2>
+            <p className="text-xl md:text-2xl text-white/80 mb-12 font-light tracking-wide">
+              Your backstage pass to the best gigs, shows, sports, and experiences
+              happening near you — any day of the week.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <Button 
                 size="lg" 
-                className="bg-gradient-primary hover:opacity-90 text-lg px-8"
-                onClick={() => setShowCreateDialog(true)}
+                className="bg-white/20 hover:bg-white/30 border-white/30 text-white text-lg px-12 py-4 backdrop-blur-sm transition-all duration-300"
+                variant="outline"
               >
-                Create Event
-              </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8">
                 Explore Events
               </Button>
             </div>
           </div>
         </div>
+        
+        {/* Floating geometric elements */}
+        <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse"></div>
+        <div className="absolute bottom-32 right-16 w-32 h-32 bg-white/5 rounded-full blur-2xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white/10 rounded-full blur-lg animate-pulse delay-500"></div>
       </section>
 
       {/* Stats Section */}
@@ -316,6 +323,7 @@ export default function Index() {
                   <TabsTrigger value="all">All Events</TabsTrigger>
                   <TabsTrigger value="trending">Trending</TabsTrigger>
                   <TabsTrigger value="nearby">Nearby</TabsTrigger>
+                  <TabsTrigger value="map">Map View</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="all" className="mt-0">
@@ -368,6 +376,10 @@ export default function Index() {
                       />
                     ))}
                   </div>
+                </TabsContent>
+
+                <TabsContent value="map" className="mt-0">
+                  <EventMap />
                 </TabsContent>
               </Tabs>
             </div>
