@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageCircle, Users, UserPlus, Heart, Share, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { CreateEventDialog } from "@/components/CreateEventDialog";
 
 // Mock social data
 const mockConnections = [
@@ -104,6 +105,7 @@ export function SocialHub() {
   const [posts, setPosts] = useState(mockPosts);
   const [groups, setGroups] = useState(mockGroups);
   const [newPost, setNewPost] = useState("");
+  const [showCreateEventDialog, setShowCreateEventDialog] = useState(false);
   const { toast } = useToast();
 
   const handleConnect = (userId: string) => {
@@ -205,7 +207,7 @@ export function SocialHub() {
               />
               <div className="flex justify-between items-center">
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={() => setShowCreateEventDialog(true)}>
                     <Calendar className="h-4 w-4 mr-2" />
                     Event
                   </Button>
@@ -362,6 +364,18 @@ export function SocialHub() {
           </Card>
         </TabsContent>
       </Tabs>
+      
+      <CreateEventDialog
+        open={showCreateEventDialog}
+        onOpenChange={setShowCreateEventDialog}
+        onCreateEvent={(eventData) => {
+          toast({
+            title: "Event Created",
+            description: `${eventData.title} has been created successfully.`,
+          });
+          setShowCreateEventDialog(false);
+        }}
+      />
     </div>
   );
 }

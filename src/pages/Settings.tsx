@@ -40,6 +40,14 @@ export default function Settings() {
     });
   };
 
+  const handleDeleteAccount = () => {
+    toast({
+      title: "Account Deletion",
+      description: "This feature will be available soon. Please contact support.",
+      variant: "destructive",
+    });
+  };
+
   const updateSetting = (category: string, key: string, value: any) => {
     setSettings(prev => ({
       ...prev,
@@ -313,7 +321,7 @@ export default function Settings() {
                   <div>
                     <Label className="text-base text-destructive">Danger Zone</Label>
                     <p className="text-sm text-muted-foreground mb-3">Permanently delete your account</p>
-                    <Button variant="destructive">Delete Account</Button>
+                    <Button variant="destructive" onClick={handleDeleteAccount}>Delete Account</Button>
                   </div>
                 </CardContent>
               </Card>

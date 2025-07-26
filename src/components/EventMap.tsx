@@ -95,7 +95,7 @@ const EventMap = () => {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/light-v11',
-      center: [-74.006, 40.7128], // NYC
+      center: [144.9631, -37.8136], // Melbourne, Victoria
       zoom: 12,
     });
 
