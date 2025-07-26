@@ -7,6 +7,9 @@ import Index from "./pages/Index";
 import Venues from "./pages/Venues";
 import Social from "./pages/Social";
 import Careers from "./pages/Careers";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+import MyBookings from "./pages/MyBookings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +25,9 @@ const App = () => (
           <Route path="/venues" element={<Venues />} />
           <Route path="/social" element={<Social />} />
           <Route path="/careers" element={<Careers />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/bookings" element={<MyBookings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

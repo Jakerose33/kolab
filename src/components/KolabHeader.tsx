@@ -147,17 +147,23 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" />
-                Profile
+              <DropdownMenuItem asChild>
+                <Link to="/profile" className="flex items-center">
+                  <User className="mr-2 h-4 w-4" />
+                  Profile
+                </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Calendar className="mr-2 h-4 w-4" />
-                My Bookings
+              <DropdownMenuItem asChild>
+                <Link to="/bookings" className="flex items-center">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  My Bookings
+                </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
-                Settings
+              <DropdownMenuItem asChild>
+                <Link to="/settings" className="flex items-center">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Settings
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-destructive">
