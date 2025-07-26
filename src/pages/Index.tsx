@@ -3,6 +3,8 @@ import { KolabHeader } from "@/components/KolabHeader";
 import { EventCard } from "@/components/EventCard";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { CreateEventDialog } from "@/components/CreateEventDialog";
+import { MessagesDialog } from "@/components/MessagesDialog";
+import { NotificationsDialog } from "@/components/NotificationsDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -111,6 +113,8 @@ export default function Index() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("featured");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showMessagesDialog, setShowMessagesDialog] = useState(false);
+  const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
   const { toast } = useToast();
 
@@ -176,8 +180,8 @@ export default function Index() {
     <div className="min-h-screen bg-background">
       <KolabHeader
         onCreateEvent={() => setShowCreateDialog(true)}
-        onOpenMessages={() => toast({ title: "Messages", description: "Opening messages..." })}
-        onOpenNotifications={() => toast({ title: "Notifications", description: "Opening notifications..." })}
+        onOpenMessages={() => setShowMessagesDialog(true)}
+        onOpenNotifications={() => setShowNotificationsDialog(true)}
       />
 
       {/* Hero Section */}
@@ -371,11 +375,19 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Create Event Dialog */}
+      {/* Dialogs */}
       <CreateEventDialog
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
         onCreateEvent={handleCreateEvent}
+      />
+      <MessagesDialog
+        open={showMessagesDialog}
+        onOpenChange={setShowMessagesDialog}
+      />
+      <NotificationsDialog
+        open={showNotificationsDialog}
+        onOpenChange={setShowNotificationsDialog}
       />
     </div>
   );
