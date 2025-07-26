@@ -71,7 +71,7 @@ const mockMapEvents: Event[] = [
 const EventMap = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const [mapboxToken, setMapboxToken] = useState('');
+  const mapboxToken = 'pk.eyJ1Ijoia29sYWIiLCJhIjoiY21ka3Jzc3duMTB2bjJ4cTNhYjBmNDI4NCJ9.joO5ftfGwuKkHBV6rwDJdA';
   const [events, setEvents] = useState<Event[]>(mockMapEvents);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -151,28 +151,6 @@ const EventMap = () => {
     };
   }, [mapboxToken, filteredEvents]);
 
-  if (!mapboxToken) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-96 space-y-4 p-8">
-        <MapPin className="h-12 w-12 text-muted-foreground" />
-        <h3 className="text-xl font-semibold">Enter Mapbox Token</h3>
-        <p className="text-muted-foreground text-center max-w-md">
-          To use the interactive map, please enter your Mapbox public token. 
-          Get one free at <a href="https://mapbox.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">mapbox.com</a>
-        </p>
-        <div className="flex gap-2 w-full max-w-md">
-          <Input
-            placeholder="Enter Mapbox public token..."
-            value={mapboxToken}
-            onChange={(e) => setMapboxToken(e.target.value)}
-          />
-          <Button onClick={() => setMapboxToken(mapboxToken)}>
-            Load Map
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
