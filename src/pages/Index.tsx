@@ -279,14 +279,6 @@ export default function Index() {
             <div className="flex-1">
               {/* Tabs and Controls */}
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList>
-                    <TabsTrigger value="all">All Events</TabsTrigger>
-                    <TabsTrigger value="trending">Trending</TabsTrigger>
-                    <TabsTrigger value="nearby">Nearby</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">Sort by:</span>
                   <Select value={sortBy} onValueChange={setSortBy}>
@@ -314,11 +306,41 @@ export default function Index() {
                 </p>
               </div>
 
-              {/* Events Grid */}
-              <TabsContent value={activeTab} className="mt-0">
-                {sortedEvents.length > 0 ? (
+              {/* Tabs with Events Grid */}
+              <Tabs value={activeTab} onValueChange={setActiveTab}>
+                <TabsList className="mb-6">
+                  <TabsTrigger value="all">All Events</TabsTrigger>
+                  <TabsTrigger value="trending">Trending</TabsTrigger>
+                  <TabsTrigger value="nearby">Nearby</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="all" className="mt-0">
+                  {sortedEvents.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                      {sortedEvents.map((event) => (
+                        <EventCard
+                          key={event.id}
+                          event={event}
+                          onBookEvent={handleBookEvent}
+                          onLikeEvent={handleLikeEvent}
+                          onShareEvent={handleShareEvent}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <div className="text-6xl mb-4">🔍</div>
+                      <h3 className="text-xl font-semibold mb-2">No events found</h3>
+                      <p className="text-muted-foreground">
+                        Try adjusting your search or filters to find more events.
+                      </p>
+                    </div>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="trending" className="mt-0">
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {sortedEvents.map((event) => (
+                    {sortedEvents.slice(0, 6).map((event) => (
                       <EventCard
                         key={event.id}
                         event={event}
@@ -328,16 +350,22 @@ export default function Index() {
                       />
                     ))}
                   </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <div className="text-6xl mb-4">🔍</div>
-                    <h3 className="text-xl font-semibold mb-2">No events found</h3>
-                    <p className="text-muted-foreground">
-                      Try adjusting your search or filters to find more events.
-                    </p>
+                </TabsContent>
+
+                <TabsContent value="nearby" className="mt-0">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {sortedEvents.slice(0, 3).map((event) => (
+                      <EventCard
+                        key={event.id}
+                        event={event}
+                        onBookEvent={handleBookEvent}
+                        onLikeEvent={handleLikeEvent}
+                        onShareEvent={handleShareEvent}
+                      />
+                    ))}
                   </div>
-                )}
-              </TabsContent>
+                </TabsContent>
+              </Tabs>
             </div>
           </div>
         </div>
