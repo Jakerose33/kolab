@@ -56,7 +56,7 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
           </Link>
           
           {/* Navigation - Hidden on mobile */}
-          <nav className="hidden lg:flex items-center space-x-1">
+          <nav className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
