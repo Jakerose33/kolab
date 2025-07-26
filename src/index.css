@@ -8,53 +8,53 @@
 
 @layer base {
   :root {
-    /* Brand Colors - Kolab Identity */
-    --primary: 0 84% 60%;           /* Vibrant red #dc2626 equivalent */
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 0 70% 50%;
-    --primary-light: 0 90% 85%;
+    /* Stone Island Inspired - Monochromatic Palette */
+    --primary: 0 0% 8%;             /* Deep charcoal */
+    --primary-foreground: 0 0% 98%;
+    --primary-hover: 0 0% 15%;
+    --primary-light: 0 0% 90%;
     
-    --secondary: 220 14% 96%;       /* Cool neutral */
-    --secondary-foreground: 220 9% 46%;
+    --secondary: 0 0% 95%;          /* Light grey */
+    --secondary-foreground: 0 0% 8%;
     
-    --accent: 45 93% 47%;           /* Gold accent */
-    --accent-foreground: 220 9% 9%;
+    --accent: 210 100% 56%;         /* Minimal blue accent */
+    --accent-foreground: 0 0% 98%;
     
     /* Surface Colors */
     --background: 0 0% 100%;
-    --background-secondary: 220 14% 98%;
-    --foreground: 220 9% 9%;
+    --background-secondary: 0 0% 98%;
+    --foreground: 0 0% 8%;
     
     --card: 0 0% 100%;
-    --card-foreground: 220 9% 9%;
-    --card-hover: 220 14% 98%;
+    --card-foreground: 0 0% 8%;
+    --card-hover: 0 0% 97%;
     
     --popover: 0 0% 100%;
-    --popover-foreground: 220 9% 9%;
+    --popover-foreground: 0 0% 8%;
     
     /* Interactive Elements */
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 45%;
     
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 0 0% 98%;
     
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 0 84% 60%;
+    --border: 0 0% 90%;
+    --input: 0 0% 96%;
+    --ring: 0 0% 8%;
     
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(0 84% 60%), hsl(0 70% 50%));
-    --gradient-accent: linear-gradient(135deg, hsl(45 93% 47%), hsl(35 90% 50%));
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 14% 98%));
+    /* Gradients - Subtle and minimal */
+    --gradient-primary: linear-gradient(135deg, hsl(0 0% 8%), hsl(0 0% 15%));
+    --gradient-accent: linear-gradient(135deg, hsl(210 100% 56%), hsl(210 80% 48%));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 98%));
     
-    /* Shadows */
-    --shadow-sm: 0 1px 2px hsl(220 9% 9% / 0.05);
-    --shadow-md: 0 4px 6px hsl(220 9% 9% / 0.1);
-    --shadow-lg: 0 10px 15px hsl(220 9% 9% / 0.1);
-    --shadow-glow: 0 0 20px hsl(0 84% 60% / 0.3);
+    /* Shadows - Clean and minimal */
+    --shadow-sm: 0 1px 2px hsl(0 0% 8% / 0.05);
+    --shadow-md: 0 2px 4px hsl(0 0% 8% / 0.08);
+    --shadow-lg: 0 4px 12px hsl(0 0% 8% / 0.1);
+    --shadow-glow: 0 0 20px hsl(210 100% 56% / 0.2);
     
-    --radius: 0.75rem;
+    --radius: 0.25rem;
     
     /* Typography */
     --font-heading: 'Inter', system-ui, sans-serif;
