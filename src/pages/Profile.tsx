@@ -12,9 +12,13 @@ import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { User, Edit2, Camera, MapPin, Briefcase, Calendar, Star, Award } from "lucide-react";
+import { MessagesDialog } from "@/components/MessagesDialog";
+import { NotificationsDialog } from "@/components/NotificationsDialog";
 
 export default function Profile() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showMessagesDialog, setShowMessagesDialog] = useState(false);
+  const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     name: "Jake Rose",
@@ -31,8 +35,22 @@ export default function Profile() {
     setIsEditing(false);
     toast({
       title: "Profile Updated",
-      description: "Your profile has been successfully updated.",
+      description: "Your profile has been updated successfully.",
     });
+  };
+
+  const handleAddSkill = () => {
+    const newSkill = prompt("Enter a new skill:");
+    if (newSkill && newSkill.trim()) {
+      setProfileData({
+        ...profileData,
+        skills: [...profileData.skills, newSkill.trim()]
+      });
+      toast({
+        title: "Skill Added",
+        description: `${newSkill} has been added to your skills.`,
+      });
+    }
   };
 
   const stats = [
@@ -46,8 +64,8 @@ export default function Profile() {
     <div className="min-h-screen bg-background">
       <KolabHeader
         onCreateEvent={() => setShowCreateDialog(true)}
-        onOpenMessages={() => toast({ title: "Messages", description: "Opening messages..." })}
-        onOpenNotifications={() => toast({ title: "Notifications", description: "Opening notifications..." })}
+        onOpenMessages={() => setShowMessagesDialog(true)}
+        onOpenNotifications={() => setShowNotificationsDialog(true)}
       />
       
       <main className="container px-4 py-8 max-w-4xl">
@@ -165,7 +183,7 @@ export default function Profile() {
                     {skill}
                   </Badge>
                 ))}
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" onClick={handleAddSkill}>
                   + Add Skill
                 </Button>
               </div>
@@ -207,6 +225,15 @@ export default function Profile() {
           </Card>
         </div>
       </main>
+      
+      <MessagesDialog
+        open={showMessagesDialog}
+        onOpenChange={setShowMessagesDialog}
+      />
+      <NotificationsDialog
+        open={showNotificationsDialog}
+        onOpenChange={setShowNotificationsDialog}
+      />
     </div>
   );
 }
