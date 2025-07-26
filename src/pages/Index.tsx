@@ -186,7 +186,13 @@ export default function Index() {
       />
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-gradient-hero overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{
+        backgroundImage: "url('https://lime-giraffe-422038.hostingersite.com/wp-content/uploads/2024/10/IMG_4791.webp')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundColor: "#1a1a1a"
+      }}>
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="container px-4 relative z-10">
           <div className="text-center max-w-4xl mx-auto">
