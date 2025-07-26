@@ -2253,6 +2253,8 @@ export default function Index() {
   const [showMessagesDialog, setShowMessagesDialog] = useState(false);
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const eventsPerPage = 12;
   const { toast } = useToast();
 
   // Filter events based on category and search
@@ -2281,6 +2283,19 @@ export default function Index() {
         return 0;
     }
   });
+
+  // Pagination
+  const paginatedEvents = sortedEvents.slice(0, currentPage * eventsPerPage);
+  const hasMoreEvents = sortedEvents.length > currentPage * eventsPerPage;
+
+  const handleLoadMore = () => {
+    setCurrentPage(prev => prev + 1);
+  };
+
+  // Reset pagination when filters change
+  const resetPagination = () => {
+    setCurrentPage(1);
+  };
 
   const handleCreateEvent = (eventData: any) => {
     setEvents(prev => [eventData, ...prev]);
@@ -2398,7 +2413,10 @@ export default function Index() {
                   <Input
                     placeholder="Search events..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      resetPagination();
+                    }}
                     className="pl-10"
                   />
                 </div>
@@ -2408,7 +2426,10 @@ export default function Index() {
               <CategoryFilter
                 categories={mockCategories}
                 selectedCategory={selectedCategory}
-                onCategorySelect={setSelectedCategory}
+                onCategorySelect={(category) => {
+                  setSelectedCategory(category);
+                  resetPagination();
+                }}
               />
 
               {/* Quick Filters */}
@@ -2434,7 +2455,10 @@ export default function Index() {
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">Sort by:</span>
-                  <Select value={sortBy} onValueChange={setSortBy}>
+                  <Select value={sortBy} onValueChange={(value) => {
+                    setSortBy(value);
+                    resetPagination();
+                  }}>
                     <SelectTrigger className="w-40">
                       <SelectValue />
                     </SelectTrigger>
@@ -2452,7 +2476,7 @@ export default function Index() {
               {/* Results Count */}
               <div className="mb-6">
                 <p className="text-muted-foreground">
-                  Showing {sortedEvents.length} of {events.length} events
+                  Showing {paginatedEvents.length} of {sortedEvents.length} events
                   {selectedCategory && (
                     <span> in {mockCategories.find(c => c.id === selectedCategory)?.name}</span>
                   )}
@@ -2469,18 +2493,33 @@ export default function Index() {
                 </TabsList>
 
                 <TabsContent value="all" className="mt-0">
-                  {sortedEvents.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                      {sortedEvents.map((event) => (
-                        <EventCard
-                          key={event.id}
-                          event={event}
-                          onBookEvent={handleBookEvent}
-                          onLikeEvent={handleLikeEvent}
-                          onShareEvent={handleShareEvent}
-                        />
-                      ))}
-                    </div>
+                  {paginatedEvents.length > 0 ? (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        {paginatedEvents.map((event) => (
+                          <EventCard
+                            key={event.id}
+                            event={event}
+                            onBookEvent={handleBookEvent}
+                            onLikeEvent={handleLikeEvent}
+                            onShareEvent={handleShareEvent}
+                          />
+                        ))}
+                      </div>
+                      
+                      {hasMoreEvents && (
+                        <div className="flex justify-center mt-8">
+                          <Button 
+                            onClick={handleLoadMore}
+                            variant="outline"
+                            size="lg"
+                            className="px-8"
+                          >
+                            View More Events
+                          </Button>
+                        </div>
+                      )}
+                    </>
                   ) : (
                     <div className="text-center py-12">
                       <div className="text-6xl mb-4">🔍</div>
