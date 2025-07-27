@@ -1,0 +1,19 @@
+{
+  "name": "Kolab - Where Your City Comes Alive",
+  "short_name": "Kolab",
+  "description": "Your backstage pass to the best gigs, shows, sports, and experiences happening near you",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["entertainment", "lifestyle", "social"],
+  "lang": "en-US"
+}

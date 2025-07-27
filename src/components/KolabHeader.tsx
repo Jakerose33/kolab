@@ -98,8 +98,9 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
             onClick={onCreateEvent}
             className="bg-gradient-primary hover:opacity-90 transition-opacity"
             size="sm"
+            aria-label="Create a new event"
           >
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
             <span className="hidden sm:inline">Create</span>
           </Button>
 
@@ -109,10 +110,14 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
             size="sm"
             asChild
             className="relative"
+            aria-label="View messages (3 unread)"
           >
             <Link to="/messages">
-              <MessageSquare className="h-5 w-5" />
-              <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-primary">
+              <MessageSquare className="h-5 w-5" aria-hidden="true" />
+              <Badge 
+                className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-primary"
+                aria-label="3 unread messages"
+              >
                 3
               </Badge>
             </Link>
@@ -124,9 +129,13 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
             size="sm"
             onClick={onOpenNotifications}
             className="relative"
+            aria-label="View notifications (2 unread)"
           >
-            <Bell className="h-5 w-5" />
-            <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-accent">
+            <Bell className="h-5 w-5" aria-hidden="true" />
+            <Badge 
+              className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-accent"
+              aria-label="2 unread notifications"
+            >
               2
             </Badge>
           </Button>
@@ -134,10 +143,18 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="relative h-9 w-9 rounded-full">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="relative h-9 w-9 rounded-full"
+                aria-label="Open user menu"
+              >
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face" alt="User" />
-                  <AvatarFallback>JD</AvatarFallback>
+                  <AvatarImage 
+                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face" 
+                    alt="Jake Rose profile picture" 
+                  />
+                  <AvatarFallback>JR</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
@@ -178,8 +195,12 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
           <div className="md:hidden">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  <Menu className="h-5 w-5" />
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  aria-label="Open mobile navigation menu"
+                >
+                  <Menu className="h-5 w-5" aria-hidden="true" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">

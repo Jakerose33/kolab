@@ -7,6 +7,8 @@ import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { AuthDialog } from "@/components/AuthDialog";
 import { RecommendationsCarousel } from "@/components/RecommendationsCarousel";
+import { EmptyState } from "@/components/EmptyState";
+import { LoadingState } from "@/components/LoadingState";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +27,8 @@ import {
   TrendingUp,
   Users,
   Clock,
-  Search
+  Search,
+  AlertCircle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import EventMap from "@/components/EventMap";
@@ -2248,6 +2251,26 @@ export default function Index() {
   const [viewMode, setViewMode] = useState("grid");
   const [events, setEvents] = useState(mockEvents);
   const [eventsToShow, setEventsToShow] = useState(12);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Simulate loading and error states
+  useEffect(() => {
+    const loadEvents = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 800));
+        setLoading(false);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+        setLoading(false);
+      }
+    };
+
+    loadEvents();
+  }, []);
 
   // Generate category data from events
   const categoryData = [
@@ -2382,6 +2405,7 @@ export default function Index() {
             size="lg" 
             className="bg-white/20 hover:bg-white/30 text-white border border-white/40 backdrop-blur-sm text-lg px-8 py-4"
             onClick={() => setShowAuth(true)}
+            aria-label="Sign up for early access to Kolab"
           >
             Get Early Access
           </Button>
@@ -2466,9 +2490,21 @@ export default function Index() {
         {/* Main Content */}
         <Tabs value={viewMode} onValueChange={setViewMode} className="space-y-6">
           <TabsContent value="grid" className="space-y-6">
-            {displayedEvents.length > 0 ? (
+            {loading ? (
+              <LoadingState variant="cards" count={12} />
+            ) : error ? (
+              <EmptyState
+                icon={AlertCircle}
+                title="Failed to load events"
+                description={error}
+                action={{
+                  label: "Try Again",
+                  onClick: () => window.location.reload()
+                }}
+              />
+            ) : displayedEvents.length > 0 ? (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
                   {displayedEvents.map((event) => (
                     <EventCard
                       key={event.id}
@@ -2500,9 +2536,9 @@ export default function Index() {
                            });
                          }
                        }}
-                        onFollowOrganizer={handleFollowOrganizer}
-                     />
-                   ))}
+                       onFollowOrganizer={handleFollowOrganizer}
+                    />
+                  ))}
                 </div>
                 
                 {/* Load More Button */}
@@ -2512,6 +2548,7 @@ export default function Index() {
                       onClick={loadMoreEvents}
                       variant="outline"
                       size="lg"
+                      aria-label={`Load ${Math.min(12, sortedEvents.length - eventsToShow)} more events`}
                     >
                       View More Events
                     </Button>
@@ -2519,18 +2556,26 @@ export default function Index() {
                 )}
               </>
             ) : (
-              <div className="text-center py-12">
-                <h3 className="text-lg font-semibold mb-2">No events found</h3>
-                <p className="text-muted-foreground mb-4">
-                  Try adjusting your search terms or category filter.
-                </p>
-                <Button onClick={() => {
-                  setSearchTerm("");
-                  setSelectedCategory("all");
-                }}>
-                  Clear filters
-                </Button>
-              </div>
+              <EmptyState
+                icon={Calendar}
+                title="No events found"
+                description={
+                  searchTerm || selectedCategory !== "all"
+                    ? "Try adjusting your search terms or category filter."
+                    : "No events are currently available. Check back soon!"
+                }
+                action={{
+                  label: searchTerm || selectedCategory !== "all" ? "Clear filters" : "Create Event",
+                  onClick: () => {
+                    if (searchTerm || selectedCategory !== "all") {
+                      setSearchTerm("");
+                      setSelectedCategory("all");
+                    } else {
+                      setShowCreateEvent(true);
+                    }
+                  }
+                }}
+              />
             )}
           </TabsContent>
           

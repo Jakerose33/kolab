@@ -3,6 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { OfflineIndicator } from "@/components/OfflineIndicator";
 import Index from "./pages/Index";
 import Venues from "./pages/Venues";
 import Social from "./pages/Social";
@@ -16,25 +18,60 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/venues" element={<Venues />} />
-          <Route path="/social" element={<Social />} />
-          <Route path="/careers" element={<Careers />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/bookings" element={<MyBookings />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <OfflineIndicator />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={
+              <ErrorBoundary>
+                <Index />
+              </ErrorBoundary>
+            } />
+            <Route path="/venues" element={
+              <ErrorBoundary>
+                <Venues />
+              </ErrorBoundary>
+            } />
+            <Route path="/social" element={
+              <ErrorBoundary>
+                <Social />
+              </ErrorBoundary>
+            } />
+            <Route path="/careers" element={
+              <ErrorBoundary>
+                <Careers />
+              </ErrorBoundary>
+            } />
+            <Route path="/profile" element={
+              <ErrorBoundary>
+                <Profile />
+              </ErrorBoundary>
+            } />
+            <Route path="/settings" element={
+              <ErrorBoundary>
+                <Settings />
+              </ErrorBoundary>
+            } />
+            <Route path="/bookings" element={
+              <ErrorBoundary>
+                <MyBookings />
+              </ErrorBoundary>
+            } />
+            <Route path="/messages" element={
+              <ErrorBoundary>
+                <Messages />
+              </ErrorBoundary>
+            } />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
