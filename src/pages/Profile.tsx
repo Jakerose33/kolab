@@ -13,7 +13,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { User, Edit2, Camera, MapPin, Briefcase, Calendar, Star, Award } from "lucide-react";
 import { MessagesDialog } from "@/components/MessagesDialog";
-import { NotificationsDialog } from "@/components/NotificationsDialog";
+import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 
 export default function Profile() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -230,7 +230,7 @@ export default function Profile() {
         open={showMessagesDialog}
         onOpenChange={setShowMessagesDialog}
       />
-      <NotificationsDialog
+      <NotificationsDrawer
         open={showNotificationsDialog}
         onOpenChange={setShowNotificationsDialog}
       />

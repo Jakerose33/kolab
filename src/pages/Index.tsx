@@ -4,7 +4,7 @@ import { EventCard } from "@/components/EventCard";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { CreateEventWizard } from "@/components/CreateEventWizard";
 import { MessagesDialog } from "@/components/MessagesDialog";
-import { NotificationsDialog } from "@/components/NotificationsDialog";
+import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { AuthDialog } from "@/components/AuthDialog";
 import { RecommendationsCarousel } from "@/components/RecommendationsCarousel";
 import { Button } from "@/components/ui/button";
@@ -2552,7 +2552,7 @@ export default function Index() {
         onOpenChange={setShowMessages}
       />
       
-      <NotificationsDialog
+      <NotificationsDrawer
         open={showNotifications}
         onOpenChange={setShowNotifications}
       />

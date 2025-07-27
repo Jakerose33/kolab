@@ -2,7 +2,7 @@ import { useState } from "react";
 import { KolabHeader } from "@/components/KolabHeader";
 import { CreateEventWizard } from "@/components/CreateEventWizard";
 import { MessagesDialog } from "@/components/MessagesDialog";
-import { NotificationsDialog } from "@/components/NotificationsDialog";
+import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -308,7 +308,7 @@ export default function Messages() {
         onOpenChange={setShowMessages}
       />
       
-      <NotificationsDialog
+      <NotificationsDrawer
         open={showNotifications}
         onOpenChange={setShowNotifications}
       />

@@ -11,7 +11,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Bell, Shield, User, Palette, Globe, Smartphone } from "lucide-react";
 import { MessagesDialog } from "@/components/MessagesDialog";
-import { NotificationsDialog } from "@/components/NotificationsDialog";
+import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 
 export default function Settings() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -344,7 +344,7 @@ export default function Settings() {
         open={showMessagesDialog}
         onOpenChange={setShowMessagesDialog}
       />
-      <NotificationsDialog
+      <NotificationsDrawer
         open={showNotificationsDialog}
         onOpenChange={setShowNotificationsDialog}
       />

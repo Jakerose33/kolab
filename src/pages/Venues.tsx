@@ -1,7 +1,7 @@
 import { KolabHeader } from "@/components/KolabHeader";
 import { VenueBooking } from "@/components/VenueBooking";
 import { MessagesDialog } from "@/components/MessagesDialog";
-import { NotificationsDialog } from "@/components/NotificationsDialog";
+import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -27,7 +27,7 @@ export default function Venues() {
         open={showMessagesDialog}
         onOpenChange={setShowMessagesDialog}
       />
-      <NotificationsDialog
+      <NotificationsDrawer
         open={showNotificationsDialog}
         onOpenChange={setShowNotificationsDialog}
       />
