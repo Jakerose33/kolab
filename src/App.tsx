@@ -17,61 +17,63 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <OfflineIndicator />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={
-              <ErrorBoundary>
-                <Index />
-              </ErrorBoundary>
-            } />
-            <Route path="/venues" element={
-              <ErrorBoundary>
-                <Venues />
-              </ErrorBoundary>
-            } />
-            <Route path="/social" element={
-              <ErrorBoundary>
-                <Social />
-              </ErrorBoundary>
-            } />
-            <Route path="/careers" element={
-              <ErrorBoundary>
-                <Careers />
-              </ErrorBoundary>
-            } />
-            <Route path="/profile" element={
-              <ErrorBoundary>
-                <Profile />
-              </ErrorBoundary>
-            } />
-            <Route path="/settings" element={
-              <ErrorBoundary>
-                <Settings />
-              </ErrorBoundary>
-            } />
-            <Route path="/bookings" element={
-              <ErrorBoundary>
-                <MyBookings />
-              </ErrorBoundary>
-            } />
-            <Route path="/messages" element={
-              <ErrorBoundary>
-                <Messages />
-              </ErrorBoundary>
-            } />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </ErrorBoundary>
-);
+function App() {
+  return (
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <OfflineIndicator />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={
+                <ErrorBoundary>
+                  <Index />
+                </ErrorBoundary>
+              } />
+              <Route path="/venues" element={
+                <ErrorBoundary>
+                  <Venues />
+                </ErrorBoundary>
+              } />
+              <Route path="/social" element={
+                <ErrorBoundary>
+                  <Social />
+                </ErrorBoundary>
+              } />
+              <Route path="/careers" element={
+                <ErrorBoundary>
+                  <Careers />
+                </ErrorBoundary>
+              } />
+              <Route path="/profile" element={
+                <ErrorBoundary>
+                  <Profile />
+                </ErrorBoundary>
+              } />
+              <Route path="/settings" element={
+                <ErrorBoundary>
+                  <Settings />
+                </ErrorBoundary>
+              } />
+              <Route path="/bookings" element={
+                <ErrorBoundary>
+                  <MyBookings />
+                </ErrorBoundary>
+              } />
+              <Route path="/messages" element={
+                <ErrorBoundary>
+                  <Messages />
+                </ErrorBoundary>
+              } />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
+  );
+}
 
 export default App;
