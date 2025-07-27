@@ -1,14 +1,14 @@
+import { useState } from "react";
 import { KolabHeader } from "@/components/KolabHeader";
+import { CreateEventDialog } from "@/components/CreateEventDialog";
+import { MessagesDialog } from "@/components/MessagesDialog";
+import { NotificationsDialog } from "@/components/NotificationsDialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { MessagesDialog } from "@/components/MessagesDialog";
-import { NotificationsDialog } from "@/components/NotificationsDialog";
 import { Calendar, MapPin, Clock, Star, Users, CheckCircle, XCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock booking data
 const mockBookings = [
@@ -265,10 +265,22 @@ export default function MyBookings() {
         </div>
       </main>
       
+      <CreateEventDialog
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
+        onCreateEvent={(eventData) => {
+          toast({
+            title: "Event Created",
+            description: `${eventData.title} has been created successfully.`,
+          });
+        }}
+      />
+      
       <MessagesDialog
         open={showMessagesDialog}
         onOpenChange={setShowMessagesDialog}
       />
+      
       <NotificationsDialog
         open={showNotificationsDialog}
         onOpenChange={setShowNotificationsDialog}

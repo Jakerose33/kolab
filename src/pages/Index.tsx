@@ -5,6 +5,7 @@ import { CategoryFilter } from "@/components/CategoryFilter";
 import { CreateEventDialog } from "@/components/CreateEventDialog";
 import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDialog } from "@/components/NotificationsDialog";
+import { AuthDialog } from "@/components/AuthDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -2242,6 +2243,7 @@ export default function Index() {
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [showMessages, setShowMessages] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
   const [events, setEvents] = useState(mockEvents);
   const [eventsToShow, setEventsToShow] = useState(12);
@@ -2354,12 +2356,9 @@ export default function Index() {
           <Button 
             size="lg" 
             className="bg-white/20 hover:bg-white/30 text-white border border-white/40 backdrop-blur-sm text-lg px-8 py-4"
-            onClick={() => {
-              const mainContent = document.querySelector('main');
-              mainContent?.scrollIntoView({ behavior: 'smooth' });
-            }}
+            onClick={() => setShowAuth(true)}
           >
-            Explore Events
+            Get Early Access
           </Button>
         </div>
       </section>
@@ -2453,18 +2452,26 @@ export default function Index() {
                           description: "You have successfully joined this event!",
                         });
                       }}
-                      onLikeEvent={(eventId) => {
-                        setEvents(prev => prev.map(e => 
-                          e.id === eventId ? { ...e, isLiked: !e.isLiked } : e
-                        ));
-                      }}
-                      onShareEvent={(eventId) => {
-                        console.log('Sharing event:', eventId);
-                        toast({
-                          title: "Event Shared",
-                          description: "Event link copied to clipboard!",
-                        });
-                      }}
+                       onLikeEvent={(eventId) => {
+                         setEvents(prev => prev.map(e => 
+                           e.id === eventId ? { ...e, isLiked: !e.isLiked } : e
+                         ));
+                         const event = events.find(e => e.id === eventId);
+                         toast({
+                           title: event?.isLiked ? "Removed from favorites" : "Added to favorites",
+                           description: event?.isLiked ? "Event removed from your favorites." : "Event added to your favorites.",
+                         });
+                       }}
+                       onShareEvent={(eventId) => {
+                         const event = events.find(e => e.id === eventId);
+                         if (event) {
+                           navigator.clipboard.writeText(`Check out this event: ${event.title} - ${window.location.origin}`);
+                           toast({
+                             title: "Event Shared",
+                             description: "Event link copied to clipboard!",
+                           });
+                         }
+                       }}
                     />
                   ))}
                 </div>
@@ -2519,6 +2526,11 @@ export default function Index() {
       <NotificationsDialog
         open={showNotifications}
         onOpenChange={setShowNotifications}
+      />
+      
+      <AuthDialog
+        isOpen={showAuth}
+        onClose={() => setShowAuth(false)}
       />
     </div>
   );

@@ -107,13 +107,15 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
           <Button
             variant="ghost"
             size="sm"
-            onClick={onOpenMessages}
+            asChild
             className="relative"
           >
-            <MessageSquare className="h-5 w-5" />
-            <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-primary">
-              3
-            </Badge>
+            <Link to="/messages">
+              <MessageSquare className="h-5 w-5" />
+              <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-primary">
+                3
+              </Badge>
+            </Link>
           </Button>
 
           {/* Notifications */}

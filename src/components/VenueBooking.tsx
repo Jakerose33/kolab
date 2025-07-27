@@ -224,10 +224,10 @@ export function VenueBooking() {
               </div>
 
               <Button 
-                className="w-full kolab-button-primary"
+                className="w-full bg-gradient-primary hover:opacity-90"
                 onClick={() => handleBookVenue(venue.id, venue.name)}
               >
-                Request Booking
+                🎟️ Book Now
               </Button>
             </CardContent>
           </Card>
