@@ -6,6 +6,7 @@ import { CreateEventWizard } from "@/components/CreateEventWizard";
 import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDialog } from "@/components/NotificationsDialog";
 import { AuthDialog } from "@/components/AuthDialog";
+import { RecommendationsCarousel } from "@/components/RecommendationsCarousel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -2364,6 +2365,9 @@ export default function Index() {
       </section>
       
       <main className="container mx-auto px-4 py-8">
+        {/* Recommendations Carousel */}
+        <RecommendationsCarousel className="mb-12" />
+        
         {/* Search and Filter Section */}
         <div className="flex flex-col lg:flex-row gap-6 mb-8">
           <div className="flex-1">
