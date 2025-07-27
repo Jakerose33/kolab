@@ -9,7 +9,9 @@ import {
   Heart,
   Share2,
   MessageCircle,
-  Star
+  Star,
+  UserPlus,
+  UserCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +32,7 @@ interface EventCardProps {
       name: string;
       avatar: string;
       verified: boolean;
+      isFollowing?: boolean;
     };
     tags: string[];
     rating?: number;
@@ -40,6 +43,7 @@ interface EventCardProps {
   onBookEvent: (eventId: string) => void;
   onLikeEvent: (eventId: string) => void;
   onShareEvent: (eventId: string) => void;
+  onFollowOrganizer?: (organizerName: string) => void;
 }
 
 export function EventCard({ 
@@ -47,7 +51,8 @@ export function EventCard({
   className, 
   onBookEvent, 
   onLikeEvent, 
-  onShareEvent 
+  onShareEvent,
+  onFollowOrganizer
 }: EventCardProps) {
   const spotsLeft = event.capacity - event.attendees;
   const isAlmostFull = spotsLeft <= 5;
@@ -161,6 +166,23 @@ export function EventCard({
             </div>
             <span className="text-xs text-muted-foreground">Event Organizer</span>
           </div>
+          {onFollowOrganizer && (
+            <Button
+              size="sm"
+              variant={event.organizer.isFollowing ? "outline" : "default"}
+              onClick={() => onFollowOrganizer(event.organizer.name)}
+              className="h-7 px-2"
+            >
+              {event.organizer.isFollowing ? (
+                <UserCheck className="h-3 w-3 mr-1" />
+              ) : (
+                <UserPlus className="h-3 w-3 mr-1" />
+              )}
+              <span className="text-xs">
+                {event.organizer.isFollowing ? "Following" : "Follow"}
+              </span>
+            </Button>
+          )}
         </div>
 
         {/* Tags */}

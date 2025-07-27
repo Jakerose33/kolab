@@ -45,7 +45,7 @@ const mockEvents = [
     attendees: 65,
     price: 35,
     image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop",
-    organizer: { name: "Sarah Chen", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: true },
+    organizer: { name: "Sarah Chen", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: true, isFollowing: false },
     tags: ["jazz", "live music", "quartet"],
     rating: 4.8,
     isLiked: false,
@@ -63,7 +63,7 @@ const mockEvents = [
     attendees: 20,
     price: 85,
     image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=600&fit=crop",
-    organizer: { name: "Marcus Johnson", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: true },
+    organizer: { name: "Marcus Johnson", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: true, isFollowing: false },
     tags: ["electronic", "production", "workshop"],
     rating: 4.6,
     isLiked: true,
@@ -80,7 +80,7 @@ const mockEvents = [
     capacity: 100,
     attendees: 75,
     image: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=800&h=600&fit=crop",
-    organizer: { name: "Alex Rivera", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: false },
+    organizer: { name: "Alex Rivera", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: false, isFollowing: false },
     tags: ["open mic", "community", "live performance"],
     rating: 4.9,
     isLiked: false,
@@ -98,7 +98,7 @@ const mockEvents = [
     attendees: 180,
     price: 55,
     image: "https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=800&h=600&fit=crop",
-    organizer: { name: "Emma Wilson", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: true },
+    organizer: { name: "Emma Wilson", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: true, isFollowing: false },
     tags: ["classical", "symphony", "ensemble"],
     rating: 4.7,
     isLiked: true,
@@ -116,7 +116,7 @@ const mockEvents = [
     attendees: 120,
     price: 25,
     image: "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&h=600&fit=crop",
-    organizer: { name: "Jordan Lee", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face", verified: false },
+    organizer: { name: "Jordan Lee", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face", verified: false, isFollowing: false },
     tags: ["hip hop", "dance", "battle"],
     rating: 4.5,
     isLiked: false,
@@ -134,7 +134,7 @@ const mockEvents = [
     attendees: 45,
     price: 20,
     image: "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=800&h=600&fit=crop",
-    organizer: { name: "Sophia Martinez", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=32&h=32&fit=crop&crop=face", verified: true },
+    organizer: { name: "Sophia Martinez", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=32&h=32&fit=crop&crop=face", verified: true, isFollowing: false },
     tags: ["indie", "folk", "acoustic"],
     rating: 4.8,
     isLiked: true,
@@ -2315,6 +2315,7 @@ export default function Index() {
         name: "You",
         avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face",
         verified: true,
+        isFollowing: false,
       },
     };
     
@@ -2324,6 +2325,29 @@ export default function Index() {
     toast({
       title: "Event Created",
       description: `${newEvent.title} has been created successfully.`,
+    });
+  };
+
+  const handleFollowOrganizer = (organizerName: string) => {
+    setEvents(prev => prev.map(event => 
+      event.organizer.name === organizerName 
+        ? { 
+            ...event, 
+            organizer: { 
+              ...event.organizer, 
+              isFollowing: event.organizer.isFollowing !== undefined ? !event.organizer.isFollowing : true
+            } 
+          }
+        : event
+    ));
+    
+    const event = events.find(e => e.organizer.name === organizerName);
+    const isCurrentlyFollowing = event?.organizer.isFollowing;
+    toast({
+      title: isCurrentlyFollowing ? "Unfollowed" : "Following",
+      description: isCurrentlyFollowing 
+        ? `You unfollowed ${organizerName}`
+        : `You are now following ${organizerName}`,
     });
   };
 
@@ -2476,8 +2500,9 @@ export default function Index() {
                            });
                          }
                        }}
-                    />
-                  ))}
+                        onFollowOrganizer={handleFollowOrganizer}
+                     />
+                   ))}
                 </div>
                 
                 {/* Load More Button */}
