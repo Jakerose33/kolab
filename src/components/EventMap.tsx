@@ -91,7 +91,7 @@ const EventMap = ({ events: propsEvents }: EventMapProps = {}) => {
   });
 
   useEffect(() => {
-    if (!mapContainer.current || !mapboxToken) return;
+    if (!mapContainer.current) return;
 
     // Initialize map
     mapboxgl.accessToken = mapboxToken;
@@ -99,8 +99,10 @@ const EventMap = ({ events: propsEvents }: EventMapProps = {}) => {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/light-v11',
-      center: [144.9631, -37.8136], // Melbourne, Victoria
-      zoom: 12,
+      center: [144.9631, -37.8136], // Melbourne, Victoria CBD
+      zoom: 11,
+      pitch: 0,
+      bearing: 0
     });
 
     // Add navigation controls
@@ -109,39 +111,47 @@ const EventMap = ({ events: propsEvents }: EventMapProps = {}) => {
       'top-right'
     );
 
-    // Add markers for filtered events
-    filteredEvents.forEach(event => {
-      const el = document.createElement('div');
-      el.className = 'w-4 h-4 bg-gradient-primary rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform';
+    // Wait for map to load before adding markers
+    map.current.on('load', () => {
+      console.log('Map loaded, adding markers for events:', filteredEvents.length);
       
-      const marker = new mapboxgl.Marker(el)
-        .setLngLat(event.coordinates)
-        .addTo(map.current!);
+      // Add markers for filtered events
+      filteredEvents.forEach((event, index) => {
+        console.log(`Adding marker for event: ${event.title} at`, event.coordinates);
+        
+        const el = document.createElement('div');
+        el.className = 'w-6 h-6 bg-red-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center text-white text-xs font-bold';
+        el.textContent = (index + 1).toString();
+        
+        const marker = new mapboxgl.Marker(el)
+          .setLngLat(event.coordinates)
+          .addTo(map.current!);
 
-      // Create popup
-      const popup = new mapboxgl.Popup({ 
-        offset: 25,
-        className: 'event-popup'
-      }).setHTML(`
-        <div class="p-3 min-w-64">
-          <h3 class="font-semibold text-sm mb-1">${event.title}</h3>
-          <p class="text-xs text-muted-foreground mb-2">${event.description}</p>
-          <div class="flex justify-between items-center text-xs">
-            <span class="text-muted-foreground">${event.date}</span>
-            <span class="font-medium">${event.price ? `$${event.price}` : 'Free'}</span>
+        // Create popup
+        const popup = new mapboxgl.Popup({ 
+          offset: 25,
+          className: 'event-popup'
+        }).setHTML(`
+          <div class="p-3 min-w-64">
+            <h3 class="font-semibold text-sm mb-1">${event.title}</h3>
+            <p class="text-xs text-muted-foreground mb-2">${event.description}</p>
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-muted-foreground">${event.date}</span>
+              <span class="font-medium">${event.price ? `$${event.price}` : 'Free'}</span>
+            </div>
+            <div class="mt-2">
+              <button 
+                class="w-full bg-primary text-primary-foreground text-xs py-1 px-3 rounded hover:opacity-90 transition-opacity"
+                onclick="window.selectMapEvent('${event.id}')"
+              >
+                View Details
+              </button>
+            </div>
           </div>
-          <div class="mt-2">
-            <button 
-              class="w-full bg-primary text-primary-foreground text-xs py-1 px-3 rounded hover:opacity-90 transition-opacity"
-              onclick="window.selectMapEvent('${event.id}')"
-            >
-              View Details
-            </button>
-          </div>
-        </div>
-      `);
+        `);
 
-      marker.setPopup(popup);
+        marker.setPopup(popup);
+      });
     });
 
     // Global function for popup buttons
@@ -151,7 +161,9 @@ const EventMap = ({ events: propsEvents }: EventMapProps = {}) => {
     };
 
     return () => {
-      map.current?.remove();
+      if (map.current) {
+        map.current.remove();
+      }
     };
   }, [mapboxToken, filteredEvents]);
 
