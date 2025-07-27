@@ -10,9 +10,13 @@ import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Bell, Shield, User, Palette, Globe, Smartphone } from "lucide-react";
+import { MessagesDialog } from "@/components/MessagesDialog";
+import { NotificationsDialog } from "@/components/NotificationsDialog";
 
 export default function Settings() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showMessagesDialog, setShowMessagesDialog] = useState(false);
+  const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
   const [settings, setSettings] = useState({
     notifications: {
       emailUpdates: true,
@@ -62,8 +66,8 @@ export default function Settings() {
     <div className="min-h-screen bg-background">
       <KolabHeader
         onCreateEvent={() => setShowCreateDialog(true)}
-        onOpenMessages={() => toast({ title: "Messages", description: "Opening messages..." })}
-        onOpenNotifications={() => toast({ title: "Notifications", description: "Opening notifications..." })}
+        onOpenMessages={() => setShowMessagesDialog(true)}
+        onOpenNotifications={() => setShowNotificationsDialog(true)}
       />
       
       <main className="container px-4 py-8 max-w-4xl">
@@ -335,6 +339,15 @@ export default function Settings() {
           </div>
         </div>
       </main>
+      
+      <MessagesDialog
+        open={showMessagesDialog}
+        onOpenChange={setShowMessagesDialog}
+      />
+      <NotificationsDialog
+        open={showNotificationsDialog}
+        onOpenChange={setShowNotificationsDialog}
+      />
     </div>
   );
 }

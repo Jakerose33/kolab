@@ -117,3 +117,30 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  /* Kolab Design System Components */
+  .kolab-card {
+    @apply bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+  
+  .kolab-button-primary {
+    @apply bg-gradient-primary text-white hover:opacity-90 transition-opacity duration-200 font-medium;
+  }
+  
+  .kolab-button-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors duration-200;
+  }
+  
+  .kolab-hero-text {
+    @apply text-transparent bg-clip-text bg-gradient-primary font-bold;
+  }
+  
+  .kolab-gradient-bg {
+    @apply bg-gradient-subtle;
+  }
+  
+  .kolab-shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+}

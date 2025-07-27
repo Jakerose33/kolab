@@ -6,6 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { MessagesDialog } from "@/components/MessagesDialog";
+import { NotificationsDialog } from "@/components/NotificationsDialog";
 import { Calendar, MapPin, Clock, Star, Users, CheckCircle, XCircle } from "lucide-react";
 
 // Mock booking data
@@ -50,6 +52,8 @@ const mockBookings = [
 
 export default function MyBookings() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showMessagesDialog, setShowMessagesDialog] = useState(false);
+  const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
   const [bookings, setBookings] = useState(mockBookings);
   const { toast } = useToast();
 
@@ -99,8 +103,8 @@ export default function MyBookings() {
     <div className="min-h-screen bg-background">
       <KolabHeader
         onCreateEvent={() => setShowCreateDialog(true)}
-        onOpenMessages={() => toast({ title: "Messages", description: "Opening messages..." })}
-        onOpenNotifications={() => toast({ title: "Notifications", description: "Opening notifications..." })}
+        onOpenMessages={() => setShowMessagesDialog(true)}
+        onOpenNotifications={() => setShowNotificationsDialog(true)}
       />
       
       <main className="container px-4 py-8">
@@ -260,6 +264,15 @@ export default function MyBookings() {
           </Tabs>
         </div>
       </main>
+      
+      <MessagesDialog
+        open={showMessagesDialog}
+        onOpenChange={setShowMessagesDialog}
+      />
+      <NotificationsDialog
+        open={showNotificationsDialog}
+        onOpenChange={setShowNotificationsDialog}
+      />
     </div>
   );
 }

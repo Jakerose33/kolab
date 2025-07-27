@@ -173,9 +173,33 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
           </DropdownMenu>
 
           {/* Mobile Menu */}
-          <Button variant="ghost" size="sm" className="md:hidden">
-            <Menu className="h-5 w-5" />
-          </Button>
+          <div className="md:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                {navItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <DropdownMenuItem key={item.name} asChild>
+                      <Link to={item.path} className="flex items-center">
+                        <Icon className="mr-2 h-4 w-4" />
+                        {item.name}
+                      </Link>
+                    </DropdownMenuItem>
+                  );
+                })}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <Search className="mr-2 h-4 w-4" />
+                  Search
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </header>
