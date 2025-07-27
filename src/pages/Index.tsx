@@ -2388,7 +2388,7 @@ export default function Index() {
         className="relative min-h-screen flex items-center justify-center overflow-hidden bg-cover bg-no-repeat"
         style={{
           backgroundImage: "url('/lovable-uploads/2c93db7f-d994-4dea-81df-8944d43e9b56.png')",
-          backgroundPosition: "center 15%"
+          backgroundPosition: "center calc(15% - 100px)"
         }}
       >
         <div className="absolute inset-0 bg-black/20"></div>
