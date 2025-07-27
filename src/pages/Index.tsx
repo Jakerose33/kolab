@@ -2592,7 +2592,19 @@ export default function Index() {
           </TabsContent>
           
           <TabsContent value="map">
-            <EventMap />
+            <EventMap events={displayedEvents.map(event => ({
+              id: event.id,
+              title: event.title,
+              description: event.description,
+              date: event.date,
+              time: event.time,
+              location: event.location,
+              category: event.category,
+              coordinates: [144.9631 + (Math.random() - 0.5) * 0.1, -37.8136 + (Math.random() - 0.5) * 0.1] as [number, number], // Random Melbourne coordinates since mock data doesn't have coordinates
+              price: event.price,
+              attendees: event.attendees,
+              capacity: event.capacity || 50
+            }))} />
           </TabsContent>
         </Tabs>
       </main>

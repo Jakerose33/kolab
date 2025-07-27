@@ -68,11 +68,15 @@ const mockMapEvents: Event[] = [
   },
 ];
 
-const EventMap = () => {
+interface EventMapProps {
+  events?: Event[];
+}
+
+const EventMap = ({ events: propsEvents }: EventMapProps = {}) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const mapboxToken = 'pk.eyJ1Ijoia29sYWIiLCJhIjoiY21ka3Jzc3duMTB2bjJ4cTNhYjBmNDI4NCJ9.joO5ftfGwuKkHBV6rwDJdA';
-  const [events, setEvents] = useState<Event[]>(mockMapEvents);
+  const [events, setEvents] = useState<Event[]>(propsEvents || mockMapEvents);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);

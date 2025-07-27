@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MapPin, Star, Users, Wifi, Car, Coffee, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { bookVenue } from "@/lib/supabase";
+import VenueMap from "@/components/VenueMap";
 
 // Mock venue data
 const mockVenues = [
@@ -165,23 +166,30 @@ export function VenueBooking() {
         </div>
       </div>
 
-      {/* Map Integration Placeholder */}
-      <Card className="kolab-card">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5" />
-            Venue Map View
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-64 bg-muted rounded flex items-center justify-center">
-            <p className="text-muted-foreground">Interactive Map Integration Coming Soon</p>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Map Integration */}
+      <Tabs defaultValue="list" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="list">List View</TabsTrigger>
+          <TabsTrigger value="map">Map View</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="map" className="space-y-4">
+          <VenueMap venues={sortedVenues.map(venue => ({
+            id: venue.id,
+            name: venue.name,
+            description: venue.description,
+            location: venue.location,
+            coordinates: [144.9631 + (Math.random() - 0.5) * 0.1, -37.8136 + (Math.random() - 0.5) * 0.1], // Random Melbourne coordinates
+            price: venue.price,
+            capacity: venue.capacity,
+            rating: venue.rating,
+            type: venue.type,
+            amenities: venue.amenities
+          }))} />
+        </TabsContent>
 
-      {/* Venues Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <TabsContent value="list">{/* Venues Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {sortedVenues.map((venue) => (
           <Card key={venue.id} className="kolab-card overflow-hidden group">
             <div className="relative">
@@ -249,7 +257,9 @@ export function VenueBooking() {
             </CardContent>
           </Card>
         ))}
-      </div>
+        </div>
+        </TabsContent>
+      </Tabs>
 
       {/* No Results */}
       {sortedVenues.length === 0 && (
