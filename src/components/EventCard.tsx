@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { 
   Calendar, 
   MapPin, 
@@ -10,9 +11,11 @@ import {
   Heart,
   Share2,
   MessageCircle,
-  Star
+  Star,
+  ImageOff
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface EventCardProps {
   event: {
@@ -52,6 +55,10 @@ export function EventCard({
 }: EventCardProps) {
   const spotsLeft = event.capacity - event.attendees;
   const isAlmostFull = spotsLeft <= 5;
+  const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  const fallbackImage = "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&h=600&fit=crop&crop=center";
 
   return (
     <Card className={cn(
@@ -59,12 +66,35 @@ export function EventCard({
       className
     )}>
       {/* Event Image */}
-      <div className="relative h-48 overflow-hidden">
-        <img 
-          src={event.image} 
-          alt={event.title}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
+      <div className="relative h-48 overflow-hidden bg-muted">
+        {!imageLoaded && !imageError && (
+          <Skeleton className="w-full h-full absolute inset-0" />
+        )}
+        {imageError ? (
+          <div className="w-full h-full flex items-center justify-center bg-muted">
+            <div className="text-center">
+              <ImageOff className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+              <span className="text-sm text-muted-foreground">Image not available</span>
+            </div>
+          </div>
+        ) : (
+          <img 
+            src={imageError ? fallbackImage : event.image} 
+            alt={event.title}
+            loading="lazy"
+            className={cn(
+              "w-full h-full object-cover transition-all duration-300 group-hover:scale-105",
+              !imageLoaded && "opacity-0"
+            )}
+            onLoad={() => setImageLoaded(true)}
+            onError={() => {
+              if (!imageError) {
+                setImageError(true);
+                setImageLoaded(true);
+              }
+            }}
+          />
+        )}
         <div className="absolute top-3 left-3">
           <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm">
             {event.category}
