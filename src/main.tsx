@@ -1,6 +1,5 @@
 import React, { StrictMode, Suspense, lazy } from 'react';
 import { createRoot } from 'react-dom/client'
-import { CriticalCSS } from './components/CriticalCSS';
 import { LoadingState } from './components/LoadingState';
 import './index.css'
 
@@ -22,7 +21,6 @@ const App = lazy(() => import('./App'));
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <CriticalCSS />
     <Suspense fallback={<LoadingState />}>
       <App />
     </Suspense>
