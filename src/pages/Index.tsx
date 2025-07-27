@@ -1884,7 +1884,7 @@ const mockEvents = [
     capacity: 60,
     attendees: 48,
     price: 35,
-    image: "https://images.unsplash.com/photo-1541746972996-4e0b0f93e586?w=800&h=600&fit=crop",
+    image: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=800&h=600&fit=crop",
     organizer: { name: "Professional Network Melbourne", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: true },
     tags: ["networking", "professionals", "business"],
     rating: 4.6,
