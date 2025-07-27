@@ -2592,19 +2592,62 @@ export default function Index() {
           </TabsContent>
           
           <TabsContent value="map">
-            <EventMap events={displayedEvents.map(event => ({
-              id: event.id,
-              title: event.title,
-              description: event.description,
-              date: event.date,
-              time: event.time,
-              location: event.location,
-              category: event.category,
-              coordinates: [144.9631 + (Math.random() - 0.5) * 0.1, -37.8136 + (Math.random() - 0.5) * 0.1] as [number, number], // Random Melbourne coordinates since mock data doesn't have coordinates
-              price: event.price,
-              attendees: event.attendees,
-              capacity: event.capacity || 50
-            }))} />
+            <EventMap events={displayedEvents.map(event => {
+              // Map real Melbourne venues to coordinates
+              const getCoordinatesForLocation = (location: string): [number, number] => {
+                const locationMap: Record<string, [number, number]> = {
+                  "Bennett's Lane Jazz Club, CBD": [144.9631, -37.8136],
+                  "SAE Creative Media Institute, South Melbourne": [144.9631, -37.8367],
+                  "The Corner Hotel, Richmond": [144.9847, -37.8136],
+                  "Melbourne Recital Centre, CBD": [144.9612, -37.8162],
+                  "ACMI, Fed Square": [144.9692, -37.8177],
+                  "NGV International, CBD": [144.9684, -37.8226],
+                  "Hosier Lane, CBD": [144.9692, -37.8172],
+                  "Royal Botanic Gardens Melbourne": [144.9796, -37.8304],
+                  "Melbourne Convention Centre": [144.9515, -37.8249],
+                  "Rod Laver Arena, Melbourne Park": [144.9783, -37.8219],
+                  "Queen Victoria Market": [144.9569, -37.8076],
+                  "St Kilda Foreshore": [144.9779, -37.8675],
+                  "Docklands Park": [144.9400, -37.8181],
+                  "Fitzroy Gardens": [144.9796, -37.8138],
+                  "Albert Park Lake": [144.9688, -37.8467],
+                  "Luna Park Melbourne": [144.9779, -37.8675],
+                  "Melbourne Cricket Ground (MCG)": [144.9844, -37.8200],
+                  "Eureka Skydeck": [144.9644, -37.8214],
+                  "Melbourne Museum": [144.9716, -37.8033],
+                  "State Library Victoria": [144.9648, -37.8097]
+                };
+                
+                // Find exact match first
+                if (locationMap[location]) {
+                  return locationMap[location];
+                }
+                
+                // Find partial match
+                for (const [key, coords] of Object.entries(locationMap)) {
+                  if (location.toLowerCase().includes(key.toLowerCase().split(',')[0])) {
+                    return coords;
+                  }
+                }
+                
+                // Default to Melbourne CBD with slight random offset
+                return [144.9631 + (Math.random() - 0.5) * 0.02, -37.8136 + (Math.random() - 0.5) * 0.02];
+              };
+
+              return {
+                id: event.id,
+                title: event.title,
+                description: event.description,
+                date: event.date,
+                time: event.time,
+                location: event.location,
+                category: event.category,
+                coordinates: getCoordinatesForLocation(event.location),
+                price: event.price,
+                attendees: event.attendees,
+                capacity: event.capacity || 50
+              };
+            })} />
           </TabsContent>
         </Tabs>
       </main>
