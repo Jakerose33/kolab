@@ -80,6 +80,8 @@ const EventMap = ({ events: propsEvents }: EventMapProps = {}) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [mapError, setMapError] = useState<string | null>(null);
 
   // Filter events
   const filteredEvents = events.filter(event => {
@@ -93,79 +95,115 @@ const EventMap = ({ events: propsEvents }: EventMapProps = {}) => {
   useEffect(() => {
     if (!mapContainer.current) return;
 
-    // Initialize map
-    mapboxgl.accessToken = mapboxToken;
-    
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/light-v11',
-      center: [144.9631, -37.8136], // Melbourne, Victoria CBD
-      zoom: 11,
-      pitch: 0,
-      bearing: 0
-    });
-
-    // Add navigation controls
-    map.current.addControl(
-      new mapboxgl.NavigationControl(),
-      'top-right'
-    );
-
-    // Wait for map to load before adding markers
-    map.current.on('load', () => {
-      console.log('Map loaded, adding markers for events:', filteredEvents.length);
+    try {
+      // Set Mapbox access token
+      mapboxgl.accessToken = mapboxToken;
       
-      // Add markers for filtered events
-      filteredEvents.forEach((event, index) => {
-        console.log(`Adding marker for event: ${event.title} at`, event.coordinates);
-        
-        const el = document.createElement('div');
-        el.className = 'w-6 h-6 bg-red-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center text-white text-xs font-bold';
-        el.textContent = (index + 1).toString();
-        
-        const marker = new mapboxgl.Marker(el)
-          .setLngLat(event.coordinates)
-          .addTo(map.current!);
-
-        // Create popup
-        const popup = new mapboxgl.Popup({ 
-          offset: 25,
-          className: 'event-popup'
-        }).setHTML(`
-          <div class="p-3 min-w-64">
-            <h3 class="font-semibold text-sm mb-1">${event.title}</h3>
-            <p class="text-xs text-muted-foreground mb-2">${event.description}</p>
-            <div class="flex justify-between items-center text-xs">
-              <span class="text-muted-foreground">${event.date}</span>
-              <span class="font-medium">${event.price ? `$${event.price}` : 'Free'}</span>
-            </div>
-            <div class="mt-2">
-              <button 
-                class="w-full bg-primary text-primary-foreground text-xs py-1 px-3 rounded hover:opacity-90 transition-opacity"
-                onclick="window.selectMapEvent('${event.id}')"
-              >
-                View Details
-              </button>
-            </div>
-          </div>
-        `);
-
-        marker.setPopup(popup);
+      console.log('Initializing map...');
+      
+      // Initialize map
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: 'mapbox://styles/mapbox/streets-v12', // Use streets style instead of light
+        center: [144.9631, -37.8136], // Melbourne CBD
+        zoom: 11,
+        attributionControl: true
       });
-    });
 
-    // Global function for popup buttons
-    (window as any).selectMapEvent = (eventId: string) => {
-      const event = events.find(e => e.id === eventId);
-      if (event) setSelectedEvent(event);
-    };
+      // Add navigation controls
+      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+      // Handle map load
+      map.current.on('load', () => {
+        console.log('Map loaded successfully!');
+        setMapLoaded(true);
+        setMapError(null);
+        
+        // Add markers after map loads
+        filteredEvents.forEach((event, index) => {
+          console.log(`Adding marker ${index + 1}: ${event.title}`);
+          
+          // Create marker element
+          const el = document.createElement('div');
+          el.style.width = '24px';
+          el.style.height = '24px';
+          el.style.borderRadius = '50%';
+          el.style.backgroundColor = '#ef4444';
+          el.style.border = '2px solid white';
+          el.style.cursor = 'pointer';
+          el.style.display = 'flex';
+          el.style.alignItems = 'center';
+          el.style.justifyContent = 'center';
+          el.style.color = 'white';
+          el.style.fontSize = '12px';
+          el.style.fontWeight = 'bold';
+          el.textContent = (index + 1).toString();
+          
+          // Create marker
+          const marker = new mapboxgl.Marker(el)
+            .setLngLat(event.coordinates)
+            .addTo(map.current!);
+
+          // Create popup
+          const popup = new mapboxgl.Popup({ offset: 25 })
+            .setHTML(`
+              <div style="padding: 12px; min-width: 200px;">
+                <h3 style="font-weight: bold; margin-bottom: 8px;">${event.title}</h3>
+                <p style="font-size: 12px; color: #666; margin-bottom: 8px;">${event.description}</p>
+                <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                  <span>${event.date}</span>
+                  <span style="font-weight: bold;">${event.price ? `$${event.price}` : 'Free'}</span>
+                </div>
+              </div>
+            `);
+
+          marker.setPopup(popup);
+        });
+      });
+
+      // Handle map errors
+      map.current.on('error', (e) => {
+        console.error('Map error:', e);
+        setMapError('Failed to load map. Please check your internet connection.');
+      });
+
+    } catch (error) {
+      console.error('Error initializing map:', error);
+      setMapError('Failed to initialize map');
+    }
 
     return () => {
       if (map.current) {
         map.current.remove();
       }
     };
-  }, [mapboxToken, filteredEvents]);
+  }, [filteredEvents]);
+
+  if (mapError) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <h3 className="text-red-800 font-semibold">Map Error</h3>
+          <p className="text-red-600 text-sm">{mapError}</p>
+          <p className="text-red-600 text-sm mt-2">Showing events in list format below:</p>
+        </div>
+        
+        {/* Fallback to event list */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredEvents.map((event) => (
+            <div key={event.id} className="p-4 border rounded-lg">
+              <h3 className="font-semibold">{event.title}</h3>
+              <p className="text-sm text-muted-foreground mb-2">{event.description}</p>
+              <div className="flex justify-between text-sm">
+                <span>{event.date}</span>
+                <span className="font-medium">{event.price ? `$${event.price}` : 'Free'}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
 
   return (
@@ -198,8 +236,17 @@ const EventMap = ({ events: propsEvents }: EventMapProps = {}) => {
       </div>
 
       {/* Map Container */}
-      <div className="relative h-96 rounded-lg overflow-hidden border shadow-lg">
-        <div ref={mapContainer} className="absolute inset-0" />
+      <div className="relative rounded-lg overflow-hidden border shadow-lg" style={{ height: '500px' }}>
+        <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
+        
+        {!mapLoaded && !mapError && (
+          <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+              <p className="text-sm text-muted-foreground">Loading Melbourne map...</p>
+            </div>
+          </div>
+        )}
         
         {/* Event Count Overlay */}
         <div className="absolute top-4 left-4 bg-background/90 backdrop-blur-sm px-3 py-2 rounded-lg shadow-md">
