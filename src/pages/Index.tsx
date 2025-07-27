@@ -2385,9 +2385,10 @@ export default function Index() {
 
       {/* Hero Section */}
       <section 
-        className="relative min-h-screen flex items-center justify-center overflow-hidden bg-cover bg-top bg-no-repeat"
+        className="relative min-h-screen flex items-center justify-center overflow-hidden bg-cover bg-no-repeat"
         style={{
-          backgroundImage: "url('/lovable-uploads/2c93db7f-d994-4dea-81df-8944d43e9b56.png')"
+          backgroundImage: "url('/lovable-uploads/2c93db7f-d994-4dea-81df-8944d43e9b56.png')",
+          backgroundPosition: "center 20%"
         }}
       >
         <div className="absolute inset-0 bg-black/20"></div>
