@@ -2385,7 +2385,7 @@ export default function Index() {
 
       {/* Hero Section */}
       <section 
-        className="relative min-h-screen flex items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat"
+        className="relative min-h-screen flex items-center justify-center overflow-hidden bg-cover bg-top bg-no-repeat"
         style={{
           backgroundImage: "url('/lovable-uploads/2c93db7f-d994-4dea-81df-8944d43e9b56.png')"
         }}
