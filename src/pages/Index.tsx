@@ -2336,7 +2336,7 @@ export default function Index() {
       <section 
         className="relative min-h-screen flex items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('/lovable-uploads/63b40ad5-4947-4dec-9020-30dd8c7932bc.png')"
+          backgroundImage: "url('/lovable-uploads/2c93db7f-d994-4dea-81df-8944d43e9b56.png')"
         }}
       >
         <div className="absolute inset-0 bg-black/20"></div>
