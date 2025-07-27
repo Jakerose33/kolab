@@ -2342,10 +2342,10 @@ export default function Index() {
         <div className="absolute inset-0 bg-black/20"></div>
         
         <div className="relative z-10 text-center text-white px-4">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6">
+          <h1 className="text-5xl md:text-7xl font-montserrat font-black mb-6 tracking-tight">
             KOLAB
           </h1>
-          <h2 className="text-3xl md:text-5xl font-bold mb-8">
+          <h2 className="text-3xl md:text-5xl font-montserrat font-bold mb-8 tracking-wide">
             WHERE YOUR CITY COMES ALIVE
           </h2>
           <p className="text-lg md:text-xl mb-12 max-w-3xl mx-auto opacity-90">
