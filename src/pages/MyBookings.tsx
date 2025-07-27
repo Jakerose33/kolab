@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { getUserBookings, getUserRSVPs } from "@/lib/supabase";
 
 // Enhanced booking data with more realistic details
 const mockBookings = [
@@ -167,12 +168,55 @@ export default function MyBookings() {
   const [sortBy, setSortBy] = useState("date");
   const { toast } = useToast();
 
-  // Simulate API call to fetch bookings
+  // Load real bookings from Supabase
   useEffect(() => {
     const fetchBookings = async () => {
       setLoading(true);
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      try {
+        const [bookingsResult, rsvpsResult] = await Promise.all([
+          getUserBookings(),
+          getUserRSVPs()
+        ]);
+
+        if (bookingsResult.error) throw bookingsResult.error;
+        if (rsvpsResult.error) throw rsvpsResult.error;
+
+        // Merge real data with mock data for demo
+        const realBookings = bookingsResult.data || [];
+        const realRSVPs = rsvpsResult.data || [];
+        
+        // Convert RSVPs to booking format
+        const rsvpBookings = realRSVPs.map(rsvp => ({
+          id: rsvp.id,
+          type: "event",
+          title: `Event RSVP - ${rsvp.event_id}`,
+          date: new Date(rsvp.created_at).toLocaleDateString(),
+          time: "TBD",
+          endTime: "TBD",
+          location: "TBD",
+          address: "TBD",
+          status: rsvp.status === 'going' ? 'confirmed' : 'pending',
+          organizer: "Event Organizer",
+          organizerEmail: "organizer@email.com",
+          price: 0,
+          bookingDate: new Date(rsvp.created_at).toLocaleDateString(),
+          attendees: 1,
+          maxAttendees: 100,
+          image: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=300&h=200&fit=crop",
+          description: `RSVP status: ${rsvp.status}`,
+          category: "Event",
+          refundable: false,
+          refundDeadline: null,
+        }));
+
+        // Show real data if available, otherwise show mock data
+        if (realBookings.length > 0 || rsvpBookings.length > 0) {
+          setBookings([...realBookings, ...rsvpBookings]);
+        }
+      } catch (error: any) {
+        console.error('Error loading bookings:', error);
+        // Keep mock data on error
+      }
       setLoading(false);
     };
     

@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Star, Users, Wifi, Car, Coffee, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { bookVenue } from "@/lib/supabase";
 
 // Mock venue data
 const mockVenues = [
@@ -93,11 +94,27 @@ export function VenueBooking() {
     }
   });
 
-  const handleBookVenue = (venueId: string, venueName: string) => {
-    toast({
-      title: "Venue Booking Request Sent",
-      description: `Your booking request for ${venueName} has been submitted.`,
-    });
+  const handleBookVenue = async (venueId: string, venueName: string) => {
+    try {
+      const { data, error } = await bookVenue(venueId, {
+        venue_name: venueName,
+        booking_date: new Date().toISOString(),
+        notes: "Booking request from venue listing"
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Booking Request Sent",
+        description: `Your booking request for ${venueName} has been submitted successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Booking Failed",
+        description: error.message || "Failed to submit booking request",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

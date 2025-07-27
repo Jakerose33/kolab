@@ -25,6 +25,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 interface KolabHeaderProps {
   onCreateEvent: () => void;
@@ -35,6 +37,8 @@ interface KolabHeaderProps {
 export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications }: KolabHeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const location = useLocation();
+  const { toast } = useToast();
+  const { user, logout, isAuthenticated } = useAuth();
 
   const navItems = [
     { name: "Events", path: "/", icon: Calendar },
@@ -161,8 +165,8 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium">Jake Rose</p>
-                  <p className="text-xs text-muted-foreground">jake@kolab.com</p>
+                  <p className="text-sm font-medium">{user?.user_metadata?.full_name || user?.email || "User"}</p>
+                  <p className="text-xs text-muted-foreground">{user?.email || "user@kolab.com"}</p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -185,7 +189,16 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
+              <DropdownMenuItem 
+                className="text-destructive"
+                onClick={async () => {
+                  await logout();
+                  toast({
+                    title: "Signed out",
+                    description: "You have been successfully signed out.",
+                  });
+                }}
+              >
                 Sign out
               </DropdownMenuItem>
             </DropdownMenuContent>

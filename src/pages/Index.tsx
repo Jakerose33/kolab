@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import EventMap from "@/components/EventMap";
+import { rsvpToEvent, createEvent } from "@/lib/supabase";
 
 // Mock data for events with corrected images
 const mockEvents = [
@@ -2509,12 +2510,22 @@ export default function Index() {
                     <EventCard
                       key={event.id}
                       event={event}
-                      onBookEvent={(eventId) => {
-                        console.log('Booking event:', eventId);
-                        toast({
-                          title: "Event Booked",
-                          description: "You have successfully joined this event!",
-                        });
+                      onBookEvent={async (eventId) => {
+                        try {
+                          const { data, error } = await rsvpToEvent(eventId, 'going');
+                          if (error) throw error;
+                          
+                          toast({
+                            title: "RSVP Confirmed",
+                            description: "You're now going to this event!",
+                          });
+                        } catch (error: any) {
+                          toast({
+                            title: "RSVP Failed",
+                            description: error.message || "Please log in to RSVP to events",
+                            variant: "destructive",
+                          });
+                        }
                       }}
                        onLikeEvent={(eventId) => {
                          setEvents(prev => prev.map(e => 
