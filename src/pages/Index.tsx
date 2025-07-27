@@ -2246,6 +2246,22 @@ export default function Index() {
   const [events, setEvents] = useState(mockEvents);
   const [eventsToShow, setEventsToShow] = useState(12);
 
+  // Generate category data from events
+  const categoryData = [
+    { id: "all", name: "All Events", icon: "🎯", count: events.length },
+    { id: "music", name: "Music", icon: "🎵", count: events.filter(e => e.category === "music").length },
+    { id: "art", name: "Art", icon: "🎨", count: events.filter(e => e.category === "art").length },
+    { id: "photography", name: "Photography", icon: "📸", count: events.filter(e => e.category === "photography").length },
+    { id: "technology", name: "Technology", icon: "💻", count: events.filter(e => e.category === "technology").length },
+    { id: "wellness", name: "Wellness", icon: "🧘", count: events.filter(e => e.category === "wellness").length },
+    { id: "gaming", name: "Gaming", icon: "🎮", count: events.filter(e => e.category === "gaming").length },
+    { id: "education", name: "Education", icon: "📚", count: events.filter(e => e.category === "education").length },
+    { id: "food", name: "Food", icon: "🍽️", count: events.filter(e => e.category === "food").length },
+    { id: "fitness", name: "Fitness", icon: "💪", count: events.filter(e => e.category === "fitness").length },
+    { id: "business", name: "Business", icon: "💼", count: events.filter(e => e.category === "business").length },
+    { id: "outdoor", name: "Outdoor", icon: "🌲", count: events.filter(e => e.category === "outdoor").length }
+  ];
+
   // Filter events based on search term and category
   const filteredEvents = events.filter(event => {
     const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -2283,18 +2299,6 @@ export default function Index() {
     setEventsToShow(prev => prev + 12);
   };
 
-  const handleEventUpdate = (updatedEvent: any) => {
-    setEvents(prevEvents => 
-      prevEvents.map(event => 
-        event.id === updatedEvent.id ? updatedEvent : event
-      )
-    );
-    
-    toast({
-      title: "Event Updated",
-      description: `${updatedEvent.title} has been updated.`,
-    });
-  };
 
   const handleCreateEvent = (eventData: any) => {
     const newEvent = {
@@ -2324,8 +2328,8 @@ export default function Index() {
     <div className="min-h-screen bg-background">
       <KolabHeader 
         onCreateEvent={() => setShowCreateEvent(true)}
-        onShowMessages={() => setShowMessages(true)}
-        onShowNotifications={() => setShowNotifications(true)}
+        onOpenMessages={() => setShowMessages(true)}
+        onOpenNotifications={() => setShowNotifications(true)}
       />
       
       <main className="container mx-auto px-4 py-8">
@@ -2378,10 +2382,11 @@ export default function Index() {
         </div>
 
         {/* Category Filter */}
-        <CategoryFilter
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-        />
+          <CategoryFilter
+            categories={categoryData}
+            selectedCategory={selectedCategory}
+            onCategorySelect={setSelectedCategory}
+          />
 
         {/* Stats Bar */}
         <div className="flex flex-wrap gap-4 mb-6 text-sm text-muted-foreground">
@@ -2409,7 +2414,25 @@ export default function Index() {
                     <EventCard
                       key={event.id}
                       event={event}
-                      onUpdate={handleEventUpdate}
+                      onBookEvent={(eventId) => {
+                        console.log('Booking event:', eventId);
+                        toast({
+                          title: "Event Booked",
+                          description: "You have successfully joined this event!",
+                        });
+                      }}
+                      onLikeEvent={(eventId) => {
+                        setEvents(prev => prev.map(e => 
+                          e.id === eventId ? { ...e, isLiked: !e.isLiked } : e
+                        ));
+                      }}
+                      onShareEvent={(eventId) => {
+                        console.log('Sharing event:', eventId);
+                        toast({
+                          title: "Event Shared",
+                          description: "Event link copied to clipboard!",
+                        });
+                      }}
                     />
                   ))}
                 </div>
@@ -2444,7 +2467,7 @@ export default function Index() {
           </TabsContent>
           
           <TabsContent value="map">
-            <EventMap events={displayedEvents} />
+            <EventMap />
           </TabsContent>
         </Tabs>
       </main>
