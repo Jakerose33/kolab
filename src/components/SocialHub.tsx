@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageCircle, Users, UserPlus, Heart, Share, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { CreateEventDialog } from "@/components/CreateEventDialog";
+import { CreateEventWizard } from "@/components/CreateEventWizard";
 
 // Mock social data
 const mockConnections = [
@@ -365,7 +365,7 @@ export function SocialHub() {
         </TabsContent>
       </Tabs>
       
-      <CreateEventDialog
+      <CreateEventWizard
         open={showCreateEventDialog}
         onOpenChange={setShowCreateEventDialog}
         onCreateEvent={(eventData) => {

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { KolabHeader } from "@/components/KolabHeader";
 import { EventCard } from "@/components/EventCard";
 import { CategoryFilter } from "@/components/CategoryFilter";
-import { CreateEventDialog } from "@/components/CreateEventDialog";
+import { CreateEventWizard } from "@/components/CreateEventWizard";
 import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDialog } from "@/components/NotificationsDialog";
 import { AuthDialog } from "@/components/AuthDialog";
@@ -2512,7 +2512,7 @@ export default function Index() {
       </main>
 
       {/* Dialogs */}
-      <CreateEventDialog
+      <CreateEventWizard
         open={showCreateEvent}
         onOpenChange={setShowCreateEvent}
         onCreateEvent={handleCreateEvent}
