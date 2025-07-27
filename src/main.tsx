@@ -1,4 +1,4 @@
-import { StrictMode, Suspense, lazy } from 'react';
+import React, { StrictMode, Suspense, lazy } from 'react';
 import { createRoot } from 'react-dom/client'
 import { CriticalCSS } from './components/CriticalCSS';
 import { usePerformanceMetrics } from './hooks/usePerformanceMetrics';
@@ -21,17 +21,22 @@ if ('serviceWorker' in navigator) {
 // Lazy load the main app for better initial bundle size
 const App = lazy(() => import('./App'));
 
+// Wrapper component that properly uses React hooks
 function AppWithMetrics() {
   usePerformanceMetrics();
   
   return (
-    <StrictMode>
+    <>
       <CriticalCSS />
       <Suspense fallback={<LoadingState />}>
         <App />
       </Suspense>
-    </StrictMode>
+    </>
   );
 }
 
-createRoot(document.getElementById("root")!).render(<AppWithMetrics />);
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <AppWithMetrics />
+  </StrictMode>
+);
