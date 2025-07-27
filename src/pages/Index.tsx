@@ -2331,6 +2331,67 @@ export default function Index() {
         onOpenMessages={() => setShowMessages(true)}
         onOpenNotifications={() => setShowNotifications(true)}
       />
+
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgPGcgZmlsbD0iaHNsKHZhcigtLW11dGVkKSAvIDAuMDUpIiBmaWxsLXJ1bGU9Im5vbnplcm8iPgogICAgICA8Y2lyY2xlIGN4PSIzIiBjeT0iMyIgcj0iMyIvPgogICAgPC9nPgogIDwvZz4KICA8L3N2Zz4K')] opacity-40"></div>
+        
+        <div className="relative container mx-auto px-4 py-16 md:py-24">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              Discover Melbourne's Best Events
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+              Connect with your local community through amazing experiences. From intimate workshops to grand festivals, find your next adventure.
+            </p>
+            
+            {/* Hero Search */}
+            <div className="relative max-w-2xl mx-auto mb-8">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+              <Input
+                placeholder="Search events in Melbourne..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-12 h-14 text-lg rounded-full border-2 border-border/50 bg-background/80 backdrop-blur-sm focus:border-primary/50 shadow-lg"
+              />
+            </div>
+            
+            {/* Popular Categories */}
+            <div className="flex flex-wrap justify-center gap-3 mb-8">
+              {categoryData.slice(1, 6).map((category) => (
+                <Button
+                  key={category.name}
+                  variant={selectedCategory === category.name ? "default" : "outline"}
+                  onClick={() => setSelectedCategory(category.name)}
+                  className="rounded-full"
+                >
+                  {category.name}
+                </Button>
+              ))}
+            </div>
+            
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto">
+              <div className="text-center">
+                <div className="text-2xl md:text-3xl font-bold text-primary">{filteredEvents.length}+</div>
+                <div className="text-sm text-muted-foreground">Events Available</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl md:text-3xl font-bold text-primary">50k+</div>
+                <div className="text-sm text-muted-foreground">Event-Goers</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl md:text-3xl font-bold text-primary">1k+</div>
+                <div className="text-sm text-muted-foreground">Organizers</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl md:text-3xl font-bold text-primary">4.8★</div>
+                <div className="text-sm text-muted-foreground">Average Rating</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
       
       <main className="container mx-auto px-4 py-8">
         {/* Search and Filter Section */}
