@@ -7,6 +7,7 @@ import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { AuthDialog } from "@/components/AuthDialog";
 import { RecommendationsCarousel } from "@/components/RecommendationsCarousel";
+import { RealtimeActivityFeed } from "@/components/RealtimeActivityFeed";
 import { EmptyState } from "@/components/EmptyState";
 import { LoadingState } from "@/components/LoadingState";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { useRealtime } from "@/hooks/useRealtime";
 import EventMap from "@/components/EventMap";
 import { getEvents, getUserRSVPs } from "@/lib/supabase";
 import React from "react";
@@ -71,6 +73,36 @@ export default function Index() {
       count
     }));
   }, [events]);
+
+  // Real-time event handlers
+  const handleNewEvent = (event: any) => {
+    // Only add if it's published and not already in the list
+    if (event.status === 'published' && !events.find(e => e.id === event.id)) {
+      setEvents(prev => [event, ...prev]);
+    }
+  };
+
+  const handleEventUpdate = (event: any) => {
+    setEvents(prev => prev.map(e => e.id === event.id ? event : e));
+  };
+
+  const handleNewRSVP = (rsvp: any) => {
+    // Update user RSVPs if it's for the current user
+    if (user && rsvp.user_id === user.id) {
+      setUserRSVPs(prev => ({
+        ...prev,
+        [rsvp.event_id]: rsvp.status
+      }));
+    }
+  };
+
+  // Set up real-time subscriptions
+  useRealtime({
+    onEventCreated: handleNewEvent,
+    onEventUpdated: handleEventUpdate,
+    onRSVPCreated: handleNewRSVP,
+    onRSVPUpdated: handleNewRSVP
+  });
 
   // Load events and user RSVPs
   useEffect(() => {
@@ -189,6 +221,9 @@ export default function Index() {
 
           {/* Recommendations Carousel */}
           <RecommendationsCarousel />
+
+          {/* Real-time Activity Feed */}
+          <RealtimeActivityFeed />
 
           {/* Quick Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
