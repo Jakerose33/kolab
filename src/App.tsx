@@ -1,3 +1,4 @@
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -5,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
+import { initAnalytics } from "./lib/analytics";
 import Index from "./pages/Index";
 import Venues from "./pages/Venues";
 import Social from "./pages/Social";
@@ -14,11 +16,17 @@ import Settings from "./pages/Settings";
 import MyBookings from "./pages/MyBookings";
 import Messages from "./pages/Messages";
 import Auth from "./pages/Auth";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 function App() {
+  // Initialize analytics tracking
+  React.useEffect(() => {
+    initAnalytics();
+  }, []);
+
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
@@ -71,6 +79,11 @@ function App() {
               <Route path="/auth" element={
                 <ErrorBoundary>
                   <Auth />
+                </ErrorBoundary>
+              } />
+              <Route path="/admin" element={
+                <ErrorBoundary>
+                  <Admin />
                 </ErrorBoundary>
               } />
               <Route path="*" element={<NotFound />} />

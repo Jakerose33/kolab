@@ -361,6 +361,28 @@ export const markNotificationAsRead = async (notificationId: string) => {
   return { data, error };
 };
 
+// Analytics functions
+export const trackAnalyticsEvent = async (
+  eventName: string,
+  properties: Record<string, any> = {}
+) => {
+  const user = await getCurrentUser();
+  const sessionId = sessionStorage.getItem('analytics_session_id') || 'unknown';
+  
+  const { data, error } = await supabase
+    .from('analytics_events')
+    .insert({
+      user_id: user?.id || null,
+      session_id: sessionId,
+      event_name: eventName,
+      event_properties: properties,
+      page_url: window.location.href,
+      user_agent: navigator.userAgent
+    });
+  
+  return { data, error };
+};
+
 export const createNotification = async (
   userId: string, 
   title: string, 
