@@ -13,7 +13,8 @@ import {
   User,
   MapPin,
   Users,
-  Briefcase
+  Briefcase,
+  LogOut
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -27,6 +28,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { AuthDialog } from "@/components/AuthDialog";
 
 interface KolabHeaderProps {
   onCreateEvent: () => void;
@@ -36,9 +38,10 @@ interface KolabHeaderProps {
 
 export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications }: KolabHeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
   const location = useLocation();
   const { toast } = useToast();
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, profile, signOut, isAuthenticated } = useAuth();
 
   const navItems = [
     { name: "Events", path: "/", icon: Calendar },
@@ -97,112 +100,121 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
 
         {/* Action Buttons */}
         <div className="flex items-center space-x-2">
-          {/* Create Event Button */}
-          <Button
-            onClick={onCreateEvent}
-            className="bg-gradient-primary hover:opacity-90 transition-opacity"
-            size="sm"
-            aria-label="Create a new event"
-          >
-            <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
-            <span className="hidden sm:inline">Create</span>
-          </Button>
-
-          {/* Messages */}
-          <Button
-            variant="ghost"
-            size="sm"
-            asChild
-            className="relative"
-            aria-label="View messages (3 unread)"
-          >
-            <Link to="/messages">
-              <MessageSquare className="h-5 w-5" aria-hidden="true" />
-              <Badge 
-                className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-primary"
-                aria-label="3 unread messages"
+          {isAuthenticated ? (
+            <>
+              {/* Create Event Button */}
+              <Button
+                onClick={onCreateEvent}
+                className="bg-gradient-primary hover:opacity-90 transition-opacity"
+                size="sm"
+                aria-label="Create a new event"
               >
-                3
-              </Badge>
-            </Link>
-          </Button>
-
-          {/* Notifications */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onOpenNotifications}
-            className="relative"
-            aria-label="View notifications (2 unread)"
-          >
-            <Bell className="h-5 w-5" aria-hidden="true" />
-            <Badge 
-              className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-accent"
-              aria-label="2 unread notifications"
-            >
-              2
-            </Badge>
-          </Button>
-
-          {/* User Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="relative h-9 w-9 rounded-full"
-                aria-label="Open user menu"
-              >
-                <Avatar className="h-8 w-8">
-                  <AvatarImage 
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face" 
-                    alt="Jake Rose profile picture" 
-                  />
-                  <AvatarFallback>JR</AvatarFallback>
-                </Avatar>
+                <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
+                <span className="hidden sm:inline">Create</span>
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
-              <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium">{user?.user_metadata?.full_name || user?.email || "User"}</p>
-                  <p className="text-xs text-muted-foreground">{user?.email || "user@kolab.com"}</p>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link to="/profile" className="flex items-center">
-                  <User className="mr-2 h-4 w-4" />
-                  Profile
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/bookings" className="flex items-center">
-                  <Calendar className="mr-2 h-4 w-4" />
-                  My Bookings
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/settings" className="flex items-center">
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                className="text-destructive"
-                onClick={async () => {
-                  await logout();
-                  toast({
-                    title: "Signed out",
-                    description: "You have been successfully signed out.",
-                  });
-                }}
+
+              {/* Messages */}
+              <Button
+                variant="ghost"
+                size="sm"
+                asChild
+                className="relative"
+                aria-label="View messages (3 unread)"
               >
-                Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <Link to="/messages">
+                  <MessageSquare className="h-5 w-5" aria-hidden="true" />
+                  <Badge 
+                    className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-primary"
+                    aria-label="3 unread messages"
+                  >
+                    3
+                  </Badge>
+                </Link>
+              </Button>
+
+              {/* Notifications */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onOpenNotifications}
+                className="relative"
+                aria-label="View notifications (2 unread)"
+              >
+                <Bell className="h-5 w-5" aria-hidden="true" />
+                <Badge 
+                  className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-accent"
+                  aria-label="2 unread notifications"
+                >
+                  2
+                </Badge>
+              </Button>
+
+              {/* User Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="relative h-9 w-9 rounded-full"
+                    aria-label="Open user menu"
+                  >
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage 
+                        src={profile?.avatar_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face"} 
+                        alt={profile?.full_name || "User profile picture"} 
+                      />
+                      <AvatarFallback>{profile?.full_name?.[0] || user?.email?.[0] || "U"}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium">{profile?.full_name || user?.email || "User"}</p>
+                      <p className="text-xs text-muted-foreground">{user?.email || "user@kolab.com"}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="flex items-center">
+                      <User className="mr-2 h-4 w-4" />
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/bookings" className="flex items-center">
+                      <Calendar className="mr-2 h-4 w-4" />
+                      My Bookings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/settings" className="flex items-center">
+                      <Settings className="mr-2 h-4 w-4" />
+                      Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="text-destructive"
+                    onClick={async () => {
+                      await signOut();
+                    }}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          ) : (
+            <Button 
+              onClick={() => setShowAuthDialog(true)}
+              className="bg-gradient-primary hover:opacity-90"
+              size="sm"
+            >
+              Sign In
+            </Button>
+          )}
 
           {/* Mobile Menu */}
           <div className="md:hidden">
@@ -238,6 +250,8 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
           </div>
         </div>
       </div>
+      
+      <AuthDialog open={showAuthDialog} onOpenChange={setShowAuthDialog} />
     </header>
   );
 }

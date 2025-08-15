@@ -287,8 +287,13 @@ export type Database = {
           full_name: string | null
           handle: string | null
           id: string
+          interests: string[] | null
+          linkedin_url: string | null
+          location: string | null
+          skills: string[] | null
           updated_at: string
           user_id: string
+          website: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -297,8 +302,13 @@ export type Database = {
           full_name?: string | null
           handle?: string | null
           id?: string
+          interests?: string[] | null
+          linkedin_url?: string | null
+          location?: string | null
+          skills?: string[] | null
           updated_at?: string
           user_id: string
+          website?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -307,8 +317,13 @@ export type Database = {
           full_name?: string | null
           handle?: string | null
           id?: string
+          interests?: string[] | null
+          linkedin_url?: string | null
+          location?: string | null
+          skills?: string[] | null
           updated_at?: string
           user_id?: string
+          website?: string | null
         }
         Relationships: []
       }

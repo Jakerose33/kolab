@@ -2687,8 +2687,8 @@ export default function Index() {
       />
       
       <AuthDialog
-        isOpen={showAuth}
-        onClose={() => setShowAuth(false)}
+        open={showAuth}
+        onOpenChange={setShowAuth}
       />
     </div>
   );
