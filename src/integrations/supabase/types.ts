@@ -14,6 +14,101 @@ export type Database = {
   }
   public: {
     Tables: {
+      event_rsvps: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          status: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_rsvps_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          capacity: number | null
+          created_at: string
+          description: string | null
+          end_at: string | null
+          id: string
+          image_url: string | null
+          latitude: number | null
+          longitude: number | null
+          organizer_id: string
+          start_at: string
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          venue_address: string | null
+          venue_name: string | null
+          visibility: string
+        }
+        Insert: {
+          capacity?: number | null
+          created_at?: string
+          description?: string | null
+          end_at?: string | null
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          organizer_id: string
+          start_at: string
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          venue_address?: string | null
+          venue_name?: string | null
+          visibility?: string
+        }
+        Update: {
+          capacity?: number | null
+          created_at?: string
+          description?: string | null
+          end_at?: string | null
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          organizer_id?: string
+          start_at?: string
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          venue_address?: string | null
+          venue_name?: string | null
+          visibility?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
