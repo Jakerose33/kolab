@@ -44,6 +44,8 @@ interface EventCardProps {
   onLikeEvent: (eventId: string) => void;
   onShareEvent: (eventId: string) => void;
   onFollowOrganizer?: (organizerName: string) => void;
+  onRSVP: (eventId: string, status: 'going' | 'interested') => void;
+  userRSVP?: 'going' | 'interested' | null;
 }
 
 export function EventCard({ 
@@ -51,8 +53,10 @@ export function EventCard({
   className, 
   onBookEvent, 
   onLikeEvent, 
-  onShareEvent,
-  onFollowOrganizer
+  onShareEvent, 
+  onFollowOrganizer,
+  onRSVP,
+  userRSVP
 }: EventCardProps) {
   const spotsLeft = event.capacity - event.attendees;
   const isAlmostFull = spotsLeft <= 5;
@@ -202,15 +206,33 @@ export function EventCard({
         )}
 
         {/* Actions */}
-        <div className="flex space-x-2">
+        <div className="space-y-2">
+          {/* RSVP Buttons */}
+          <div className="flex gap-2">
+            <Button 
+              variant={userRSVP === 'going' ? 'default' : 'outline'}
+              size="sm"
+              className="flex-1"
+              onClick={() => onRSVP(event.id, 'going')}
+            >
+              🔥 {userRSVP === 'going' ? 'Going' : 'Going'}
+            </Button>
+            <Button 
+              variant={userRSVP === 'interested' ? 'default' : 'outline'}
+              size="sm"
+              className="flex-1"
+              onClick={() => onRSVP(event.id, 'interested')}
+            >
+              👀 {userRSVP === 'interested' ? 'Interested' : 'Interested'}
+            </Button>
+          </div>
+          
+          {/* Join Event Button */}
           <Button 
-            className="flex-1 bg-gradient-primary hover:opacity-90"
+            className="w-full bg-gradient-primary hover:opacity-90"
             onClick={() => onBookEvent(event.id)}
           >
             Join Event
-          </Button>
-          <Button variant="outline" size="sm" className="px-3">
-            <MessageCircle className="h-4 w-4" />
           </Button>
         </div>
       </CardContent>

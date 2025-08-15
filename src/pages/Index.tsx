@@ -2528,6 +2528,23 @@ export default function Index() {
                           });
                         }
                       }}
+                      onRSVP={async (eventId, status) => {
+                        try {
+                          const { data, error } = await rsvpToEvent(eventId, status);
+                          if (error) throw error;
+                          
+                          toast({
+                            title: "RSVP Updated",
+                            description: `You're now ${status === 'going' ? 'going to' : 'interested in'} this event!`,
+                          });
+                        } catch (error: any) {
+                          toast({
+                            title: "RSVP Failed",
+                            description: error.message || "Please log in to RSVP to events",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
                        onLikeEvent={(eventId) => {
                          setEvents(prev => prev.map(e => 
                            e.id === eventId ? { ...e, isLiked: !e.isLiked } : e

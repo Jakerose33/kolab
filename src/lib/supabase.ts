@@ -236,6 +236,153 @@ export const getUserBookings = async () => {
   return { data, error };
 };
 
+// Messaging functions
+export const sendMessage = async (recipientId: string, content: string) => {
+  const user = await getCurrentUser();
+  if (!user) throw new Error('User not authenticated');
+
+  // Create or get conversation
+  const { data: conversation, error: convError } = await supabase
+    .from('conversations')
+    .select('*')
+    .or(`and(participant_one_id.eq.${user.id},participant_two_id.eq.${recipientId}),and(participant_one_id.eq.${recipientId},participant_two_id.eq.${user.id})`)
+    .maybeSingle();
+
+  let conversationId = conversation?.id;
+
+  if (!conversation) {
+    const { data: newConv, error: newConvError } = await supabase
+      .from('conversations')
+      .insert({
+        participant_one_id: user.id,
+        participant_two_id: recipientId
+      })
+      .select()
+      .single();
+
+    if (newConvError) throw newConvError;
+    conversationId = newConv.id;
+  }
+
+  // Send message
+  const { data, error } = await supabase
+    .from('messages')
+    .insert({
+      sender_id: user.id,
+      recipient_id: recipientId,
+      content
+    })
+    .select(`
+      *,
+      sender:profiles!messages_sender_id_fkey(full_name, handle, avatar_url),
+      recipient:profiles!messages_recipient_id_fkey(full_name, handle, avatar_url)
+    `)
+    .single();
+
+  if (error) throw error;
+
+  // Update conversation last message
+  await supabase
+    .from('conversations')
+    .update({
+      last_message_id: data.id,
+      last_message_at: new Date().toISOString()
+    })
+    .eq('id', conversationId);
+
+  return { data, error: null };
+};
+
+export const getConversations = async () => {
+  const user = await getCurrentUser();
+  if (!user) return { data: [], error: null };
+
+  const { data, error } = await supabase
+    .from('conversations')
+    .select(`
+      *,
+      participant_one:profiles!conversations_participant_one_id_fkey(full_name, handle, avatar_url),
+      participant_two:profiles!conversations_participant_two_id_fkey(full_name, handle, avatar_url),
+      last_message:messages(content, created_at)
+    `)
+    .or(`participant_one_id.eq.${user.id},participant_two_id.eq.${user.id}`)
+    .order('last_message_at', { ascending: false });
+
+  return { data, error };
+};
+
+export const getMessages = async (conversationId: string) => {
+  const { data, error } = await supabase
+    .from('messages')
+    .select(`
+      *,
+      sender:profiles!messages_sender_id_fkey(full_name, handle, avatar_url)
+    `)
+    .or(`sender_id.in.(select participant_one_id from conversations where id = '${conversationId}'),sender_id.in.(select participant_two_id from conversations where id = '${conversationId}')`)
+    .order('created_at', { ascending: true });
+
+  return { data, error };
+};
+
+export const markMessageAsRead = async (messageId: string) => {
+  const { data, error } = await supabase
+    .from('messages')
+    .update({ read_at: new Date().toISOString() })
+    .eq('id', messageId)
+    .eq('read_at', null)
+    .select()
+    .single();
+
+  return { data, error };
+};
+
+// Notification functions
+export const getNotifications = async () => {
+  const user = await getCurrentUser();
+  if (!user) return { data: [], error: null };
+
+  const { data, error } = await supabase
+    .from('notifications')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false });
+  
+  return { data, error };
+};
+
+export const markNotificationAsRead = async (notificationId: string) => {
+  const { data, error } = await supabase
+    .from('notifications')
+    .update({ read_at: new Date().toISOString() })
+    .eq('id', notificationId)
+    .select()
+    .single();
+  
+  return { data, error };
+};
+
+export const createNotification = async (
+  userId: string, 
+  title: string, 
+  message: string, 
+  type: 'message' | 'event_rsvp' | 'booking_update' | 'system',
+  relatedId?: string
+) => {
+  const { data, error } = await supabase
+    .from('notifications')
+    .insert({
+      user_id: userId,
+      title,
+      message,
+      type,
+      related_id: relatedId
+    })
+    .select()
+    .single();
+  
+  return { data, error };
+};
+
 export const getVenueBookings = async () => {
   const user = await getCurrentUser();
   if (!user) return { data: [], error: null };
