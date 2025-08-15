@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_metrics: {
+        Row: {
+          created_at: string
+          date_recorded: string
+          id: string
+          metric_name: string
+          metric_value: Json
+        }
+        Insert: {
+          created_at?: string
+          date_recorded?: string
+          id?: string
+          metric_name: string
+          metric_value: Json
+        }
+        Update: {
+          created_at?: string
+          date_recorded?: string
+          id?: string
+          metric_name?: string
+          metric_value?: Json
+        }
+        Relationships: []
+      }
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_name: string
+          event_properties: Json | null
+          id: string
+          ip_address: unknown | null
+          page_url: string | null
+          session_id: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_name: string
+          event_properties?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          page_url?: string | null
+          session_id: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_name?: string
+          event_properties?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          page_url?: string | null
+          session_id?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       conversations: {
         Row: {
           created_at: string
@@ -379,7 +439,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_daily_metrics: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
