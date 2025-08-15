@@ -196,6 +196,51 @@ export type Database = {
           },
         ]
       }
+      event_analytics: {
+        Row: {
+          created_at: string
+          date: string
+          engagement_score: number
+          event_id: string
+          id: string
+          organizer_id: string
+          revenue: number
+          rsvp_conversions: number
+          shares: number
+          unique_views: number
+          updated_at: string
+          views: number
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          engagement_score?: number
+          event_id: string
+          id?: string
+          organizer_id: string
+          revenue?: number
+          rsvp_conversions?: number
+          shares?: number
+          unique_views?: number
+          updated_at?: string
+          views?: number
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          engagement_score?: number
+          event_id?: string
+          id?: string
+          organizer_id?: string
+          revenue?: number
+          rsvp_conversions?: number
+          shares?: number
+          unique_views?: number
+          updated_at?: string
+          views?: number
+        }
+        Relationships: []
+      }
       event_rsvps: {
         Row: {
           created_at: string
@@ -477,6 +522,57 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_analytics: {
+        Row: {
+          active_users: number
+          conversion_rate: number
+          created_at: string
+          date: string
+          id: string
+          new_events: number
+          new_users: number
+          retention_rate: number
+          total_bookings: number
+          total_events: number
+          total_revenue: number
+          total_users: number
+          total_venues: number
+          updated_at: string
+        }
+        Insert: {
+          active_users?: number
+          conversion_rate?: number
+          created_at?: string
+          date?: string
+          id?: string
+          new_events?: number
+          new_users?: number
+          retention_rate?: number
+          total_bookings?: number
+          total_events?: number
+          total_revenue?: number
+          total_users?: number
+          total_venues?: number
+          updated_at?: string
+        }
+        Update: {
+          active_users?: number
+          conversion_rate?: number
+          created_at?: string
+          date?: string
+          id?: string
+          new_events?: number
+          new_users?: number
+          retention_rate?: number
+          total_bookings?: number
+          total_events?: number
+          total_revenue?: number
+          total_users?: number
+          total_venues?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -555,6 +651,54 @@ export type Database = {
         }
         Relationships: []
       }
+      user_behavior_analytics: {
+        Row: {
+          bookings_made: number
+          created_at: string
+          date: string
+          events_created: number
+          events_viewed: number
+          id: string
+          messages_sent: number
+          page_views: number
+          search_queries: number
+          sessions: number
+          time_spent_minutes: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bookings_made?: number
+          created_at?: string
+          date?: string
+          events_created?: number
+          events_viewed?: number
+          id?: string
+          messages_sent?: number
+          page_views?: number
+          search_queries?: number
+          sessions?: number
+          time_spent_minutes?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bookings_made?: number
+          created_at?: string
+          date?: string
+          events_created?: number
+          events_viewed?: number
+          id?: string
+          messages_sent?: number
+          page_views?: number
+          search_queries?: number
+          sessions?: number
+          time_spent_minutes?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_blocks: {
         Row: {
           blocked_id: string
@@ -612,6 +756,54 @@ export type Database = {
           start_date?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      venue_analytics: {
+        Row: {
+          average_rating: number | null
+          booking_conversions: number
+          booking_requests: number
+          created_at: string
+          date: string
+          id: string
+          occupancy_rate: number
+          owner_id: string
+          revenue: number
+          unique_views: number
+          updated_at: string
+          venue_id: string
+          views: number
+        }
+        Insert: {
+          average_rating?: number | null
+          booking_conversions?: number
+          booking_requests?: number
+          created_at?: string
+          date?: string
+          id?: string
+          occupancy_rate?: number
+          owner_id: string
+          revenue?: number
+          unique_views?: number
+          updated_at?: string
+          venue_id: string
+          views?: number
+        }
+        Update: {
+          average_rating?: number | null
+          booking_conversions?: number
+          booking_requests?: number
+          created_at?: string
+          date?: string
+          id?: string
+          occupancy_rate?: number
+          owner_id?: string
+          revenue?: number
+          unique_views?: number
+          updated_at?: string
+          venue_id?: string
+          views?: number
         }
         Relationships: []
       }
@@ -746,6 +938,15 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      calculate_engagement_score: {
+        Args: {
+          p_comments?: number
+          p_rsvps: number
+          p_shares: number
+          p_views: number
+        }
+        Returns: number
+      }
       create_activity_entry: {
         Args: {
           p_action_type: string
@@ -781,6 +982,10 @@ export type Database = {
       process_offline_action: {
         Args: { p_action_data: Json; p_action_type: string; p_user_id: string }
         Returns: boolean
+      }
+      track_event_view: {
+        Args: { p_event_id: string; p_is_unique?: boolean; p_user_id?: string }
+        Returns: undefined
       }
     }
     Enums: {
