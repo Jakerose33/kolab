@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { KolabHeader } from "@/components/KolabHeader";
+import Hero from "@/features/hero/Hero";
+import EditorialGrid from "@/features/editorial/EditorialGrid";
+import CityGuide from "@/features/city/CityGuide";
 import { EventCard } from "@/components/EventCard";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { CreateEventWizard } from "@/components/CreateEventWizard";
@@ -214,18 +217,17 @@ export default function Index() {
         onOpenNotifications={() => setShowNotificationsDialog(true)}
       />
       
+      {/* Hero Section */}
+      <Hero />
+      
+      {/* Editorial Grid */}
+      <EditorialGrid />
+      
+      {/* City Guide */}
+      <CityGuide />
+      
       <main className="container px-4 py-8">
         <div className="space-y-8">
-          {/* Hero Section */}
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Discover Events & Collaborations
-            </h1>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Connect with creators, attend amazing events, and build meaningful relationships in our vibrant community.
-            </p>
-          </div>
-
           {/* Recommendations Carousel */}
           <RecommendationsCarousel />
 
