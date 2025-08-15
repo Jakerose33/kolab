@@ -8,6 +8,7 @@ import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { AuthDialog } from "@/components/AuthDialog";
 import { RecommendationsCarousel } from "@/components/RecommendationsCarousel";
 import { RealtimeActivityFeed } from "@/components/RealtimeActivityFeed";
+import { RealtimeNotificationsList } from "@/components/RealtimeNotificationsList";
 import { EmptyState } from "@/components/EmptyState";
 import { LoadingState } from "@/components/LoadingState";
 import { Button } from "@/components/ui/button";
@@ -222,8 +223,11 @@ export default function Index() {
           {/* Recommendations Carousel */}
           <RecommendationsCarousel />
 
-          {/* Real-time Activity Feed */}
-          <RealtimeActivityFeed />
+          {/* Real-time Activity Feed and Notifications */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <RealtimeActivityFeed />
+            <RealtimeNotificationsList />
+          </div>
 
           {/* Quick Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

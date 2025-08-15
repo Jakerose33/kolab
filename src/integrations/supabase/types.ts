@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_feed: {
+        Row: {
+          action_type: string
+          actor_id: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          target_id: string | null
+          target_type: string
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          actor_id: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          target_id?: string | null
+          target_type: string
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          actor_id?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          target_id?: string | null
+          target_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       admin_metrics: {
         Row: {
           created_at: string
@@ -330,6 +363,48 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_preferences: {
+        Row: {
+          booking_confirmations: boolean
+          created_at: string
+          email_enabled: boolean
+          event_reminders: boolean
+          event_updates: boolean
+          id: string
+          moderation_updates: boolean
+          new_messages: boolean
+          push_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          booking_confirmations?: boolean
+          created_at?: string
+          email_enabled?: boolean
+          event_reminders?: boolean
+          event_updates?: boolean
+          id?: string
+          moderation_updates?: boolean
+          new_messages?: boolean
+          push_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          booking_confirmations?: boolean
+          created_at?: string
+          email_enabled?: boolean
+          event_reminders?: boolean
+          event_updates?: boolean
+          id?: string
+          moderation_updates?: boolean
+          new_messages?: boolean
+          push_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -604,6 +679,30 @@ export type Database = {
       calculate_daily_metrics: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      create_activity_entry: {
+        Args: {
+          p_action_type: string
+          p_actor_id: string
+          p_metadata?: Json
+          p_target_id?: string
+          p_target_type: string
+          p_user_id: string
+        }
+        Returns: string
+      }
+      create_notification_with_activity: {
+        Args: {
+          p_action_type?: string
+          p_actor_id: string
+          p_message: string
+          p_related_id?: string
+          p_target_type?: string
+          p_title: string
+          p_type: string
+          p_user_id: string
+        }
+        Returns: string
       }
       is_user_blocked: {
         Args: { blocked_id: string; blocker_id: string }
