@@ -13,7 +13,7 @@ interface EditorialGridProps {
 
 const EventCard = ({ item }: { item: EditorialItem }) => (
   <Link to={`/events/${item.id}`}>
-    <Card className="group cursor-pointer overflow-hidden border-0 bg-card hover:bg-card-hover transition-all duration-300 hover:scale-[1.02]">
+    <Card className="kolab-card group cursor-pointer overflow-hidden border-0 hover:scale-[1.02]">
       <div className="aspect-[4/5] relative overflow-hidden">
         <img 
           src={item.image} 
@@ -30,7 +30,7 @@ const EventCard = ({ item }: { item: EditorialItem }) => (
             <span className="text-white/60">•</span>
             <span className="text-white/80">{item.time}</span>
           </div>
-          <h3 className="font-bold text-lg mb-1 line-clamp-2">{item.title}</h3>
+          <h3 className="kolab-heading-small text-white mb-1 line-clamp-2">{item.title}</h3>
           <p className="text-white/70 text-sm mb-3">{item.neighbourhood}</p>
           
           {/* RSVP chips */}
@@ -133,28 +133,29 @@ export default function EditorialGrid({ className }: EditorialGridProps) {
         {/* Section header with tabs */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-12">
           <div className="mb-6 sm:mb-0">
+            <p className="kolab-accent-text mb-4">What's happening</p>
             <div className="flex gap-1 mb-4">
               <Button
                 variant={activeTab === 'tonight' ? 'default' : 'ghost'}
                 onClick={() => setActiveTab('tonight')}
-                className="text-2xl sm:text-3xl lg:text-4xl font-bold h-auto p-0 bg-transparent hover:bg-transparent text-foreground hover:text-primary"
+                className="kolab-heading-large h-auto p-0 bg-transparent hover:bg-transparent text-foreground hover:text-primary transition-colors duration-300"
               >
                 Tonight
               </Button>
-              <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-muted-foreground mx-2">/</span>
+              <span className="kolab-heading-large text-muted-foreground mx-2">/</span>
               <Button
                 variant={activeTab === 'week' ? 'default' : 'ghost'}
                 onClick={() => setActiveTab('week')}
-                className="text-2xl sm:text-3xl lg:text-4xl font-bold h-auto p-0 bg-transparent hover:bg-transparent text-foreground hover:text-primary"
+                className="kolab-heading-large h-auto p-0 bg-transparent hover:bg-transparent text-foreground hover:text-primary transition-colors duration-300"
               >
                 This week
               </Button>
             </div>
           </div>
           
-          <Button variant="outline" className="self-start sm:self-center group">
-            View all
-            <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+          <Button variant="outline" className="kolab-button-ghost self-start sm:self-center group border-border/40 hover:border-primary/40">
+            <span className="kolab-caption">View all</span>
+            <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
           </Button>
         </div>
 

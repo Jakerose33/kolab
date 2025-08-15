@@ -62,7 +62,7 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
             <div className="h-8 w-8 rounded-sm bg-gradient-primary flex items-center justify-center">
               <span className="text-white font-bold text-lg">K</span>
             </div>
-            <span className="font-heading font-bold text-xl text-foreground">Kolab</span>
+            <span className="kolab-heading-medium font-accent tracking-wide text-foreground">Kolab</span>
           </Link>
           
           {/* Navigation - Hidden on mobile */}

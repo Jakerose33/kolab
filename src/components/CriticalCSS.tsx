@@ -2,13 +2,18 @@ import { useEffect } from "react";
 
 // Critical CSS for above-the-fold content
 const criticalCSS = `
-  /* Critical styles for initial render */
+  /* Enhanced critical styles for initial render */
   body {
     margin: 0;
     padding: 0;
-    font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-feature-settings: 'cv11', 'ss01';
+    font-variation-settings: 'opsz' auto;
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   
   .header-critical {

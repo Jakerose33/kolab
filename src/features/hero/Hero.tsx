@@ -44,22 +44,27 @@ export default function Hero({ className }: HeroProps) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 w-full items-center">
           {/* Left column - Text content */}
           <div className="space-y-6 lg:space-y-8 text-center lg:text-left">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-[0.9] tracking-tight">
-              Discover the city's{" "}
-              <span className="block text-white/90">
-                best-kept secrets
-              </span>
-            </h1>
+            <div className="space-y-2">
+              <p className="kolab-accent-text text-white/70 mb-4">
+                Your backstage pass
+              </p>
+              <h1 className="kolab-hero-text text-white leading-[0.85] tracking-tighter">
+                Discover the city's{" "}
+                <span className="block kolab-display-text text-transparent bg-gradient-to-r from-white via-white/90 to-white/70 bg-clip-text">
+                  best-kept secrets
+                </span>
+              </h1>
+            </div>
             
-            <p className="text-lg sm:text-xl text-white/80 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Underground culture, exclusive events, and hidden venues await
+            <p className="kolab-body-large text-white/80 max-w-xl mx-auto lg:mx-0">
+              Underground culture, exclusive events, and hidden venues await your discovery
             </p>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
               <Button 
                 size="lg"
-                className="bg-white text-black hover:bg-white/90 transition-all duration-300 font-semibold px-8 py-4 h-auto text-base"
+                className="kolab-button-primary bg-white text-black hover:bg-white/90 hover:scale-105 transition-all duration-300 font-semibold px-10 py-4 h-auto text-base shadow-premium"
               >
                 <Flame className="w-5 h-5 mr-2 text-red-500" />
                 Tonight
@@ -68,7 +73,7 @@ export default function Hero({ className }: HeroProps) {
               <Button 
                 variant="outline"
                 size="lg"
-                className="border-white/30 text-white hover:bg-white/10 transition-all duration-300 font-semibold px-8 py-4 h-auto text-base backdrop-blur-sm"
+                className="kolab-glass border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 font-semibold px-10 py-4 h-auto text-base backdrop-blur-md"
               >
                 <Eye className="w-5 h-5 mr-2" />
                 Explore venues
