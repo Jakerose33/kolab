@@ -3,6 +3,7 @@ import { KolabHeader } from "@/components/KolabHeader";
 import Hero from "@/features/hero/Hero";
 import EditorialGrid from "@/features/editorial/EditorialGrid";
 import CityGuide from "@/features/city/CityGuide";
+import DiariesStrip from "@/features/diaries/DiariesStrip";
 import { EventCard } from "@/components/EventCard";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { CreateEventWizard } from "@/components/CreateEventWizard";
@@ -371,6 +372,9 @@ export default function Index() {
           </Tabs>
         </div>
       </main>
+
+      {/* Kolab Diaries Strip */}
+      <DiariesStrip />
 
       <CreateEventWizard
         open={showCreateDialog}
