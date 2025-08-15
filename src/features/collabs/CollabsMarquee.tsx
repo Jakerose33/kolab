@@ -13,7 +13,29 @@ export default function CollabsMarquee({ className }: CollabsMarqueeProps) {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     
     if (prefersReducedMotion && marqueeRef.current) {
+      // Pause animation for users who prefer reduced motion
       marqueeRef.current.style.animationPlayState = 'paused'
+    }
+
+    // Add hover event listeners for pause/play
+    const marqueeElement = marqueeRef.current
+    if (marqueeElement) {
+      const handleMouseEnter = () => {
+        marqueeElement.style.animationPlayState = 'paused'
+      }
+      const handleMouseLeave = () => {
+        if (!prefersReducedMotion) {
+          marqueeElement.style.animationPlayState = 'running'
+        }
+      }
+
+      marqueeElement.addEventListener('mouseenter', handleMouseEnter)
+      marqueeElement.addEventListener('mouseleave', handleMouseLeave)
+
+      return () => {
+        marqueeElement.removeEventListener('mouseenter', handleMouseEnter)
+        marqueeElement.removeEventListener('mouseleave', handleMouseLeave)
+      }
     }
   }, [])
 
@@ -45,7 +67,7 @@ export default function CollabsMarquee({ className }: CollabsMarqueeProps) {
             ref={marqueeRef}
             className={cn(
               "flex gap-8 items-center",
-              "animate-marquee hover:pause-animation",
+              "animate-marquee",
               "will-change-transform"
             )}
             style={{
@@ -80,31 +102,6 @@ export default function CollabsMarquee({ className }: CollabsMarqueeProps) {
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes marquee {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(-50%);
-          }
-        }
-
-        .animate-marquee {
-          animation: marquee 60s linear infinite;
-        }
-
-        .pause-animation {
-          animation-play-state: paused;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .animate-marquee {
-            animation-play-state: paused;
-          }
-        }
-      `}</style>
     </section>
   )
 }
