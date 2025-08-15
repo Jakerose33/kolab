@@ -1,0 +1,110 @@
+import { lazy } from 'react';
+
+// Lazy load pages with loading states
+export const LazyPages = {
+  Index: lazy(() => import('@/pages/Index')),
+  Venues: lazy(() => import('@/pages/Venues')),
+  Social: lazy(() => import('@/pages/Social')),
+  Careers: lazy(() => import('@/pages/Careers')),
+  Profile: lazy(() => import('@/pages/Profile')),
+  Settings: lazy(() => import('@/pages/Settings')),
+  MyBookings: lazy(() => import('@/pages/MyBookings')),
+  Messages: lazy(() => import('@/pages/Messages')),
+  Auth: lazy(() => import('@/pages/Auth')),
+  Admin: lazy(() => import('@/pages/Admin')),
+  NotFound: lazy(() => import('@/pages/NotFound')),
+};
+
+// Lazy load components - only map view for now since others don't have default exports
+export const LazyComponents = {
+  VenueMap: lazy(() => import('@/components/VenueMap')),
+  EventMap: lazy(() => import('@/components/EventMap')),
+};
+
+// Preload function for critical routes
+export const preloadRoutes = {
+  venues: () => import('@/pages/Venues'),
+  social: () => import('@/pages/Social'),
+  auth: () => import('@/pages/Auth'),
+};
+
+// Intersection Observer for lazy loading images and components
+export class LazyLoader {
+  private static observer?: IntersectionObserver;
+  
+  static init() {
+    if (typeof window === 'undefined' || this.observer) return;
+    
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const element = entry.target as HTMLElement;
+            const src = element.dataset.src;
+            const preload = element.dataset.preload;
+            
+            if (src && element instanceof HTMLImageElement) {
+              element.src = src;
+              element.removeAttribute('data-src');
+            }
+            
+            if (preload) {
+              import(preload).catch(console.error);
+              element.removeAttribute('data-preload');
+            }
+            
+            this.observer?.unobserve(element);
+          }
+        });
+      },
+      {
+        rootMargin: '50px 0px',
+        threshold: 0.1,
+      }
+    );
+  }
+  
+  static observe(element: HTMLElement) {
+    if (!this.observer) this.init();
+    this.observer?.observe(element);
+  }
+  
+  static unobserve(element: HTMLElement) {
+    this.observer?.unobserve(element);
+  }
+  
+  static disconnect() {
+    this.observer?.disconnect();
+    this.observer = undefined;
+  }
+}
+
+// React hook for lazy loading
+export function useLazyLoading() {
+  const observeElement = (element: HTMLElement | null) => {
+    if (element) {
+      LazyLoader.observe(element);
+    }
+  };
+  
+  const preloadRoute = (routeName: keyof typeof preloadRoutes) => {
+    preloadRoutes[routeName]().catch(console.error);
+  };
+  
+  return {
+    observeElement,
+    preloadRoute,
+  };
+}
+
+// Prefetch on hover utility
+export function prefetchOnHover(href: string) {
+  const handleMouseEnter = () => {
+    const route = href.slice(1) as keyof typeof preloadRoutes;
+    if (preloadRoutes[route]) {
+      preloadRoutes[route]().catch(console.error);
+    }
+  };
+  
+  return { onMouseEnter: handleMouseEnter };
+}

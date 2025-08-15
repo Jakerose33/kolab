@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,25 +6,41 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
+import { LoadingState } from "@/components/LoadingState";
 import { initAnalytics } from "./lib/analytics";
-import Index from "./pages/Index";
-import Venues from "./pages/Venues";
-import Social from "./pages/Social";
-import Careers from "./pages/Careers";
-import Profile from "./pages/Profile";
-import Settings from "./pages/Settings";
-import MyBookings from "./pages/MyBookings";
-import Messages from "./pages/Messages";
-import Auth from "./pages/Auth";
-import Admin from "./pages/Admin";
-import NotFound from "./pages/NotFound";
+import { LazyPages } from "./lib/lazyLoading";
+import { SecurityMiddleware } from "./lib/securityHeaders";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: (failureCount, error) => {
+        // Don't retry on 4xx errors
+        if (error instanceof Error && error.message.includes('4')) {
+          return false;
+        }
+        return failureCount < 3;
+      },
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes
+    },
+  },
+});
 
 function App() {
-  // Initialize analytics tracking
+  // Initialize analytics tracking and security
   React.useEffect(() => {
     initAnalytics();
+    
+    // Set CSP meta tag
+    const meta = document.createElement('meta');
+    meta.httpEquiv = 'Content-Security-Policy';
+    meta.content = SecurityMiddleware.generateCSP();
+    document.head.appendChild(meta);
+    
+    return () => {
+      document.head.removeChild(meta);
+    };
   }, []);
 
   return (
@@ -35,59 +51,61 @@ function App() {
           <Sonner />
           <OfflineIndicator />
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={
-                <ErrorBoundary>
-                  <Index />
-                </ErrorBoundary>
-              } />
-              <Route path="/venues" element={
-                <ErrorBoundary>
-                  <Venues />
-                </ErrorBoundary>
-              } />
-              <Route path="/social" element={
-                <ErrorBoundary>
-                  <Social />
-                </ErrorBoundary>
-              } />
-              <Route path="/careers" element={
-                <ErrorBoundary>
-                  <Careers />
-                </ErrorBoundary>
-              } />
-              <Route path="/profile" element={
-                <ErrorBoundary>
-                  <Profile />
-                </ErrorBoundary>
-              } />
-              <Route path="/settings" element={
-                <ErrorBoundary>
-                  <Settings />
-                </ErrorBoundary>
-              } />
-              <Route path="/bookings" element={
-                <ErrorBoundary>
-                  <MyBookings />
-                </ErrorBoundary>
-              } />
-              <Route path="/messages" element={
-                <ErrorBoundary>
-                  <Messages />
-                </ErrorBoundary>
-              } />
-              <Route path="/auth" element={
-                <ErrorBoundary>
-                  <Auth />
-                </ErrorBoundary>
-              } />
-              <Route path="/admin" element={
-                <ErrorBoundary>
-                  <Admin />
-                </ErrorBoundary>
-              } />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense fallback={<LoadingState />}>
+              <Routes>
+                <Route path="/" element={
+                  <ErrorBoundary>
+                    <LazyPages.Index />
+                  </ErrorBoundary>
+                } />
+                <Route path="/venues" element={
+                  <ErrorBoundary>
+                    <LazyPages.Venues />
+                  </ErrorBoundary>
+                } />
+                <Route path="/social" element={
+                  <ErrorBoundary>
+                    <LazyPages.Social />
+                  </ErrorBoundary>
+                } />
+                <Route path="/careers" element={
+                  <ErrorBoundary>
+                    <LazyPages.Careers />
+                  </ErrorBoundary>
+                } />
+                <Route path="/profile" element={
+                  <ErrorBoundary>
+                    <LazyPages.Profile />
+                  </ErrorBoundary>
+                } />
+                <Route path="/settings" element={
+                  <ErrorBoundary>
+                    <LazyPages.Settings />
+                  </ErrorBoundary>
+                } />
+                <Route path="/bookings" element={
+                  <ErrorBoundary>
+                    <LazyPages.MyBookings />
+                  </ErrorBoundary>
+                } />
+                <Route path="/messages" element={
+                  <ErrorBoundary>
+                    <LazyPages.Messages />
+                  </ErrorBoundary>
+                } />
+                <Route path="/auth" element={
+                  <ErrorBoundary>
+                    <LazyPages.Auth />
+                  </ErrorBoundary>
+                } />
+                <Route path="/admin" element={
+                  <ErrorBoundary>
+                    <LazyPages.Admin />
+                  </ErrorBoundary>
+                } />
+                <Route path="*" element={<LazyPages.NotFound />} />
+              </Routes>
+            </Suspense>
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
