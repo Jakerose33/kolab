@@ -145,13 +145,129 @@ export const getUserRSVPs = async () => {
   return { data, error };
 };
 
-// Venue booking stub functions (will be implemented next)
-export const bookVenue = async (venueId: string, bookingData: any) => {
-  console.log('Venue booking will be available after venue tables are created');
-  return { data: null, error: new Error('Feature not yet implemented') };
+// Venue functions
+export const getVenues = async (filters?: { 
+  search?: string; 
+  tags?: string[]; 
+  capacity?: number; 
+  limit?: number 
+}) => {
+  let query = supabase
+    .from('venues')
+    .select(`
+      *,
+      profiles!venues_owner_id_fkey(full_name, handle)
+    `)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false });
+
+  if (filters?.search) {
+    query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%,address.ilike.%${filters.search}%`);
+  }
+
+  if (filters?.capacity) {
+    query = query.gte('capacity', filters.capacity);
+  }
+
+  if (filters?.limit) {
+    query = query.limit(filters.limit);
+  }
+
+  const { data, error } = await query;
+  return { data, error };
+};
+
+export const getVenue = async (venueId: string) => {
+  const { data, error } = await supabase
+    .from('venues')
+    .select(`
+      *,
+      profiles!venues_owner_id_fkey(full_name, handle, avatar_url)
+    `)
+    .eq('id', venueId)
+    .eq('status', 'active')
+    .single();
+  
+  return { data, error };
+};
+
+export const bookVenue = async (bookingData: {
+  venue_id: string;
+  start_date: string;
+  end_date: string;
+  guest_count: number;
+  event_type?: string;
+  special_requests?: string;
+  message?: string;
+}) => {
+  const user = await getCurrentUser();
+  if (!user) throw new Error('User not authenticated');
+
+  const { data, error } = await supabase
+    .from('venue_bookings')
+    .insert({
+      user_id: user.id,
+      ...bookingData
+    })
+    .select(`
+      *,
+      venues(name, address),
+      profiles!venue_bookings_user_id_fkey(full_name, handle)
+    `)
+    .single();
+  
+  return { data, error };
 };
 
 export const getUserBookings = async () => {
-  console.log('Bookings will be available after venue tables are created');
-  return { data: [], error: null };
+  const user = await getCurrentUser();
+  if (!user) return { data: [], error: null };
+
+  const { data, error } = await supabase
+    .from('venue_bookings')
+    .select(`
+      *,
+      venues(name, address, images),
+      profiles!venues_owner_id_fkey(full_name, handle)
+    `)
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false });
+  
+  return { data, error };
+};
+
+export const getVenueBookings = async () => {
+  const user = await getCurrentUser();
+  if (!user) return { data: [], error: null };
+
+  const { data, error } = await supabase
+    .from('venue_bookings')
+    .select(`
+      *,
+      venues!inner(id, name, address, owner_id),
+      profiles!venue_bookings_user_id_fkey(full_name, handle, avatar_url)
+    `)
+    .eq('venues.owner_id', user.id)
+    .order('created_at', { ascending: false });
+  
+  return { data, error };
+};
+
+export const updateBookingStatus = async (
+  bookingId: string, 
+  status: 'approved' | 'rejected', 
+  ownerNotes?: string
+) => {
+  const { data, error } = await supabase
+    .from('venue_bookings')
+    .update({ 
+      status, 
+      owner_notes: ownerNotes,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', bookingId)
+    .select()
+    .single();
+  
+  return { data, error };
 };

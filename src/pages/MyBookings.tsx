@@ -182,11 +182,33 @@ export default function MyBookings() {
         if (rsvpsResult.error) throw rsvpsResult.error;
 
         // Merge real data with mock data for demo
-        const realBookings = bookingsResult.data || [];
+        const realBookings = (bookingsResult.data || []).map((booking: any) => ({
+          id: booking.id,
+          type: "venue",
+          title: booking.venues?.name || "Venue Booking",
+          date: new Date(booking.start_date).toLocaleDateString(),
+          time: new Date(booking.start_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          endTime: new Date(booking.end_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          location: booking.venues?.name || "Venue",
+          address: booking.venues?.address || "Address TBD",
+          status: booking.status,
+          organizer: "Venue Owner",
+          organizerEmail: "venue@email.com",
+          price: booking.total_amount || 0,
+          bookingDate: new Date(booking.created_at).toLocaleDateString(),
+          attendees: booking.guest_count,
+          maxAttendees: booking.guest_count,
+          image: booking.venues?.images?.[0] || "https://images.unsplash.com/photo-1497366216548-37526070297c?w=300&h=200&fit=crop",
+          description: booking.message || booking.special_requests || "Venue booking request",
+          category: booking.event_type || "Venue",
+          refundable: booking.status === 'pending',
+          refundDeadline: booking.status === 'pending' ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString() : null,
+        }));
+        
         const realRSVPs = rsvpsResult.data || [];
         
         // Convert RSVPs to booking format
-        const rsvpBookings = realRSVPs.map(rsvp => ({
+        const rsvpBookings = realRSVPs.map((rsvp: any) => ({
           id: rsvp.id,
           type: "event",
           title: `Event RSVP - ${rsvp.event_id}`,

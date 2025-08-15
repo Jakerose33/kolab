@@ -142,6 +142,128 @@ export type Database = {
         }
         Relationships: []
       }
+      venue_bookings: {
+        Row: {
+          created_at: string
+          end_date: string
+          event_type: string | null
+          guest_count: number
+          id: string
+          message: string | null
+          owner_notes: string | null
+          special_requests: string | null
+          start_date: string
+          status: string
+          total_amount: number | null
+          updated_at: string
+          user_id: string
+          venue_id: string
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          event_type?: string | null
+          guest_count: number
+          id?: string
+          message?: string | null
+          owner_notes?: string | null
+          special_requests?: string | null
+          start_date: string
+          status?: string
+          total_amount?: number | null
+          updated_at?: string
+          user_id: string
+          venue_id: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          event_type?: string | null
+          guest_count?: number
+          id?: string
+          message?: string | null
+          owner_notes?: string | null
+          special_requests?: string | null
+          start_date?: string
+          status?: string
+          total_amount?: number | null
+          updated_at?: string
+          user_id?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_bookings_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venues: {
+        Row: {
+          address: string
+          amenities: string[] | null
+          capacity: number | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          description: string | null
+          hourly_rate: number | null
+          id: string
+          images: string[] | null
+          latitude: number | null
+          longitude: number | null
+          name: string
+          opening_hours: Json | null
+          owner_id: string
+          status: string
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          amenities?: string[] | null
+          capacity?: number | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          hourly_rate?: number | null
+          id?: string
+          images?: string[] | null
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          opening_hours?: Json | null
+          owner_id: string
+          status?: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          amenities?: string[] | null
+          capacity?: number | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          hourly_rate?: number | null
+          id?: string
+          images?: string[] | null
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          opening_hours?: Json | null
+          owner_id?: string
+          status?: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -97,11 +97,16 @@ export function VenueBooking() {
 
   const handleBookVenue = async (venueId: string, venueName: string) => {
     try {
-      const { data, error } = await bookVenue(venueId, {
-        venue_name: venueName,
-        booking_date: new Date().toISOString(),
-        notes: "Booking request from venue listing"
-      });
+      const bookingData = {
+        venue_id: venueId,
+        start_date: new Date().toISOString(),
+        end_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
+        guest_count: 10,
+        event_type: "Event",
+        message: `Booking request for ${venueName}`
+      };
+      
+      const { data, error } = await bookVenue(bookingData);
       
       if (error) throw error;
       
@@ -109,7 +114,7 @@ export function VenueBooking() {
         title: "Booking Request Sent",
         description: `Your booking request for ${venueName} has been submitted successfully.`,
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Booking Failed",
         description: error.message || "Failed to submit booking request",
