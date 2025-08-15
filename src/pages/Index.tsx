@@ -9,6 +9,8 @@ import { AuthDialog } from "@/components/AuthDialog";
 import { RecommendationsCarousel } from "@/components/RecommendationsCarousel";
 import { RealtimeActivityFeed } from "@/components/RealtimeActivityFeed";
 import { RealtimeNotificationsList } from "@/components/RealtimeNotificationsList";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { EmptyState } from "@/components/EmptyState";
 import { LoadingState } from "@/components/LoadingState";
 import { Button } from "@/components/ui/button";
@@ -35,6 +37,8 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useRealtime } from "@/hooks/useRealtime";
+import { useOfflineQueue } from "@/hooks/useOfflineQueue";
+import { usePerformanceMetrics } from "@/hooks/usePerformanceMetrics";
 import EventMap from "@/components/EventMap";
 import { getEvents, getUserRSVPs } from "@/lib/supabase";
 import React from "react";
@@ -54,6 +58,8 @@ export default function Index() {
   const [activeTab, setActiveTab] = useState("events");
   const { toast } = useToast();
   const { user } = useAuth();
+  const { isOnline } = useOfflineQueue();
+  usePerformanceMetrics();
 
   // Generate categories from events
   const categories = React.useMemo(() => {
@@ -377,6 +383,10 @@ export default function Index() {
         onOpenChange={setShowNotificationsDialog}
       />
       
+      {/* PWA Components */}
+      <PWAInstallPrompt />
+      <OfflineIndicator />
+
       <AuthDialog
         open={showAuth}
         onOpenChange={setShowAuth}

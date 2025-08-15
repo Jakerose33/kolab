@@ -9,9 +9,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Bell, Shield, User, Palette, Globe, Smartphone } from "lucide-react";
+import { Bell, Shield, User, Palette, Globe, Smartphone, Download } from "lucide-react";
 import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
+import { NotificationPreferences } from "@/components/NotificationPreferences";
+import { PushNotificationManager } from "@/components/PushNotificationManager";
 
 export default function Settings() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -80,8 +82,9 @@ export default function Settings() {
           </div>
 
           <Tabs defaultValue="notifications" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="notifications">Notifications</TabsTrigger>
+              <TabsTrigger value="pwa">Mobile App</TabsTrigger>
               <TabsTrigger value="privacy">Privacy</TabsTrigger>
               <TabsTrigger value="preferences">Preferences</TabsTrigger>
               <TabsTrigger value="account">Account</TabsTrigger>
@@ -89,63 +92,53 @@ export default function Settings() {
 
             {/* Notifications Tab */}
             <TabsContent value="notifications" className="space-y-6">
+              <NotificationPreferences />
+            </TabsContent>
+
+            {/* PWA/Mobile App Tab */}
+            <TabsContent value="pwa" className="space-y-6">
               <Card className="kolab-card">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Bell className="h-5 w-5" />
-                    Notification Settings
+                    <Smartphone className="h-5 w-5" />
+                    Mobile App Experience
                   </CardTitle>
                   <CardDescription>
-                    Choose how you want to be notified about events and updates
+                    Install Kolab as a native app and manage push notifications
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="email-updates" className="text-base">Email Updates</Label>
-                      <p className="text-sm text-muted-foreground">Receive event updates and newsletters</p>
+                  <PushNotificationManager />
+                </CardContent>
+              </Card>
+
+              <Card className="kolab-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Download className="h-5 w-5" />
+                    Progressive Web App
+                  </CardTitle>
+                  <CardDescription>
+                    Install Kolab for offline access and better performance
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <h4 className="font-medium">Features</h4>
+                      <ul className="text-sm text-muted-foreground space-y-1">
+                        <li>• Offline event browsing</li>
+                        <li>• Faster loading times</li>
+                        <li>• Home screen shortcut</li>
+                        <li>• Background sync</li>
+                      </ul>
                     </div>
-                    <Switch
-                      id="email-updates"
-                      checked={settings.notifications.emailUpdates}
-                      onCheckedChange={(checked) => updateSetting('notifications', 'emailUpdates', checked)}
-                    />
-                  </div>
-                  <Separator />
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="push-notifications" className="text-base">Push Notifications</Label>
-                      <p className="text-sm text-muted-foreground">Get instant notifications on your device</p>
+                    <div className="space-y-2">
+                      <h4 className="font-medium">Installation</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Look for the install prompt or check your browser's address bar for the install option.
+                      </p>
                     </div>
-                    <Switch
-                      id="push-notifications"
-                      checked={settings.notifications.pushNotifications}
-                      onCheckedChange={(checked) => updateSetting('notifications', 'pushNotifications', checked)}
-                    />
-                  </div>
-                  <Separator />
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="event-reminders" className="text-base">Event Reminders</Label>
-                      <p className="text-sm text-muted-foreground">Reminders before events you've joined</p>
-                    </div>
-                    <Switch
-                      id="event-reminders"
-                      checked={settings.notifications.eventReminders}
-                      onCheckedChange={(checked) => updateSetting('notifications', 'eventReminders', checked)}
-                    />
-                  </div>
-                  <Separator />
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="social-updates" className="text-base">Social Updates</Label>
-                      <p className="text-sm text-muted-foreground">Notifications from connections and groups</p>
-                    </div>
-                    <Switch
-                      id="social-updates"
-                      checked={settings.notifications.socialUpdates}
-                      onCheckedChange={(checked) => updateSetting('notifications', 'socialUpdates', checked)}
-                    />
                   </div>
                 </CardContent>
               </Card>

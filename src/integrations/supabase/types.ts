@@ -441,6 +441,42 @@ export type Database = {
         }
         Relationships: []
       }
+      offline_queue: {
+        Row: {
+          action_data: Json
+          action_type: string
+          created_at: string
+          error_message: string | null
+          id: string
+          max_retries: number
+          processed_at: string | null
+          retry_count: number
+          user_id: string
+        }
+        Insert: {
+          action_data: Json
+          action_type: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          max_retries?: number
+          processed_at?: string | null
+          retry_count?: number
+          user_id: string
+        }
+        Update: {
+          action_data?: Json
+          action_type?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          max_retries?: number
+          processed_at?: string | null
+          retry_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -486,6 +522,36 @@ export type Database = {
           updated_at?: string
           user_id?: string
           website?: string | null
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          created_at: string
+          endpoint: string
+          id: string
+          is_active: boolean
+          keys: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          endpoint: string
+          id?: string
+          is_active?: boolean
+          keys: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          endpoint?: string
+          id?: string
+          is_active?: boolean
+          keys?: Json
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -710,6 +776,10 @@ export type Database = {
       }
       is_user_suspended: {
         Args: { user_id: string }
+        Returns: boolean
+      }
+      process_offline_action: {
+        Args: { p_action_data: Json; p_action_type: string; p_user_id: string }
         Returns: boolean
       }
     }
