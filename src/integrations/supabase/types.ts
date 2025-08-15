@@ -74,6 +74,57 @@ export type Database = {
         }
         Relationships: []
       }
+      content_reports: {
+        Row: {
+          content_type: string
+          created_at: string
+          description: string | null
+          id: string
+          moderator_id: string | null
+          moderator_notes: string | null
+          reason: string
+          reported_content_id: string | null
+          reported_user_id: string | null
+          reporter_id: string
+          resolution_action: string | null
+          resolved_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          content_type: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          moderator_id?: string | null
+          moderator_notes?: string | null
+          reason: string
+          reported_content_id?: string | null
+          reported_user_id?: string | null
+          reporter_id: string
+          resolution_action?: string | null
+          resolved_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          moderator_id?: string | null
+          moderator_notes?: string | null
+          reason?: string
+          reported_content_id?: string | null
+          reported_user_id?: string | null
+          reporter_id?: string
+          resolution_action?: string | null
+          resolved_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       conversations: {
         Row: {
           created_at: string
@@ -243,6 +294,42 @@ export type Database = {
         }
         Relationships: []
       }
+      moderation_log: {
+        Row: {
+          action_type: string
+          content_type: string | null
+          created_at: string
+          id: string
+          moderator_id: string
+          notes: string | null
+          reason: string | null
+          target_content_id: string | null
+          target_user_id: string | null
+        }
+        Insert: {
+          action_type: string
+          content_type?: string | null
+          created_at?: string
+          id?: string
+          moderator_id: string
+          notes?: string | null
+          reason?: string | null
+          target_content_id?: string | null
+          target_user_id?: string | null
+        }
+        Update: {
+          action_type?: string
+          content_type?: string | null
+          created_at?: string
+          id?: string
+          moderator_id?: string
+          notes?: string | null
+          reason?: string | null
+          target_content_id?: string | null
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -324,6 +411,66 @@ export type Database = {
           updated_at?: string
           user_id?: string
           website?: string | null
+        }
+        Relationships: []
+      }
+      user_blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+          id: string
+          reason: string | null
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
+      user_suspensions: {
+        Row: {
+          created_at: string
+          end_date: string | null
+          id: string
+          is_permanent: boolean
+          moderator_id: string
+          reason: string
+          start_date: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          is_permanent?: boolean
+          moderator_id: string
+          reason: string
+          start_date?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          is_permanent?: boolean
+          moderator_id?: string
+          reason?: string
+          start_date?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -457,6 +604,14 @@ export type Database = {
       calculate_daily_metrics: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      is_user_blocked: {
+        Args: { blocked_id: string; blocker_id: string }
+        Returns: boolean
+      }
+      is_user_suspended: {
+        Args: { user_id: string }
+        Returns: boolean
       }
     }
     Enums: {
