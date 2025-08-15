@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import MyBookings from "./pages/MyBookings";
 import Messages from "./pages/Messages";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -65,6 +66,11 @@ function App() {
               <Route path="/messages" element={
                 <ErrorBoundary>
                   <Messages />
+                </ErrorBoundary>
+              } />
+              <Route path="/auth" element={
+                <ErrorBoundary>
+                  <Auth />
                 </ErrorBoundary>
               } />
               <Route path="*" element={<NotFound />} />

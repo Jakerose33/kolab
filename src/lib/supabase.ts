@@ -1,21 +1,22 @@
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '@/integrations/supabase/client';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co'
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder_key'
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export { supabase };
 
 // Auth helpers
 export const signUp = async (email: string, password: string, userData?: any) => {
+  const redirectUrl = `${window.location.origin}/`;
+  
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
+      emailRedirectTo: redirectUrl,
       data: userData
     }
-  })
-  return { data, error }
-}
+  });
+  
+  return { data, error };
+};
 
 export const signIn = async (email: string, password: string) => {
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -35,131 +36,56 @@ export const getCurrentUser = async () => {
   return user
 }
 
-// Event RSVP functions
-export const rsvpToEvent = async (eventId: string, status: 'going' | 'interested') => {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('User not authenticated')
+// Profile functions
+export const getUserProfile = async (userId?: string) => {
+  const targetUserId = userId || (await getCurrentUser())?.id;
+  if (!targetUserId) return { data: null, error: new Error('No user ID provided') };
 
   const { data, error } = await supabase
-    .from('event_rsvps')
-    .upsert({
-      user_id: user.id,
-      event_id: eventId,
-      status,
-      created_at: new Date().toISOString()
-    })
-  
-  return { data, error }
-}
-
-export const getUserRSVPs = async () => {
-  const user = await getCurrentUser()
-  if (!user) return { data: [], error: null }
-
-  const { data, error } = await supabase
-    .from('event_rsvps')
+    .from('profiles')
     .select('*')
-    .eq('user_id', user.id)
+    .eq('user_id', targetUserId)
+    .single();
   
-  return { data, error }
-}
+  return { data, error };
+};
 
-// Venue booking functions
-export const bookVenue = async (venueId: string, bookingData: any) => {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('User not authenticated')
+export const updateUserProfile = async (updates: any) => {
+  const user = await getCurrentUser();
+  if (!user) throw new Error('User not authenticated');
 
   const { data, error } = await supabase
-    .from('venue_bookings')
-    .insert({
-      user_id: user.id,
-      venue_id: venueId,
-      ...bookingData,
-      status: 'pending',
-      created_at: new Date().toISOString()
-    })
+    .from('profiles')
+    .update(updates)
+    .eq('user_id', user.id)
+    .select()
+    .single();
   
-  return { data, error }
-}
+  return { data, error };
+};
+
+// Temporary stub functions for existing functionality
+export const rsvpToEvent = async (eventId: string, status: 'going' | 'interested') => {
+  console.log('RSVP feature will be available after event tables are created');
+  return { data: null, error: new Error('Feature not yet implemented') };
+};
+
+export const createEvent = async (eventData: any) => {
+  console.log('Event creation will be available after event tables are created');
+  return { data: null, error: new Error('Feature not yet implemented') };
+};
+
+export const bookVenue = async (venueId: string, bookingData: any) => {
+  console.log('Venue booking will be available after venue tables are created');
+  return { data: null, error: new Error('Feature not yet implemented') };
+};
 
 export const getUserBookings = async () => {
-  const user = await getCurrentUser()
-  if (!user) return { data: [], error: null }
+  console.log('Bookings will be available after venue tables are created');
+  return { data: [], error: null };
+};
 
-  const { data, error } = await supabase
-    .from('venue_bookings')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-  
-  return { data, error }
-}
-
-// Event creation
-export const createEvent = async (eventData: any) => {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('User not authenticated')
-
-  const { data, error } = await supabase
-    .from('events')
-    .insert({
-      ...eventData,
-      organizer_id: user.id,
-      created_at: new Date().toISOString()
-    })
-  
-  return { data, error }
-}
-
-// Messages
-export const sendMessage = async (recipientId: string, content: string) => {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('User not authenticated')
-
-  const { data, error } = await supabase
-    .from('messages')
-    .insert({
-      sender_id: user.id,
-      recipient_id: recipientId,
-      content,
-      created_at: new Date().toISOString()
-    })
-  
-  return { data, error }
-}
-
-export const getMessages = async () => {
-  const user = await getCurrentUser()
-  if (!user) return { data: [], error: null }
-
-  const { data, error } = await supabase
-    .from('messages')
-    .select('*')
-    .or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
-    .order('created_at', { ascending: false })
-  
-  return { data, error }
-}
-
-// Notifications
-export const getNotifications = async () => {
-  const user = await getCurrentUser()
-  if (!user) return { data: [], error: null }
-
-  const { data, error } = await supabase
-    .from('notifications')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-  
-  return { data, error }
-}
-
-export const markNotificationRead = async (notificationId: string) => {
-  const { data, error } = await supabase
-    .from('notifications')
-    .update({ read: true })
-    .eq('id', notificationId)
-  
-  return { data, error }
-}
+export const getUserRSVPs = async () => {
+  console.log('RSVPs will be available after event tables are created');
+  return { data: [], error: null };
+};
