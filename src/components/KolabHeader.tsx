@@ -14,6 +14,7 @@ import {
   MapPin,
   Users,
   Briefcase,
+  BookOpen,
   LogOut
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
@@ -46,6 +47,7 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
   const navItems = [
     { name: "Events", path: "/", icon: Calendar },
     { name: "Venues", path: "/venues", icon: MapPin },
+    { name: "Journal", path: "/journal", icon: BookOpen },
     { name: "Social", path: "/social", icon: Users },
     { name: "Search", path: "/search", icon: Search },
     { name: "Careers", path: "/careers", icon: Briefcase },
