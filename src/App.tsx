@@ -58,6 +58,11 @@ function App() {
                     <LazyPages.Index />
                   </ErrorBoundary>
                 } />
+                <Route path="/events/:id" element={
+                  <ErrorBoundary>
+                    <LazyPages.EventDetail />
+                  </ErrorBoundary>
+                } />
                 <Route path="/venues" element={
                   <ErrorBoundary>
                     <LazyPages.Venues />

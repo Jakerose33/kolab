@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Link } from "react-router-dom"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -11,40 +12,42 @@ interface EditorialGridProps {
 }
 
 const EventCard = ({ item }: { item: EditorialItem }) => (
-  <Card className="group cursor-pointer overflow-hidden border-0 bg-card hover:bg-card-hover transition-all duration-300 hover:scale-[1.02]">
-    <div className="aspect-[4/5] relative overflow-hidden">
-      <img 
-        src={item.image} 
-        alt={item.title}
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        loading="lazy"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-      
-      {/* Event details overlay */}
-      <div className="absolute bottom-4 left-4 right-4 text-white">
-        <div className="flex items-center gap-2 text-sm font-medium mb-2">
-          <span className="text-white/80">{item.date}</span>
-          <span className="text-white/60">•</span>
-          <span className="text-white/80">{item.time}</span>
-        </div>
-        <h3 className="font-bold text-lg mb-1 line-clamp-2">{item.title}</h3>
-        <p className="text-white/70 text-sm mb-3">{item.neighbourhood}</p>
+  <Link to={`/events/${item.id}`}>
+    <Card className="group cursor-pointer overflow-hidden border-0 bg-card hover:bg-card-hover transition-all duration-300 hover:scale-[1.02]">
+      <div className="aspect-[4/5] relative overflow-hidden">
+        <img 
+          src={item.image} 
+          alt={item.title}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
         
-        {/* RSVP chips */}
-        <div className="flex gap-2">
-          <Badge variant="secondary" className="bg-red-500/20 text-red-300 border-red-500/30 hover:bg-red-500/30">
-            <Flame className="w-3 h-3 mr-1" />
-            {item.going} Going
-          </Badge>
-          <Badge variant="secondary" className="bg-blue-500/20 text-blue-300 border-blue-500/30 hover:bg-blue-500/30">
-            <Eye className="w-3 h-3 mr-1" />
-            {item.interested} Interested
-          </Badge>
+        {/* Event details overlay */}
+        <div className="absolute bottom-4 left-4 right-4 text-white">
+          <div className="flex items-center gap-2 text-sm font-medium mb-2">
+            <span className="text-white/80">{item.date}</span>
+            <span className="text-white/60">•</span>
+            <span className="text-white/80">{item.time}</span>
+          </div>
+          <h3 className="font-bold text-lg mb-1 line-clamp-2">{item.title}</h3>
+          <p className="text-white/70 text-sm mb-3">{item.neighbourhood}</p>
+          
+          {/* RSVP chips */}
+          <div className="flex gap-2">
+            <Badge variant="secondary" className="bg-red-500/20 text-red-300 border-red-500/30 hover:bg-red-500/30">
+              <Flame className="w-3 h-3 mr-1" />
+              {item.going} Going
+            </Badge>
+            <Badge variant="secondary" className="bg-blue-500/20 text-blue-300 border-blue-500/30 hover:bg-blue-500/30">
+              <Eye className="w-3 h-3 mr-1" />
+              {item.interested} Interested
+            </Badge>
+          </div>
         </div>
       </div>
-    </div>
-  </Card>
+    </Card>
+  </Link>
 )
 
 const CityGuideCard = ({ item }: { item: EditorialItem }) => (
