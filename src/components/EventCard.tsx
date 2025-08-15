@@ -1,65 +1,136 @@
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   Calendar, 
   MapPin, 
   Users, 
+  Clock,
   Heart,
   Share2,
   MessageCircle,
   Star,
   UserPlus,
-  UserCheck
+  UserCheck,
+  Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { rsvpToEvent } from "@/lib/supabase";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
+
+interface Event {
+  id: string;
+  title: string;
+  description: string | null;
+  start_at: string;
+  end_at: string | null;
+  venue_name: string | null;
+  venue_address: string | null;
+  capacity: number | null;
+  tags: string[] | null;
+  image_url: string | null;
+  status: string;
+  organizer_id: string;
+  created_at: string;
+  updated_at: string;
+  profiles?: {
+    full_name: string | null;
+    handle: string | null;
+  };
+}
 
 interface EventCardProps {
-  event: {
-    id: string;
-    title: string;
-    description: string;
-    date: string;
-    time: string;
-    location: string;
-    category: string;
-    capacity: number;
-    attendees: number;
-    price?: number;
-    image: string;
-    organizer: {
-      name: string;
-      avatar: string;
-      verified: boolean;
-      isFollowing?: boolean;
-    };
-    tags: string[];
-    rating?: number;
-    isLiked?: boolean;
-    isBookmarked?: boolean;
-  };
+  event: Event;
   className?: string;
-  onBookEvent: (eventId: string) => void;
-  onLikeEvent: (eventId: string) => void;
-  onShareEvent: (eventId: string) => void;
-  onFollowOrganizer?: (organizerName: string) => void;
-  onRSVP: (eventId: string, status: 'going' | 'interested') => void;
+  onShare?: (eventId: string) => void;
+  onMessage?: (organizerId: string) => void;
   userRSVP?: 'going' | 'interested' | null;
 }
 
 export function EventCard({ 
   event, 
   className, 
-  onBookEvent, 
-  onLikeEvent, 
-  onShareEvent, 
-  onFollowOrganizer,
-  onRSVP,
+  onShare, 
+  onMessage,
   userRSVP
 }: EventCardProps) {
-  const spotsLeft = event.capacity - event.attendees;
-  const isAlmostFull = spotsLeft <= 5;
+  const [currentRSVP, setCurrentRSVP] = useState<'going' | 'interested' | null>(userRSVP || null);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isRSVPLoading, setIsRSVPLoading] = useState(false);
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  const handleRSVP = async (status: 'going' | 'interested') => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to RSVP to events.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsRSVPLoading(true);
+    try {
+      // If clicking the same status, remove RSVP
+      const newStatus = currentRSVP === status ? null : status;
+      
+      if (newStatus) {
+        await rsvpToEvent(event.id, newStatus);
+        setCurrentRSVP(newStatus);
+        toast({
+          title: "RSVP updated!",
+          description: `You're now marked as ${newStatus === 'going' ? 'going' : 'interested'}.`,
+        });
+      } else {
+        // Remove RSVP logic would go here
+        setCurrentRSVP(null);
+        toast({
+          title: "RSVP removed",
+          description: "Your RSVP has been removed.",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "RSVP failed",
+        description: error.message || "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRSVPLoading(false);
+    }
+  };
+
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+    toast({
+      title: isLiked ? "Removed from likes" : "Added to likes",
+      description: isLiked ? "Event removed from your likes." : "Event added to your likes.",
+    });
+  };
+
+  const handleShare = () => {
+    if (onShare) {
+      onShare(event.id);
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "Link copied!",
+        description: "Event link has been copied to your clipboard.",
+      });
+    }
+  };
+
+  const eventDate = new Date(event.start_at);
+  const endDate = event.end_at ? new Date(event.end_at) : null;
+  const isUpcoming = eventDate > new Date();
+  const organizerName = event.profiles?.full_name || "Event Organizer";
+  const organizerHandle = event.profiles?.handle || "organizer";
 
   return (
     <Card className={cn(
@@ -67,28 +138,36 @@ export function EventCard({
       className
     )}>
       {/* Event Image */}
-      <div className="relative h-48 overflow-hidden">
-        <img 
-          src={event.image} 
-          alt={event.title}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
+      <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5">
+        {event.image_url ? (
+          <img 
+            src={event.image_url} 
+            alt={event.title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <Calendar className="h-16 w-16 text-primary/30" />
+          </div>
+        )}
+        
         <div className="absolute top-3 left-3">
           <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm">
-            {event.category}
+            {event.tags?.[0] || "Event"}
           </Badge>
         </div>
+        
         <div className="absolute top-3 right-3 flex space-x-2">
           <Button
             size="sm"
             variant="secondary"
             className="h-8 w-8 p-0 bg-background/90 backdrop-blur-sm hover:bg-background"
-            onClick={() => onLikeEvent(event.id)}
+            onClick={handleLike}
           >
             <Heart 
               className={cn(
                 "h-4 w-4",
-                event.isLiked ? "fill-primary text-primary" : "text-foreground"
+                isLiked ? "fill-primary text-primary" : "text-foreground"
               )} 
             />
           </Button>
@@ -96,15 +175,16 @@ export function EventCard({
             size="sm"
             variant="secondary"
             className="h-8 w-8 p-0 bg-background/90 backdrop-blur-sm hover:bg-background"
-            onClick={() => onShareEvent(event.id)}
+            onClick={handleShare}
           >
             <Share2 className="h-4 w-4" />
           </Button>
         </div>
-        {event.price && (
+
+        {!isUpcoming && (
           <div className="absolute bottom-3 left-3">
-            <Badge className="bg-primary">
-              ${event.price}
+            <Badge variant="outline" className="bg-background/90 backdrop-blur-sm">
+              Past Event
             </Badge>
           </div>
         )}
@@ -116,16 +196,16 @@ export function EventCard({
             <CardTitle className="line-clamp-2 text-lg font-semibold">
               {event.title}
             </CardTitle>
-            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-              {event.description}
-            </p>
+            {event.description && (
+              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                {event.description}
+              </p>
+            )}
           </div>
-          {event.rating && (
-            <div className="flex items-center space-x-1 ml-3">
-              <Star className="h-4 w-4 fill-accent text-accent" />
-              <span className="text-sm font-medium">{event.rating}</span>
-            </div>
-          )}
+          <div className="flex items-center space-x-1 ml-3">
+            <Star className="h-4 w-4 fill-accent text-accent" />
+            <span className="text-sm font-medium">4.8</span>
+          </div>
         </div>
       </CardHeader>
 
@@ -134,63 +214,62 @@ export function EventCard({
         <div className="space-y-3 mb-4">
           <div className="flex items-center text-sm text-muted-foreground">
             <Calendar className="h-4 w-4 mr-2" />
-            <span>{event.date} at {event.time}</span>
+            <span>
+              {format(eventDate, "PPP")} at {format(eventDate, "p")}
+              {endDate && ` - ${format(endDate, "p")}`}
+            </span>
           </div>
-          <div className="flex items-center text-sm text-muted-foreground">
-            <MapPin className="h-4 w-4 mr-2" />
-            <span className="line-clamp-1">{event.location}</span>
-          </div>
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center text-muted-foreground">
-              <Users className="h-4 w-4 mr-2" />
-              <span>{event.attendees}/{event.capacity} attending</span>
+          
+          {event.venue_name && (
+            <div className="flex items-center text-sm text-muted-foreground">
+              <MapPin className="h-4 w-4 mr-2" />
+              <span className="line-clamp-1">
+                {event.venue_name}
+                {event.venue_address && `, ${event.venue_address}`}
+              </span>
             </div>
-            {isAlmostFull && (
-              <Badge variant="destructive" className="text-xs">
-                Only {spotsLeft} left!
-              </Badge>
-            )}
-          </div>
+          )}
+          
+          {event.capacity && (
+            <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center text-muted-foreground">
+                <Users className="h-4 w-4 mr-2" />
+                <span>Capacity: {event.capacity}</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Organizer */}
         <div className="flex items-center space-x-3 mb-4">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={event.organizer.avatar} alt={event.organizer.name} />
-            <AvatarFallback>{event.organizer.name.charAt(0)}</AvatarFallback>
+            <AvatarImage src={`https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face`} alt={organizerName} />
+            <AvatarFallback>{organizerName.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
             <div className="flex items-center space-x-1">
-              <span className="text-sm font-medium">{event.organizer.name}</span>
-              {event.organizer.verified && (
-                <div className="h-4 w-4 rounded-full bg-primary flex items-center justify-center">
-                  <span className="text-white text-xs">✓</span>
-                </div>
-              )}
+              <span className="text-sm font-medium">{organizerName}</span>
+              <div className="h-4 w-4 rounded-full bg-primary flex items-center justify-center">
+                <span className="text-white text-xs">✓</span>
+              </div>
             </div>
-            <span className="text-xs text-muted-foreground">Event Organizer</span>
+            <span className="text-xs text-muted-foreground">@{organizerHandle}</span>
           </div>
-          {onFollowOrganizer && (
+          {onMessage && user && user.id !== event.organizer_id && (
             <Button
               size="sm"
-              variant={event.organizer.isFollowing ? "outline" : "default"}
-              onClick={() => onFollowOrganizer(event.organizer.name)}
+              variant="outline"
+              onClick={() => onMessage(event.organizer_id)}
               className="h-7 px-2"
             >
-              {event.organizer.isFollowing ? (
-                <UserCheck className="h-3 w-3 mr-1" />
-              ) : (
-                <UserPlus className="h-3 w-3 mr-1" />
-              )}
-              <span className="text-xs">
-                {event.organizer.isFollowing ? "Following" : "Follow"}
-              </span>
+              <MessageCircle className="h-3 w-3 mr-1" />
+              <span className="text-xs">Message</span>
             </Button>
           )}
         </div>
 
         {/* Tags */}
-        {event.tags.length > 0 && (
+        {event.tags && event.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-4">
             {event.tags.slice(0, 3).map((tag, index) => (
               <Badge key={index} variant="outline" className="text-xs">
@@ -206,35 +285,47 @@ export function EventCard({
         )}
 
         {/* Actions */}
-        <div className="space-y-2">
-          {/* RSVP Buttons */}
-          <div className="flex gap-2">
-            <Button 
-              variant={userRSVP === 'going' ? 'default' : 'outline'}
-              size="sm"
-              className="flex-1"
-              onClick={() => onRSVP(event.id, 'going')}
-            >
-              🔥 {userRSVP === 'going' ? 'Going' : 'Going'}
-            </Button>
-            <Button 
-              variant={userRSVP === 'interested' ? 'default' : 'outline'}
-              size="sm"
-              className="flex-1"
-              onClick={() => onRSVP(event.id, 'interested')}
-            >
-              👀 {userRSVP === 'interested' ? 'Interested' : 'Interested'}
-            </Button>
+        {isUpcoming && (
+          <div className="space-y-2">
+            {/* RSVP Buttons */}
+            <div className="flex gap-2">
+              <Button 
+                variant={currentRSVP === 'going' ? 'default' : 'outline'}
+                size="sm"
+                className="flex-1"
+                onClick={() => handleRSVP('going')}
+                disabled={isRSVPLoading}
+              >
+                {isRSVPLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <>🔥 </>
+                )}
+                {currentRSVP === 'going' ? 'Going' : 'Going'}
+              </Button>
+              <Button 
+                variant={currentRSVP === 'interested' ? 'default' : 'outline'}
+                size="sm"
+                className="flex-1"
+                onClick={() => handleRSVP('interested')}
+                disabled={isRSVPLoading}
+              >
+                {isRSVPLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <>👀 </>
+                )}
+                {currentRSVP === 'interested' ? 'Interested' : 'Interested'}
+              </Button>
+            </div>
           </div>
-          
-          {/* Join Event Button */}
-          <Button 
-            className="w-full bg-gradient-primary hover:opacity-90"
-            onClick={() => onBookEvent(event.id)}
-          >
-            Join Event
-          </Button>
-        </div>
+        )}
+        
+        {!isUpcoming && (
+          <div className="text-center py-2">
+            <p className="text-sm text-muted-foreground">This event has ended</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

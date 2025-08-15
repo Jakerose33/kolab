@@ -31,2659 +31,311 @@ import {
   AlertCircle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import EventMap from "@/components/EventMap";
-import { rsvpToEvent, createEvent } from "@/lib/supabase";
-
-// Mock data for events with corrected images
-const mockEvents = [
-  // Music Events (15)
-  {
-    id: "1",
-    title: "Jazz Quartet Night",
-    description: "Intimate jazz performance featuring Melbourne's finest quartet musicians.",
-    date: "March 15, 2024",
-    time: "8:00 PM",
-    location: "Bennett's Lane Jazz Club, CBD",
-    category: "music",
-    capacity: 80,
-    attendees: 65,
-    price: 35,
-    image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop",
-    organizer: { name: "Sarah Chen", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: true, isFollowing: false },
-    tags: ["jazz", "live music", "quartet"],
-    rating: 4.8,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "2",
-    title: "Electronic Music Production Workshop",
-    description: "Learn the fundamentals of electronic music production using industry-standard software.",
-    date: "March 16, 2024",
-    time: "2:00 PM",
-    location: "SAE Creative Media Institute, South Melbourne",
-    category: "music",
-    capacity: 25,
-    attendees: 20,
-    price: 85,
-    image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=600&fit=crop",
-    organizer: { name: "Marcus Johnson", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: true, isFollowing: false },
-    tags: ["electronic", "production", "workshop"],
-    rating: 4.6,
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: "3",
-    title: "Open Mic Night",
-    description: "Share your musical talents with a supportive community of music lovers.",
-    date: "March 17, 2024",
-    time: "7:00 PM",
-    location: "The Corner Hotel, Richmond",
-    category: "music",
-    capacity: 100,
-    attendees: 75,
-    image: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=800&h=600&fit=crop",
-    organizer: { name: "Alex Rivera", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: false, isFollowing: false },
-    tags: ["open mic", "community", "live performance"],
-    rating: 4.9,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "4",
-    title: "Classical String Ensemble",
-    description: "An evening of classical masterpieces performed by Melbourne Symphony musicians.",
-    date: "March 18, 2024",
-    time: "7:30 PM",
-    location: "Melbourne Recital Centre, CBD",
-    category: "music",
-    capacity: 200,
-    attendees: 180,
-    price: 55,
-    image: "https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=800&h=600&fit=crop",
-    organizer: { name: "Emma Wilson", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: true, isFollowing: false },
-    tags: ["classical", "symphony", "ensemble"],
-    rating: 4.7,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "5",
-    title: "Hip Hop Dance Battle",
-    description: "Melbourne's best hip hop dancers compete in an electrifying dance battle.",
-    date: "March 19, 2024",
-    time: "6:00 PM",
-    location: "The Substation, Newport",
-    category: "music",
-    capacity: 150,
-    attendees: 120,
-    price: 25,
-    image: "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&h=600&fit=crop",
-    organizer: { name: "Jordan Lee", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face", verified: false, isFollowing: false },
-    tags: ["hip hop", "dance", "battle"],
-    rating: 4.5,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "6",
-    title: "Indie Folk Acoustic Session",
-    description: "Intimate acoustic performances by emerging indie folk artists.",
-    date: "March 20, 2024",
-    time: "3:00 PM",
-    location: "Gasometer Hotel, Collingwood",
-    category: "music",
-    capacity: 60,
-    attendees: 45,
-    price: 20,
-    image: "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=800&h=600&fit=crop",
-    organizer: { name: "Sophia Martinez", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=32&h=32&fit=crop&crop=face", verified: true, isFollowing: false },
-    tags: ["indie", "folk", "acoustic"],
-    rating: 4.8,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "7",
-    title: "Rock Band Jam Session",
-    description: "Join a collaborative rock session with other musicians. Bring your instruments!",
-    date: "March 21, 2024",
-    time: "7:00 PM",
-    location: "Musicland Studios, Brunswick",
-    category: "music",
-    capacity: 20,
-    attendees: 16,
-    price: 30,
-    image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800&h=600&fit=crop",
-    organizer: { name: "Tyler Brown", avatar: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["rock", "jam session", "collaborative"],
-    rating: 4.4,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "8",
-    title: "World Music Festival Kickoff",
-    description: "Experience diverse musical traditions from around the globe in one spectacular evening.",
-    date: "March 22, 2024",
-    time: "5:00 PM",
-    location: "Federation Square, CBD",
-    category: "music",
-    capacity: 500,
-    attendees: 350,
-    image: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&h=600&fit=crop",
-    organizer: { name: "Amara Okafor", avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["world music", "festival", "multicultural"],
-    rating: 4.9,
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: "9",
-    title: "Piano Recital Evening",
-    description: "Solo piano performances featuring works by Chopin, Debussy, and contemporary composers.",
-    date: "March 23, 2024",
-    time: "7:00 PM",
-    location: "Iwaki Auditorium, ABC Southbank",
-    category: "music",
-    capacity: 120,
-    attendees: 95,
-    price: 40,
-    image: "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=800&h=600&fit=crop",
-    organizer: { name: "Isabella Kim", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["piano", "classical", "recital"],
-    rating: 4.6,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "10",
-    title: "Blues Harmonica Workshop",
-    description: "Learn to play blues harmonica from a master musician in this hands-on workshop.",
-    date: "March 24, 2024",
-    time: "1:00 PM",
-    location: "The Lomond Hotel, East Brunswick",
-    category: "music",
-    capacity: 15,
-    attendees: 12,
-    price: 65,
-    image: "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?w=800&h=600&fit=crop",
-    organizer: { name: "Robert Jackson", avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["blues", "harmonica", "workshop"],
-    rating: 4.7,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "11",
-    title: "Vocal Harmony Circle",
-    description: "Join a supportive circle where we explore vocal harmonies and group singing techniques.",
-    date: "March 25, 2024",
-    time: "6:30 PM",
-    location: "St. Kilda Community Centre",
-    category: "music",
-    capacity: 25,
-    attendees: 18,
-    price: 15,
-    image: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=800&h=600&fit=crop",
-    organizer: { name: "Maya Patel", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["vocal", "harmony", "group singing"],
-    rating: 4.8,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "12",
-    title: "Reggae Night Showcase",
-    description: "Local reggae bands perform classic and original tracks in a laid-back atmosphere.",
-    date: "March 26, 2024",
-    time: "8:00 PM",
-    location: "The Toff in Town, CBD",
-    category: "music",
-    capacity: 180,
-    attendees: 140,
-    price: 30,
-    image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop",
-    organizer: { name: "Marcus Thompson", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["reggae", "live music", "showcase"],
-    rating: 4.5,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "13",
-    title: "Choir Performance Workshop",
-    description: "Learn proper choir techniques and perform in a group setting with experienced vocalists.",
-    date: "March 27, 2024",
-    time: "2:00 PM",
-    location: "Melbourne Town Hall, CBD",
-    category: "music",
-    capacity: 50,
-    attendees: 35,
-    price: 45,
-    image: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=800&h=600&fit=crop",
-    organizer: { name: "Catherine Moore", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["choir", "vocal training", "performance"],
-    rating: 4.7,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "14",
-    title: "DJ Mixing Masterclass",
-    description: "Professional DJ teaches mixing techniques, beatmatching, and crowd reading skills.",
-    date: "March 28, 2024",
-    time: "7:00 PM",
-    location: "Revolver Upstairs, Prahran",
-    category: "music",
-    capacity: 30,
-    attendees: 25,
-    price: 75,
-    image: "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?w=800&h=600&fit=crop",
-    organizer: { name: "DJ Alex Storm", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["DJ", "mixing", "masterclass"],
-    rating: 4.6,
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: "15",
-    title: "Folk Song Circle",
-    description: "Traditional folk songs from around the world in an intimate, participatory setting.",
-    date: "March 29, 2024",
-    time: "4:00 PM",
-    location: "The Worker's Club, Fitzroy",
-    category: "music",
-    capacity: 40,
-    attendees: 30,
-    price: 12,
-    image: "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=800&h=600&fit=crop",
-    organizer: { name: "Folk Society Melbourne", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["folk", "traditional", "participatory"],
-    rating: 4.4,
-    isLiked: false,
-    isBookmarked: false,
-  },
-
-  // Art Events (13)
-  {
-    id: "16",
-    title: "Street Art Walking Tour",
-    description: "Explore Melbourne's famous laneways and discover the stories behind the street art.",
-    date: "March 15, 2024",
-    time: "10:00 AM",
-    location: "Hosier Lane, CBD",
-    category: "art",
-    capacity: 25,
-    attendees: 20,
-    price: 25,
-    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop",
-    organizer: { name: "Luna Rodriguez", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["street art", "tour", "laneways"],
-    rating: 4.9,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "17",
-    title: "Watercolor Painting Workshop",
-    description: "Learn watercolor techniques for beginners in a relaxed studio environment.",
-    date: "March 16, 2024",
-    time: "1:00 PM",
-    location: "Artists' Society of Victoria, East Melbourne",
-    category: "art",
-    capacity: 15,
-    attendees: 12,
-    price: 55,
-    image: "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=800&h=600&fit=crop",
-    organizer: { name: "Grace Chen", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["watercolor", "painting", "workshop"],
-    rating: 4.7,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "18",
-    title: "Modern Sculpture Exhibition Opening",
-    description: "Opening night for contemporary sculpture exhibition featuring local and international artists.",
-    date: "March 17, 2024",
-    time: "6:00 PM",
-    location: "Australian Centre for Contemporary Art, Southbank",
-    category: "art",
-    capacity: 200,
-    attendees: 150,
-    image: "https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=800&h=600&fit=crop",
-    organizer: { name: "ACCA Events", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["sculpture", "exhibition", "contemporary"],
-    rating: 4.8,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "19",
-    title: "Life Drawing Session",
-    description: "Practice figure drawing with live models in a supportive artistic environment.",
-    date: "March 18, 2024",
-    time: "7:00 PM",
-    location: "Drawing Studios Melbourne, Fitzroy",
-    category: "art",
-    capacity: 20,
-    attendees: 16,
-    price: 30,
-    image: "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=800&h=600&fit=crop",
-    organizer: { name: "Art Circle Melbourne", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["life drawing", "figure", "sketching"],
-    rating: 4.6,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "20",
-    title: "Abstract Expressionism Workshop",
-    description: "Explore abstract expressionist techniques through guided painting exercises.",
-    date: "March 19, 2024",
-    time: "2:00 PM",
-    location: "Creative Space Collingwood",
-    category: "art",
-    capacity: 12,
-    attendees: 10,
-    price: 65,
-    image: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=600&fit=crop",
-    organizer: { name: "Patricia Wong", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["abstract", "expressionism", "painting"],
-    rating: 4.5,
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: "21",
-    title: "Ceramics and Pottery Making",
-    description: "Hands-on pottery workshop for beginners - create your own ceramic pieces.",
-    date: "March 20, 2024",
-    time: "10:00 AM",
-    location: "Clay Studio, Richmond",
-    category: "art",
-    capacity: 18,
-    attendees: 14,
-    price: 70,
-    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop",
-    organizer: { name: "Clay Masters Melbourne", avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["ceramics", "pottery", "hands-on"],
-    rating: 4.6,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "22",
-    title: "Digital Art and Animation Workshop",
-    description: "Introduction to digital art creation and basic animation techniques.",
-    date: "March 21, 2024",
-    time: "1:00 PM",
-    location: "Digital Arts Centre, South Yarra",
-    category: "art",
-    capacity: 16,
-    attendees: 13,
-    price: 80,
-    image: "https://images.unsplash.com/photo-1561736778-92e52a7769ef?w=800&h=600&fit=crop",
-    organizer: { name: "Tech Art Studio", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["digital art", "animation", "technology"],
-    rating: 4.7,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "23",
-    title: "Portrait Photography Masterclass",
-    description: "Professional portrait photography techniques with lighting and composition tips.",
-    date: "March 22, 2024",
-    time: "10:00 AM",
-    location: "Photo Studio Melbourne, CBD",
-    category: "art",
-    capacity: 12,
-    attendees: 10,
-    price: 120,
-    image: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=800&h=600&fit=crop",
-    organizer: { name: "Pro Photo Melbourne", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["photography", "portrait", "masterclass"],
-    rating: 4.8,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "24",
-    title: "Printmaking Workshop",
-    description: "Learn traditional printmaking techniques including linocut and etching.",
-    date: "March 23, 2024",
-    time: "11:00 AM",
-    location: "Print Workshop, Fitzroy",
-    category: "art",
-    capacity: 14,
-    attendees: 11,
-    price: 65,
-    image: "https://images.unsplash.com/photo-1574268438462-828487d2c4c7?w=800&h=600&fit=crop",
-    organizer: { name: "Traditional Arts Collective", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["printmaking", "traditional", "linocut"],
-    rating: 4.5,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "25",
-    title: "Mixed Media Art Exploration",
-    description: "Experiment with various materials and techniques in this creative mixed media workshop.",
-    date: "March 24, 2024",
-    time: "2:00 PM",
-    location: "Creative Hub, Collingwood",
-    category: "art",
-    capacity: 20,
-    attendees: 16,
-    price: 55,
-    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop",
-    organizer: { name: "Mixed Arts Studio", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["mixed media", "experimental", "creative"],
-    rating: 4.6,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "26",
-    title: "Art Gallery Opening Night",
-    description: "Opening of new contemporary art exhibition featuring emerging Australian artists.",
-    date: "March 25, 2024",
-    time: "6:00 PM",
-    location: "Gallery 31, Fitzroy",
-    category: "art",
-    capacity: 80,
-    attendees: 60,
-    image: "https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=800&h=600&fit=crop",
-    organizer: { name: "Gallery 31", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["gallery", "opening", "contemporary"],
-    rating: 4.7,
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: "27",
-    title: "Sculpture in the Park",
-    description: "Outdoor sculpture workshop using natural and recycled materials.",
-    date: "March 26, 2024",
-    time: "10:00 AM",
-    location: "Royal Botanic Gardens, Melbourne",
-    category: "art",
-    capacity: 22,
-    attendees: 18,
-    price: 40,
-    image: "https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=800&h=600&fit=crop",
-    organizer: { name: "Eco Art Collective", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["sculpture", "outdoor", "eco-friendly"],
-    rating: 4.4,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "28",
-    title: "Calligraphy and Hand Lettering",
-    description: "Learn beautiful calligraphy and hand lettering techniques for beginners.",
-    date: "March 27, 2024",
-    time: "1:00 PM",
-    location: "Paper & Ink Studio, Carlton",
-    category: "art",
-    capacity: 16,
-    attendees: 12,
-    price: 50,
-    image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&h=600&fit=crop",
-    organizer: { name: "Lettering Arts Melbourne", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["calligraphy", "lettering", "traditional"],
-    rating: 4.8,
-    isLiked: true,
-    isBookmarked: false,
-  },
-
-  // Business Events (15)
-  {
-    id: "29",
-    title: "Startup Pitch Night",
-    description: "Early-stage startups pitch to investors and industry experts for feedback and funding.",
-    date: "March 15, 2024",
-    time: "6:00 PM",
-    location: "Innovation Hub, 456 Tech Street",
-    category: "business",
-    capacity: 100,
-    attendees: 85,
-    image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=600&fit=crop",
-    organizer: { name: "Startup Melbourne", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["startup", "pitch", "investors"],
-    rating: 4.7,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "30",
-    title: "Digital Marketing Workshop",
-    description: "Learn effective digital marketing strategies for small businesses and startups.",
-    date: "March 16, 2024",
-    time: "9:00 AM",
-    location: "Business Centre Melbourne, CBD",
-    category: "business",
-    capacity: 50,
-    attendees: 40,
-    price: 95,
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
-    organizer: { name: "Digital Growth Academy", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["marketing", "digital", "workshop"],
-    rating: 4.6,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "31",
-    title: "Women in Leadership Summit",
-    description: "Empowering women leaders across industries with networking and professional development.",
-    date: "March 17, 2024",
-    time: "8:30 AM",
-    location: "Crown Conference Centre, Southbank",
-    category: "business",
-    capacity: 200,
-    attendees: 175,
-    price: 150,
-    image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&h=600&fit=crop",
-    organizer: { name: "Women Leaders Network", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["women", "leadership", "summit"],
-    rating: 4.9,
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: "32",
-    title: "E-commerce Growth Strategies",
-    description: "Advanced strategies for scaling your online business and increasing revenue.",
-    date: "March 18, 2024",
-    time: "1:00 PM",
-    location: "Melbourne Business School, Carlton",
-    category: "business",
-    capacity: 60,
-    attendees: 50,
-    price: 120,
-    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop",
-    organizer: { name: "E-commerce Institute", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["e-commerce", "growth", "strategies"],
-    rating: 4.5,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "33",
-    title: "Networking Breakfast for Entrepreneurs",
-    description: "Early morning networking event for startup founders and business owners.",
-    date: "March 19, 2024",
-    time: "7:00 AM",
-    location: "Sunrise Cafe, Collins Street",
-    category: "business",
-    capacity: 40,
-    attendees: 30,
-    price: 25,
-    image: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=800&h=600&fit=crop",
-    organizer: { name: "Entrepreneur's Circle", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["networking", "breakfast", "entrepreneurs"],
-    rating: 4.4,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "34",
-    title: "Financial Planning for Small Business",
-    description: "Essential financial planning and budgeting strategies for small business owners.",
-    date: "March 20, 2024",
-    time: "6:00 PM",
-    location: "AccountingPro Centre, South Melbourne",
-    category: "business",
-    capacity: 35,
-    attendees: 28,
-    price: 75,
-    image: "https://images.unsplash.com/photo-1488972685288-c3fd157d7c7a?w=800&h=600&fit=crop",
-    organizer: { name: "Financial Advisors Melbourne", avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["financial", "planning", "small business"],
-    rating: 4.6,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "35",
-    title: "Tech Innovation Showcase",
-    description: "Latest tech innovations and emerging technologies presentation and demo.",
-    date: "March 21, 2024",
-    time: "3:00 PM",
-    location: "Tech Hub Melbourne, Docklands",
-    category: "business",
-    capacity: 120,
-    attendees: 95,
-    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop",
-    organizer: { name: "Tech Innovators Collective", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["tech", "innovation", "showcase"],
-    rating: 4.7,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "36",
-    title: "Customer Service Excellence Training",
-    description: "Advanced customer service training for retail and hospitality businesses.",
-    date: "March 22, 2024",
-    time: "10:00 AM",
-    location: "Training Centre, Richmond",
-    category: "business",
-    capacity: 45,
-    attendees: 35,
-    price: 110,
-    image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&h=600&fit=crop",
-    organizer: { name: "Service Excellence Institute", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["customer service", "training", "excellence"],
-    rating: 4.5,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "37",
-    title: "Scaling Your Business Workshop",
-    description: "Practical strategies for scaling businesses from startup to enterprise level.",
-    date: "March 23, 2024",
-    time: "9:00 AM",
-    location: "Business Growth Centre, CBD",
-    category: "business",
-    capacity: 80,
-    attendees: 65,
-    price: 140,
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop",
-    organizer: { name: "Growth Strategies Inc", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["scaling", "business growth", "workshop"],
-    rating: 4.8,
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: "38",
-    title: "Social Media Marketing Masterclass",
-    description: "Advanced social media marketing techniques for brand building and customer engagement.",
-    date: "March 24, 2024",
-    time: "2:00 PM",
-    location: "Digital Marketing Hub, South Yarra",
-    category: "business",
-    capacity: 55,
-    attendees: 45,
-    price: 85,
-    image: "https://images.unsplash.com/photo-1611926653458-09294b3142bf?w=800&h=600&fit=crop",
-    organizer: { name: "Social Media Experts", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["social media", "marketing", "masterclass"],
-    rating: 4.6,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "39",
-    title: "Investment and Portfolio Management",
-    description: "Learn investment strategies and portfolio management for business owners.",
-    date: "March 25, 2024",
-    time: "6:30 PM",
-    location: "Investment Centre, Collins Street",
-    category: "business",
-    capacity: 40,
-    attendees: 30,
-    price: 95,
-    image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=800&h=600&fit=crop",
-    organizer: { name: "Investment Advisors Group", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["investment", "portfolio", "management"],
-    rating: 4.7,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "40",
-    title: "Business Law Essentials",
-    description: "Essential legal knowledge for small business owners and entrepreneurs.",
-    date: "March 26, 2024",
-    time: "7:00 PM",
-    location: "Law Institute, Melbourne",
-    category: "business",
-    capacity: 60,
-    attendees: 45,
-    price: 105,
-    image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=600&fit=crop",
-    organizer: { name: "Business Law Centre", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["business law", "legal", "essentials"],
-    rating: 4.5,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "41",
-    title: "Export and International Trade",
-    description: "Guide to expanding your business internationally and export opportunities.",
-    date: "March 27, 2024",
-    time: "1:00 PM",
-    location: "Trade Centre, Docklands",
-    category: "business",
-    capacity: 70,
-    attendees: 55,
-    price: 115,
-    image: "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=800&h=600&fit=crop",
-    organizer: { name: "International Trade Council", avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["export", "international", "trade"],
-    rating: 4.6,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "42",
-    title: "Business Resilience and Risk Management",
-    description: "Strategies for building resilient businesses and managing operational risks.",
-    date: "March 28, 2024",
-    time: "4:00 PM",
-    location: "Risk Management Institute, CBD",
-    category: "business",
-    capacity: 50,
-    attendees: 38,
-    price: 90,
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=600&fit=crop",
-    organizer: { name: "Risk Management Experts", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["resilience", "risk management", "business"],
-    rating: 4.4,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "43",
-    title: "Innovation and Product Development",
-    description: "Workshop on innovation processes and successful product development strategies.",
-    date: "March 29, 2024",
-    time: "10:00 AM",
-    location: "Innovation Lab, South Melbourne",
-    category: "business",
-    capacity: 35,
-    attendees: 28,
-    price: 125,
-    image: "https://images.unsplash.com/photo-1553028826-f4804a6dba3b?w=800&h=600&fit=crop",
-    organizer: { name: "Innovation Institute", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["innovation", "product development", "strategy"],
-    rating: 4.8,
-    isLiked: true,
-    isBookmarked: true,
-  },
-
-  // Photography Events (12)
-  {
-    id: "44",
-    title: "Urban Street Photography Walk",
-    description: "Explore Melbourne's urban landscape while learning street photography techniques.",
-    date: "March 15, 2024",
-    time: "9:00 AM",
-    location: "Federation Square, CBD",
-    category: "photography",
-    capacity: 15,
-    attendees: 12,
-    price: 40,
-    image: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=800&h=600&fit=crop",
-    organizer: { name: "Street Photo Melbourne", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["street photography", "urban", "walk"],
-    rating: 4.7,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "45",
-    title: "Portrait Lighting Workshop",
-    description: "Master professional portrait lighting techniques in studio and natural settings.",
-    date: "March 16, 2024",
-    time: "2:00 PM",
-    location: "Photo Studio Pro, Richmond",
-    category: "photography",
-    capacity: 12,
-    attendees: 10,
-    price: 110,
-    image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=800&h=600&fit=crop",
-    organizer: { name: "Portrait Masters", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["portrait", "lighting", "studio"],
-    rating: 4.9,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "46",
-    title: "Nature and Landscape Photography",
-    description: "Dawn photography session in the Dandenong Ranges capturing landscapes and wildlife.",
-    date: "March 17, 2024",
-    time: "5:30 AM",
-    location: "Dandenong Ranges National Park",
-    category: "photography",
-    capacity: 20,
-    attendees: 16,
-    price: 65,
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
-    organizer: { name: "Nature Photo Society", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["nature", "landscape", "dawn"],
-    rating: 4.8,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "47",
-    title: "Black and White Photography Masterclass",
-    description: "Advanced techniques for creating compelling black and white photographs.",
-    date: "March 18, 2024",
-    time: "7:00 PM",
-    location: "Monochrome Studio, Carlton",
-    category: "photography",
-    capacity: 14,
-    attendees: 11,
-    price: 85,
-    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&h=600&fit=crop",
-    organizer: { name: "B&W Photography Guild", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["black and white", "monochrome", "masterclass"],
-    rating: 4.6,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "48",
-    title: "Wedding Photography Basics",
-    description: "Essential skills and techniques for aspiring wedding photographers.",
-    date: "March 19, 2024",
-    time: "10:00 AM",
-    location: "Wedding Studio Melbourne, South Yarra",
-    category: "photography",
-    capacity: 18,
-    attendees: 15,
-    price: 95,
-    image: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800&h=600&fit=crop",
-    organizer: { name: "Wedding Photo Academy", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["wedding", "photography", "basics"],
-    rating: 4.7,
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: "49",
-    title: "Macro Photography Workshop",
-    description: "Close-up photography techniques for capturing intricate details in nature and objects.",
-    date: "March 20, 2024",
-    time: "1:00 PM",
-    location: "Royal Botanic Gardens, Melbourne",
-    category: "photography",
-    capacity: 16,
-    attendees: 13,
-    price: 70,
-    image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&h=600&fit=crop",
-    organizer: { name: "Macro Photo Collective", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["macro", "close-up", "detail"],
-    rating: 4.5,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "50",
-    title: "Food Photography Styling",
-    description: "Learn to photograph food with professional styling and lighting techniques.",
-    date: "March 21, 2024",
-    time: "11:00 AM",
-    location: "Culinary Photo Studio, Fitzroy",
-    category: "photography",
-    capacity: 12,
-    attendees: 9,
-    price: 105,
-    image: "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800&h=600&fit=crop",
-    organizer: { name: "Food Photo Studio", avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["food photography", "styling", "commercial"],
-    rating: 4.8,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "51",
-    title: "Night Photography and Light Trails",
-    description: "Master night photography techniques including long exposures and light painting.",
-    date: "March 22, 2024",
-    time: "8:00 PM",
-    location: "Docklands Waterfront",
-    category: "photography",
-    capacity: 22,
-    attendees: 18,
-    price: 55,
-    image: "https://images.unsplash.com/photo-1514999851-4d6972f2c53b?w=800&h=600&fit=crop",
-    organizer: { name: "Night Photography Group", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["night photography", "long exposure", "light trails"],
-    rating: 4.6,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "52",
-    title: "Mobile Photography Masterclass",
-    description: "Advanced smartphone photography techniques and editing for social media.",
-    date: "March 23, 2024",
-    time: "3:00 PM",
-    location: "Creative Hub, South Melbourne",
-    category: "photography",
-    capacity: 25,
-    attendees: 20,
-    price: 45,
-    image: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=800&h=600&fit=crop",
-    organizer: { name: "Mobile Photo Academy", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["mobile photography", "smartphone", "social media"],
-    rating: 4.4,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "53",
-    title: "Architecture Photography Tour",
-    description: "Explore Melbourne's architectural landmarks while learning composition and perspective.",
-    date: "March 24, 2024",
-    time: "2:00 PM",
-    location: "Collins Street, CBD",
-    category: "photography",
-    capacity: 18,
-    attendees: 14,
-    price: 50,
-    image: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&h=600&fit=crop",
-    organizer: { name: "Architecture Photo Society", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["architecture", "composition", "urban"],
-    rating: 4.7,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "54",
-    title: "Fashion Photography Workshop",
-    description: "Fashion photography techniques including posing, lighting, and working with models.",
-    date: "March 25, 2024",
-    time: "4:00 PM",
-    location: "Fashion Studio, Prahran",
-    category: "photography",
-    capacity: 15,
-    attendees: 12,
-    price: 120,
-    image: "https://images.unsplash.com/photo-1506629905645-b178e0825b3c?w=800&h=600&fit=crop",
-    organizer: { name: "Fashion Photo Collective", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["fashion", "portrait", "modeling"],
-    rating: 4.8,
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: "55",
-    title: "Documentary Photography Ethics",
-    description: "Exploring the ethical considerations and storytelling in documentary photography.",
-    date: "March 26, 2024",
-    time: "6:00 PM",
-    location: "Documentary Centre, Fitzroy",
-    category: "photography",
-    capacity: 30,
-    attendees: 24,
-    price: 35,
-    image: "https://images.unsplash.com/photo-1548048026-5a1a941d93d3?w=800&h=600&fit=crop",
-    organizer: { name: "Documentary Photography Guild", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["documentary", "ethics", "storytelling"],
-    rating: 4.5,
-    isLiked: false,
-    isBookmarked: false,
-  },
-
-  // Fitness Events (10)
-  {
-    id: "56",
-    title: "Beach Volleyball Tournament",
-    description: "Competitive beach volleyball tournament with teams of all skill levels welcome.",
-    date: "March 15, 2024",
-    time: "10:00 AM",
-    location: "St Kilda Beach Courts",
-    category: "fitness",
-    capacity: 40,
-    attendees: 32,
-    price: 20,
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
-    organizer: { name: "Beach Sports Melbourne", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["volleyball", "beach", "tournament"],
-    rating: 4.6,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "57",
-    title: "Sunrise Yoga in the Park",
-    description: "Start your day with energizing yoga session in the beautiful Royal Botanic Gardens.",
-    date: "March 16, 2024",
-    time: "6:30 AM",
-    location: "Royal Botanic Gardens, Melbourne",
-    category: "fitness",
-    capacity: 50,
-    attendees: 35,
-    price: 15,
-    image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=600&fit=crop",
-    organizer: { name: "Sunrise Yoga Collective", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["yoga", "sunrise", "outdoor"],
-    rating: 4.8,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "58",
-    title: "CrossFit Competition Prep",
-    description: "High-intensity CrossFit training session to prepare for upcoming competitions.",
-    date: "March 17, 2024",
-    time: "7:00 AM",
-    location: "CrossFit Melbourne, South Yarra",
-    category: "fitness",
-    capacity: 25,
-    attendees: 20,
-    price: 30,
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",
-    organizer: { name: "CrossFit Champions", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["crossfit", "competition", "training"],
-    rating: 4.7,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "59",
-    title: "Rock Climbing for Beginners",
-    description: "Introduction to indoor rock climbing with safety training and equipment provided.",
-    date: "March 18, 2024",
-    time: "7:00 PM",
-    location: "Melbourne Climbing Gym, Collingwood",
-    category: "fitness",
-    capacity: 20,
-    attendees: 16,
-    price: 45,
-    image: "https://images.unsplash.com/photo-1522163182402-834f871fd851?w=800&h=600&fit=crop",
-    organizer: { name: "Climbing Academy Melbourne", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["rock climbing", "beginners", "indoor"],
-    rating: 4.5,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "60",
-    title: "Marathon Training Group",
-    description: "Weekly long-distance running group preparing for the Melbourne Marathon.",
-    date: "March 19, 2024",
-    time: "6:00 AM",
-    location: "Tan Track, Royal Botanic Gardens",
-    category: "fitness",
-    capacity: 60,
-    attendees: 45,
-    image: "https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=800&h=600&fit=crop",
-    organizer: { name: "Melbourne Marathon Club", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["marathon", "running", "training"],
-    rating: 4.6,
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: "61",
-    title: "Pilates Core Strength Workshop",
-    description: "Intensive Pilates workshop focusing on core strength and stability.",
-    date: "March 20, 2024",
-    time: "11:00 AM",
-    location: "Pilates Studio Pro, Richmond",
-    category: "fitness",
-    capacity: 18,
-    attendees: 14,
-    price: 40,
-    image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&h=600&fit=crop",
-    organizer: { name: "Core Strength Studio", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["pilates", "core strength", "workshop"],
-    rating: 4.7,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "62",
-    title: "Boxing Fitness Class",
-    description: "High-energy boxing fitness class combining cardio, strength, and technique training.",
-    date: "March 21, 2024",
-    time: "6:30 PM",
-    location: "Fight Club Melbourne, Brunswick",
-    category: "fitness",
-    capacity: 30,
-    attendees: 24,
-    price: 25,
-    image: "https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=800&h=600&fit=crop",
-    organizer: { name: "Boxing Fitness Melbourne", avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["boxing", "fitness", "cardio"],
-    rating: 4.4,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "63",
-    title: "Outdoor Bootcamp Challenge",
-    description: "Intense outdoor fitness bootcamp with obstacle courses and team challenges.",
-    date: "March 22, 2024",
-    time: "8:00 AM",
-    location: "Albert Park, Melbourne",
-    category: "fitness",
-    capacity: 35,
-    attendees: 28,
-    price: 20,
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",
-    organizer: { name: "Outdoor Fitness Collective", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["bootcamp", "outdoor", "challenge"],
-    rating: 4.5,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "64",
-    title: "Swimming Technique Improvement",
-    description: "Professional swimming coaching focusing on stroke technique and efficiency.",
-    date: "March 23, 2024",
-    time: "12:00 PM",
-    location: "Melbourne Aquatic Centre, Albert Park",
-    category: "fitness",
-    capacity: 15,
-    attendees: 12,
-    price: 55,
-    image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=800&h=600&fit=crop",
-    organizer: { name: "Swimming Excellence Academy", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["swimming", "technique", "coaching"],
-    rating: 4.8,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "65",
-    title: "Cycling Group Adventure",
-    description: "Guided cycling tour through Melbourne's best cycling paths and hidden gems.",
-    date: "March 24, 2024",
-    time: "9:00 AM",
-    location: "Capital City Trail Start, CBD",
-    category: "fitness",
-    capacity: 25,
-    attendees: 19,
-    price: 35,
-    image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=800&h=600&fit=crop",
-    organizer: { name: "Melbourne Cycling Club", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["cycling", "adventure", "tour"],
-    rating: 4.6,
-    isLiked: false,
-    isBookmarked: false,
-  },
-
-  // Food Events (10)
-  {
-    id: "66",
-    title: "Wine Tasting and Food Pairing",
-    description: "Explore premium Victorian wines paired with artisanal cheese and local produce.",
-    date: "March 15, 2024",
-    time: "7:00 PM",
-    location: "Wine Bar Melbourne, CBD",
-    category: "food",
-    capacity: 30,
-    attendees: 25,
-    price: 75,
-    image: "https://images.unsplash.com/photo-1497534446932-c925b458314e?w=800&h=600&fit=crop",
-    organizer: { name: "Melbourne Wine Society", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["wine tasting", "food pairing", "premium"],
-    rating: 4.8,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "67",
-    title: "Pasta Making Workshop",
-    description: "Learn to make authentic Italian pasta from scratch with traditional techniques.",
-    date: "March 16, 2024",
-    time: "2:00 PM",
-    location: "Cucina Italiana, Carlton",
-    category: "food",
-    capacity: 16,
-    attendees: 14,
-    price: 65,
-    image: "https://images.unsplash.com/photo-1481931098730-318b6f776db0?w=800&h=600&fit=crop",
-    organizer: { name: "Italian Cooking School", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["pasta", "italian", "cooking"],
-    rating: 4.9,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "68",
-    title: "Japanese Sushi and Sashimi Class",
-    description: "Master the art of sushi and sashimi preparation with a professional Japanese chef.",
-    date: "March 17, 2024",
-    time: "11:00 AM",
-    location: "Sushi Academy, South Yarra",
-    category: "food",
-    capacity: 12,
-    attendees: 10,
-    price: 95,
-    image: "https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?w=800&h=600&fit=crop",
-    organizer: { name: "Sushi Master Yamamoto", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["sushi", "japanese", "chef"],
-    rating: 4.7,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "69",
-    title: "Craft Beer Brewing Workshop",
-    description: "Learn the fundamentals of craft beer brewing and create your own unique brew.",
-    date: "March 18, 2024",
-    time: "6:00 PM",
-    location: "Homebrew Centre, Fitzroy",
-    category: "food",
-    capacity: 20,
-    attendees: 16,
-    price: 80,
-    image: "https://images.unsplash.com/photo-1615332579937-c8db4d42c90f?w=800&h=600&fit=crop",
-    organizer: { name: "Craft Brewing Academy", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["beer", "brewing", "craft"],
-    rating: 4.6,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "70",
-    title: "Gourmet Chocolate Making",
-    description: "Create artisanal chocolates and learn tempering techniques from a master chocolatier.",
-    date: "March 19, 2024",
-    time: "1:00 PM",
-    location: "Chocolate Workshop, Prahran",
-    category: "food",
-    capacity: 14,
-    attendees: 11,
-    price: 70,
-    image: "https://images.unsplash.com/photo-1548907040-4baa42d10919?w=800&h=600&fit=crop",
-    organizer: { name: "Artisan Chocolate Co", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["chocolate", "artisan", "technique"],
-    rating: 4.8,
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: "71",
-    title: "Farm-to-Table Cooking Experience",
-    description: "Cook with fresh local ingredients in this sustainable farm-to-table workshop.",
-    date: "March 20, 2024",
-    time: "10:00 AM",
-    location: "Organic Farm Kitchen, Yarra Valley",
-    category: "food",
-    capacity: 18,
-    attendees: 15,
-    price: 85,
-    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop",
-    organizer: { name: "Sustainable Food Collective", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["farm-to-table", "organic", "sustainable"],
-    rating: 4.7,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "72",
-    title: "Barista Coffee Skills Workshop",
-    description: "Professional barista training including espresso extraction, milk steaming, and latte art.",
-    date: "March 21, 2024",
-    time: "9:00 AM",
-    location: "Coffee Academy, Richmond",
-    category: "food",
-    capacity: 16,
-    attendees: 13,
-    price: 90,
-    image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&h=600&fit=crop",
-    organizer: { name: "Melbourne Coffee Institute", avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["coffee", "barista", "latte art"],
-    rating: 4.9,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "73",
-    title: "Thai Cooking Masterclass",
-    description: "Authentic Thai cooking class featuring traditional curries, stir-fries, and desserts.",
-    date: "March 22, 2024",
-    time: "3:00 PM",
-    location: "Thai Kitchen Studio, St Kilda",
-    category: "food",
-    capacity: 20,
-    attendees: 17,
-    price: 60,
-    image: "https://images.unsplash.com/photo-1552611052-33e04de081de?w=800&h=600&fit=crop",
-    organizer: { name: "Authentic Thai Cooking", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["thai", "cooking", "authentic"],
-    rating: 4.5,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "74",
-    title: "Sourdough Bread Making",
-    description: "Learn the art of sourdough bread making from starter cultivation to final bake.",
-    date: "March 23, 2024",
-    time: "8:00 AM",
-    location: "Artisan Bakery, Fitzroy",
-    category: "food",
-    capacity: 12,
-    attendees: 9,
-    price: 75,
-    image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&h=600&fit=crop",
-    organizer: { name: "Traditional Bakery Arts", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["sourdough", "bread", "artisan"],
-    rating: 4.6,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "75",
-    title: "Molecular Gastronomy Experience",
-    description: "Explore modern culinary techniques including spherification and foam creation.",
-    date: "March 24, 2024",
-    time: "7:00 PM",
-    location: "Modern Cuisine Lab, South Melbourne",
-    category: "food",
-    capacity: 10,
-    attendees: 8,
-    price: 120,
-    image: "https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?w=800&h=600&fit=crop",
-    organizer: { name: "Molecular Kitchen", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["molecular", "gastronomy", "modern"],
-    rating: 4.8,
-    isLiked: false,
-    isBookmarked: false,
-  },
-
-  // Technology Events (15)
-  {
-    id: "76",
-    title: "AI and Machine Learning Workshop",
-    description: "Introduction to artificial intelligence and machine learning for beginners.",
-    date: "March 15, 2024",
-    time: "1:00 PM",
-    location: "Tech Hub Melbourne, Docklands",
-    category: "technology",
-    capacity: 40,
-    attendees: 32,
-    price: 95,
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=600&fit=crop",
-    organizer: { name: "AI Academy Melbourne", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["AI", "machine learning", "workshop"],
-    rating: 4.7,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "77",
-    title: "Blockchain and Cryptocurrency Seminar",
-    description: "Understanding blockchain technology and cryptocurrency investment strategies.",
-    date: "March 16, 2024",
-    time: "7:00 PM",
-    location: "Crypto Centre, CBD",
-    category: "technology",
-    capacity: 60,
-    attendees: 48,
-    price: 50,
-    image: "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=800&h=600&fit=crop",
-    organizer: { name: "Blockchain Society", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["blockchain", "cryptocurrency", "investment"],
-    rating: 4.5,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "78",
-    title: "Mobile App Development Bootcamp",
-    description: "Intensive mobile app development workshop covering iOS and Android platforms.",
-    date: "March 17, 2024",
-    time: "9:00 AM",
-    location: "Code Academy, South Yarra",
-    category: "technology",
-    capacity: 25,
-    attendees: 20,
-    price: 150,
-    image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&h=600&fit=crop",
-    organizer: { name: "Mobile Dev Institute", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["mobile", "app development", "bootcamp"],
-    rating: 4.8,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "79",
-    title: "Web Design and UX/UI Workshop",
-    description: "Modern web design principles and user experience optimization techniques.",
-    date: "March 18, 2024",
-    time: "10:00 AM",
-    location: "Design Studio Pro, Richmond",
-    category: "technology",
-    capacity: 30,
-    attendees: 24,
-    price: 110,
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
-    organizer: { name: "UX Design Collective", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["web design", "UX", "UI"],
-    rating: 4.6,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "80",
-    title: "Cybersecurity Best Practices",
-    description: "Essential cybersecurity knowledge for businesses and individuals.",
-    date: "March 19, 2024",
-    time: "6:30 PM",
-    location: "Security Training Centre, CBD",
-    category: "technology",
-    capacity: 50,
-    attendees: 38,
-    price: 75,
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=600&fit=crop",
-    organizer: { name: "CyberSec Melbourne", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["cybersecurity", "best practices", "training"],
-    rating: 4.7,
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: "81",
-    title: "Cloud Computing for Small Business",
-    description: "How to leverage cloud computing to improve business efficiency and reduce costs.",
-    date: "March 20, 2024",
-    time: "2:00 PM",
-    location: "Cloud Tech Centre, South Melbourne",
-    category: "technology",
-    capacity: 35,
-    attendees: 28,
-    price: 85,
-    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=600&fit=crop",
-    organizer: { name: "Cloud Solutions Group", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["cloud computing", "small business", "efficiency"],
-    rating: 4.4,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "82",
-    title: "Data Science and Analytics",
-    description: "Introduction to data science tools and analytical techniques for business insights.",
-    date: "March 21, 2024",
-    time: "1:00 PM",
-    location: "Data Science Lab, Carlton",
-    category: "technology",
-    capacity: 28,
-    attendees: 22,
-    price: 125,
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop",
-    organizer: { name: "Data Analytics Institute", avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["data science", "analytics", "business"],
-    rating: 4.8,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "83",
-    title: "Virtual Reality Development",
-    description: "Create immersive VR experiences using modern development tools and platforms.",
-    date: "March 22, 2024",
-    time: "10:00 AM",
-    location: "VR Studio, Fitzroy",
-    category: "technology",
-    capacity: 20,
-    attendees: 16,
-    price: 140,
-    image: "https://images.unsplash.com/photo-1592478411213-6153e4ebc696?w=800&h=600&fit=crop",
-    organizer: { name: "VR Developers Melbourne", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["VR", "virtual reality", "development"],
-    rating: 4.6,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "84",
-    title: "Internet of Things (IoT) Workshop",
-    description: "Build connected devices and learn IoT programming for smart home applications.",
-    date: "March 23, 2024",
-    time: "11:00 AM",
-    location: "IoT Lab, Docklands",
-    category: "technology",
-    capacity: 24,
-    attendees: 19,
-    price: 105,
-    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=600&fit=crop",
-    organizer: { name: "IoT Innovation Hub", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["IoT", "connected devices", "programming"],
-    rating: 4.5,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "85",
-    title: "Digital Photography Editing",
-    description: "Advanced photo editing techniques using Photoshop and Lightroom.",
-    date: "March 24, 2024",
-    time: "3:00 PM",
-    location: "Digital Arts Studio, Prahran",
-    category: "technology",
-    capacity: 22,
-    attendees: 18,
-    price: 90,
-    image: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=800&h=600&fit=crop",
-    organizer: { name: "Digital Photography School", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["photography", "editing", "Photoshop"],
-    rating: 4.7,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "86",
-    title: "Social Media Automation Tools",
-    description: "Automate your social media marketing with advanced scheduling and analytics tools.",
-    date: "March 25, 2024",
-    time: "4:00 PM",
-    location: "Social Media Centre, South Yarra",
-    category: "technology",
-    capacity: 32,
-    attendees: 26,
-    price: 65,
-    image: "https://images.unsplash.com/photo-1611926653458-09294b3142bf?w=800&h=600&fit=crop",
-    organizer: { name: "Social Tech Solutions", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["social media", "automation", "marketing"],
-    rating: 4.4,
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: "87",
-    title: "3D Printing and Design Workshop",
-    description: "Learn 3D modeling and printing techniques for prototyping and creative projects.",
-    date: "March 26, 2024",
-    time: "12:00 PM",
-    location: "Maker Space, Collingwood",
-    category: "technology",
-    capacity: 18,
-    attendees: 14,
-    price: 95,
-    image: "https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=800&h=600&fit=crop",
-    organizer: { name: "3D Design Academy", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["3D printing", "design", "prototyping"],
-    rating: 4.6,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "88",
-    title: "Game Development with Unity",
-    description: "Create 2D and 3D games using Unity game engine and C# programming.",
-    date: "March 27, 2024",
-    time: "9:00 AM",
-    location: "Game Dev Studio, Richmond",
-    category: "technology",
-    capacity: 26,
-    attendees: 21,
-    price: 130,
-    image: "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=800&h=600&fit=crop",
-    organizer: { name: "Indie Game Developers", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["game development", "Unity", "programming"],
-    rating: 4.8,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "89",
-    title: "E-commerce Platform Setup",
-    description: "Build and optimize online stores using popular e-commerce platforms.",
-    date: "March 28, 2024",
-    time: "2:00 PM",
-    location: "E-commerce Hub, CBD",
-    category: "technology",
-    capacity: 30,
-    attendees: 24,
-    price: 100,
-    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop",
-    organizer: { name: "Online Business Academy", avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["e-commerce", "online store", "platform"],
-    rating: 4.5,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "90",
-    title: "Tech Startup Pitch Competition",
-    description: "Present your tech startup idea to investors and win funding opportunities.",
-    date: "March 29, 2024",
-    time: "6:00 PM",
-    location: "Startup Accelerator, South Melbourne",
-    category: "technology",
-    capacity: 80,
-    attendees: 65,
-    image: "https://images.unsplash.com/photo-1483058712412-4245e9b90334?w=800&h=600&fit=crop",
-    organizer: { name: "Tech Startup Network", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["startup", "pitch", "competition"],
-    rating: 4.7,
-    isLiked: true,
-    isBookmarked: false,
-  },
-
-  // Health Events (12)
-  {
-    id: "91",
-    title: "Mental Health and Wellness Workshop",
-    description: "Learn stress management techniques and mindfulness practices for better mental health.",
-    date: "March 15, 2024",
-    time: "10:00 AM",
-    location: "Wellness Centre, St Kilda",
-    category: "health",
-    capacity: 40,
-    attendees: 32,
-    price: 35,
-    image: "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=800&h=600&fit=crop",
-    organizer: { name: "Mental Health Foundation", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["mental health", "wellness", "mindfulness"],
-    rating: 4.8,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "92",
-    title: "Nutrition and Healthy Eating Seminar",
-    description: "Evidence-based nutrition advice and meal planning for optimal health.",
-    date: "March 16, 2024",
-    time: "1:00 PM",
-    location: "Health Centre, Carlton",
-    category: "health",
-    capacity: 50,
-    attendees: 40,
-    price: 45,
-    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop",
-    organizer: { name: "Nutritionists Melbourne", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["nutrition", "healthy eating", "meal planning"],
-    rating: 4.7,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "93",
-    title: "First Aid and CPR Training",
-    description: "Certified first aid and CPR training course with hands-on practice.",
-    date: "March 17, 2024",
-    time: "9:00 AM",
-    location: "Training Centre, Richmond",
-    category: "health",
-    capacity: 25,
-    attendees: 20,
-    price: 95,
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=600&fit=crop",
-    organizer: { name: "Safety Training Institute", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["first aid", "CPR", "training"],
-    rating: 4.9,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "94",
-    title: "Sleep Health and Insomnia Management",
-    description: "Strategies for improving sleep quality and managing sleep disorders.",
-    date: "March 18, 2024",
-    time: "7:00 PM",
-    location: "Sleep Clinic, South Yarra",
-    category: "health",
-    capacity: 30,
-    attendees: 24,
-    price: 50,
-    image: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=800&h=600&fit=crop",
-    organizer: { name: "Sleep Health Specialists", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["sleep health", "insomnia", "wellness"],
-    rating: 4.6,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "95",
-    title: "Women's Health and Fitness",
-    description: "Specialized health and fitness workshop addressing women's specific health needs.",
-    date: "March 19, 2024",
-    time: "11:00 AM",
-    location: "Women's Health Centre, Fitzroy",
-    category: "health",
-    capacity: 35,
-    attendees: 28,
-    price: 40,
-    image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&h=600&fit=crop",
-    organizer: { name: "Women's Health Network", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["women's health", "fitness", "wellness"],
-    rating: 4.5,
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: "96",
-    title: "Diabetes Prevention and Management",
-    description: "Learn about diabetes prevention, blood sugar management, and healthy lifestyle choices.",
-    date: "March 20, 2024",
-    time: "3:00 PM",
-    location: "Diabetes Centre, CBD",
-    category: "health",
-    capacity: 45,
-    attendees: 35,
-    price: 25,
-    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=600&fit=crop",
-    organizer: { name: "Diabetes Australia", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["diabetes", "prevention", "management"],
-    rating: 4.7,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "97",
-    title: "Heart Health and Cardiovascular Fitness",
-    description: "Understanding heart health and exercises to improve cardiovascular fitness.",
-    date: "March 21, 2024",
-    time: "6:00 PM",
-    location: "Cardiac Centre, South Melbourne",
-    category: "health",
-    capacity: 40,
-    attendees: 32,
-    price: 55,
-    image: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=800&h=600&fit=crop",
-    organizer: { name: "Heart Foundation", avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["heart health", "cardiovascular", "fitness"],
-    rating: 4.8,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "98",
-    title: "Natural Remedies and Herbal Medicine",
-    description: "Introduction to natural healing methods and herbal medicine practices.",
-    date: "March 22, 2024",
-    time: "2:00 PM",
-    location: "Natural Health Centre, Prahran",
-    category: "health",
-    capacity: 28,
-    attendees: 22,
-    price: 60,
-    image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&h=600&fit=crop",
-    organizer: { name: "Natural Medicine Society", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["natural remedies", "herbal medicine", "healing"],
-    rating: 4.4,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "99",
-    title: "Aging Gracefully Health Workshop",
-    description: "Health and wellness strategies for healthy aging and maintaining vitality.",
-    date: "March 23, 2024",
-    time: "10:00 AM",
-    location: "Senior Health Centre, Brighton",
-    category: "health",
-    capacity: 50,
-    attendees: 38,
-    price: 30,
-    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=600&fit=crop",
-    organizer: { name: "Healthy Aging Institute", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["aging", "health", "vitality"],
-    rating: 4.6,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "100",
-    title: "Stress Management and Meditation",
-    description: "Practical stress reduction techniques and guided meditation sessions.",
-    date: "March 24, 2024",
-    time: "7:30 PM",
-    location: "Meditation Centre, St Kilda",
-    category: "health",
-    capacity: 35,
-    attendees: 28,
-    price: 40,
-    image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=600&fit=crop",
-    organizer: { name: "Mindfulness Melbourne", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["stress management", "meditation", "mindfulness"],
-    rating: 4.8,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "101",
-    title: "Addiction Recovery Support Group",
-    description: "Supportive environment for those in recovery with professional guidance.",
-    date: "March 25, 2024",
-    time: "6:00 PM",
-    location: "Recovery Centre, Collingwood",
-    category: "health",
-    capacity: 20,
-    attendees: 15,
-    image: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=800&h=600&fit=crop",
-    organizer: { name: "Recovery Support Network", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["addiction recovery", "support group", "guidance"],
-    rating: 4.9,
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: "102",
-    title: "Health Screening and Prevention",
-    description: "Free health screenings and education about preventive healthcare measures.",
-    date: "March 26, 2024",
-    time: "9:00 AM",
-    location: "Community Health Centre, Richmond",
-    category: "health",
-    capacity: 60,
-    attendees: 45,
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=600&fit=crop",
-    organizer: { name: "Community Health Services", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["health screening", "prevention", "healthcare"],
-    rating: 4.5,
-    isLiked: false,
-    isBookmarked: false,
-  },
-
-  // Social Events (10)
-  {
-    id: "103",
-    title: "Speed Networking for Professionals",
-    description: "Quick networking format for professionals to make meaningful business connections.",
-    date: "March 15, 2024",
-    time: "6:00 PM",
-    location: "Business Lounge, Collins Street",
-    category: "social",
-    capacity: 60,
-    attendees: 48,
-    price: 35,
-    image: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=800&h=600&fit=crop",
-    organizer: { name: "Professional Network Melbourne", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["networking", "professionals", "business"],
-    rating: 4.6,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "104",
-    title: "Singles Mixer and Games Night",
-    description: "Fun evening for singles featuring icebreaker games and social activities.",
-    date: "March 16, 2024",
-    time: "7:00 PM",
-    location: "Social Club, South Yarra",
-    category: "social",
-    capacity: 80,
-    attendees: 65,
-    price: 25,
-    image: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=800&h=600&fit=crop",
-    organizer: { name: "Melbourne Singles Events", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["singles", "mixer", "games"],
-    rating: 4.4,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "105",
-    title: "International Culture Exchange",
-    description: "Meet people from different cultures and share traditions, food, and stories.",
-    date: "March 17, 2024",
-    time: "4:00 PM",
-    location: "Cultural Centre, CBD",
-    category: "social",
-    capacity: 100,
-    attendees: 75,
-    image: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&h=600&fit=crop",
-    organizer: { name: "International Community Melbourne", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["culture", "international", "exchange"],
-    rating: 4.8,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "106",
-    title: "Board Games and Coffee Social",
-    description: "Relaxed board game session with coffee and casual conversation.",
-    date: "March 18, 2024",
-    time: "2:00 PM",
-    location: "Board Game Cafe, Fitzroy",
-    category: "social",
-    capacity: 40,
-    attendees: 30,
-    price: 15,
-    image: "https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=800&h=600&fit=crop",
-    organizer: { name: "Board Game Society", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["board games", "coffee", "casual"],
-    rating: 4.5,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "107",
-    title: "Book Club and Discussion Circle",
-    description: "Monthly book discussion featuring contemporary fiction and literary classics.",
-    date: "March 19, 2024",
-    time: "7:00 PM",
-    location: "Local Library, Carlton",
-    category: "social",
-    capacity: 25,
-    attendees: 18,
-    price: 10,
-    image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&h=600&fit=crop",
-    organizer: { name: "Melbourne Book Lovers", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["book club", "discussion", "literature"],
-    rating: 4.7,
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: "108",
-    title: "Trivia Night and Pub Quiz",
-    description: "Test your knowledge in this fun trivia competition with prizes and drinks.",
-    date: "March 20, 2024",
-    time: "8:00 PM",
-    location: "The Local Pub, Richmond",
-    category: "social",
-    capacity: 70,
-    attendees: 55,
-    price: 20,
-    image: "https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=800&h=600&fit=crop",
-    organizer: { name: "Trivia Masters Melbourne", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["trivia", "pub quiz", "competition"],
-    rating: 4.3,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "109",
-    title: "Language Exchange Meetup",
-    description: "Practice languages with native speakers in a friendly, supportive environment.",
-    date: "March 21, 2024",
-    time: "6:30 PM",
-    location: "International Centre, CBD",
-    category: "social",
-    capacity: 50,
-    attendees: 38,
-    image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=600&fit=crop",
-    organizer: { name: "Language Exchange Melbourne", avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["language exchange", "practice", "international"],
-    rating: 4.6,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "110",
-    title: "New Residents Welcome Social",
-    description: "Welcome event for new Melbourne residents to meet locals and learn about the city.",
-    date: "March 22, 2024",
-    time: "5:00 PM",
-    location: "Welcome Centre, Docklands",
-    category: "social",
-    capacity: 90,
-    attendees: 70,
-    image: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=800&h=600&fit=crop",
-    organizer: { name: "Melbourne Welcome Committee", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["new residents", "welcome", "locals"],
-    rating: 4.5,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "111",
-    title: "Dancing and Social Movement",
-    description: "Learn social dancing styles including salsa, swing, and contemporary movement.",
-    date: "March 23, 2024",
-    time: "7:30 PM",
-    location: "Dance Studio, St Kilda",
-    category: "social",
-    capacity: 60,
-    attendees: 45,
-    price: 30,
-    image: "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&h=600&fit=crop",
-    organizer: { name: "Social Dance Melbourne", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["dancing", "social", "movement"],
-    rating: 4.7,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "112",
-    title: "Community Garden and Sharing Circle",
-    description: "Collaborative gardening session followed by a community sharing circle.",
-    date: "March 24, 2024",
-    time: "10:00 AM",
-    location: "Community Garden, Brunswick",
-    category: "social",
-    capacity: 35,
-    attendees: 25,
-    price: 12,
-    image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&h=600&fit=crop",
-    organizer: { name: "Community Garden Collective", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["community garden", "sharing", "collaboration"],
-    rating: 4.8,
-    isLiked: false,
-    isBookmarked: false,
-  },
-
-  // Sports Events (10)
-  {
-    id: "113",
-    title: "Community Basketball Tournament",
-    description: "Open basketball tournament for all skill levels with team and individual competitions.",
-    date: "March 15, 2024",
-    time: "9:00 AM",
-    location: "Sports Centre, Richmond",
-    category: "sports",
-    capacity: 80,
-    attendees: 64,
-    price: 25,
-    image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&h=600&fit=crop",
-    organizer: { name: "Melbourne Basketball League", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["basketball", "tournament", "community"],
-    rating: 4.6,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "114",
-    title: "Weekend Soccer Skills Clinic",
-    description: "Soccer skills development clinic for youth and adults focusing on technique and tactics.",
-    date: "March 16, 2024",
-    time: "10:00 AM",
-    location: "Soccer Fields, Albert Park",
-    category: "sports",
-    capacity: 50,
-    attendees: 40,
-    price: 35,
-    image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=800&h=600&fit=crop",
-    organizer: { name: "Melbourne Soccer Academy", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["soccer", "skills", "clinic"],
-    rating: 4.7,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "115",
-    title: "Tennis Round Robin Tournament",
-    description: "Round robin tennis tournament for intermediate and advanced players.",
-    date: "March 17, 2024",
-    time: "8:00 AM",
-    location: "Tennis Club, Kooyong",
-    category: "sports",
-    capacity: 32,
-    attendees: 28,
-    price: 40,
-    image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=800&h=600&fit=crop",
-    organizer: { name: "Tennis Melbourne", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["tennis", "tournament", "round robin"],
-    rating: 4.5,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "116",
-    title: "Swimming Squad Training",
-    description: "Structured swimming training session for competitive and fitness swimmers.",
-    date: "March 18, 2024",
-    time: "6:00 AM",
-    location: "Aquatic Centre, Melbourne",
-    category: "sports",
-    capacity: 25,
-    attendees: 20,
-    price: 20,
-    image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=800&h=600&fit=crop",
-    organizer: { name: "Melbourne Swimming Club", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["swimming", "training", "squad"],
-    rating: 4.8,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "117",
-    title: "AFL Skills and Drills Session",
-    description: "Australian Football League skills workshop focusing on kicking, marking, and tactics.",
-    date: "March 19, 2024",
-    time: "4:00 PM",
-    location: "Oval Ground, Fitzroy",
-    category: "sports",
-    capacity: 45,
-    attendees: 35,
-    price: 30,
-    image: "https://images.unsplash.com/photo-1566577134770-3d85bb3a9cc4?w=800&h=600&fit=crop",
-    organizer: { name: "AFL Development Melbourne", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["AFL", "skills", "drills"],
-    rating: 4.6,
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: "118",
-    title: "Cricket Training and Match",
-    description: "Cricket training session followed by a friendly match for all skill levels.",
-    date: "March 20, 2024",
-    time: "1:00 PM",
-    location: "Cricket Ground, Richmond",
-    category: "sports",
-    capacity: 40,
-    attendees: 30,
-    price: 25,
-    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop",
-    organizer: { name: "Melbourne Cricket Society", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["cricket", "training", "match"],
-    rating: 4.4,
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: "119",
-    title: "Badminton Club Championship",
-    description: "Competitive badminton championship with singles and doubles categories.",
-    date: "March 21, 2024",
-    time: "7:00 PM",
-    location: "Badminton Centre, South Melbourne",
-    category: "sports",
-    capacity: 60,
-    attendees: 48,
-    price: 35,
-    image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800&h=600&fit=crop",
-    organizer: { name: "Badminton Melbourne", avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["badminton", "championship", "competition"],
-    rating: 4.7,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "120",
-    title: "Golf Putting Competition",
-    description: "Putting skills competition for golfers of all handicaps with prizes and instruction.",
-    date: "March 22, 2024",
-    time: "11:00 AM",
-    location: "Golf Club, Sandringham",
-    category: "sports",
-    capacity: 35,
-    attendees: 28,
-    price: 45,
-    image: "https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=800&h=600&fit=crop",
-    organizer: { name: "Melbourne Golf Association", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["golf", "putting", "competition"],
-    rating: 4.5,
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: "121",
-    title: "Table Tennis Tournament",
-    description: "Fast-paced table tennis tournament with beginner and advanced divisions.",
-    date: "March 23, 2024",
-    time: "2:00 PM",
-    location: "Sports Complex, Brunswick",
-    category: "sports",
-    capacity: 48,
-    attendees: 38,
-    price: 20,
-    image: "https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?w=800&h=600&fit=crop",
-    organizer: { name: "Table Tennis Club Melbourne", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop&crop=face", verified: false },
-    tags: ["table tennis", "tournament", "competition"],
-    rating: 4.3,
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: "122",
-    title: "Ultimate Frisbee Pickup Game",
-    description: "Casual ultimate frisbee game for beginners and experienced players alike.",
-    date: "March 24, 2024",
-    time: "5:00 PM",
-    location: "Park Oval, Carlton",
-    category: "sports",
-    capacity: 30,
-    attendees: 22,
-    price: 15,
-    image: "https://images.unsplash.com/photo-1529753253655-64cadbb4b6c2?w=800&h=600&fit=crop",
-    organizer: { name: "Ultimate Frisbee Melbourne", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face", verified: true },
-    tags: ["ultimate frisbee", "pickup game", "casual"],
-    rating: 4.6,
-    isLiked: false,
-    isBookmarked: false,
-  }
-];
+import { getEvents, getUserRSVPs } from "@/lib/supabase";
+import React from "react";
 
 export default function Index() {
-  const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [sortBy, setSortBy] = useState("date");
-  const [showCreateEvent, setShowCreateEvent] = useState(false);
-  const [showMessages, setShowMessages] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
+  const [events, setEvents] = useState<any[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<any[]>([]);
+  const [userRSVPs, setUserRSVPs] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showMessagesDialog, setShowMessagesDialog] = useState(false);
+  const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
-  const [viewMode, setViewMode] = useState("grid");
-  const [events, setEvents] = useState(mockEvents);
-  const [eventsToShow, setEventsToShow] = useState(12);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState("date");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("events");
+  const { toast } = useToast();
+  const { user } = useAuth();
 
-  // Simulate loading and error states
+  // Generate categories from events
+  const categories = React.useMemo(() => {
+    const categoryMap = new Map();
+    events.forEach(event => {
+      if (event.tags) {
+        event.tags.forEach((tag: string) => {
+          const count = categoryMap.get(tag) || 0;
+          categoryMap.set(tag, count + 1);
+        });
+      }
+    });
+
+    return Array.from(categoryMap.entries()).map(([name, count]) => ({
+      id: name.toLowerCase(),
+      name,
+      icon: null,
+      count
+    }));
+  }, [events]);
+
+  // Load events and user RSVPs
   useEffect(() => {
-    const loadEvents = async () => {
+    const loadData = async () => {
       setLoading(true);
-      setError(null);
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 800));
-        setLoading(false);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
+        const { data: eventsData, error: eventsError } = await getEvents();
+        if (eventsError) throw eventsError;
+        
+        setEvents(eventsData || []);
+        
+        // Load user RSVPs if authenticated
+        if (user) {
+          const { data: rsvpData } = await getUserRSVPs();
+          const rsvpMap: Record<string, string> = {};
+          rsvpData?.forEach((rsvp: any) => {
+            if (rsvp.events?.id) {
+              rsvpMap[rsvp.events.id] = rsvp.status;
+            }
+          });
+          setUserRSVPs(rsvpMap);
+        }
+      } catch (error: any) {
+        toast({
+          title: "Error loading events",
+          description: error.message,
+          variant: "destructive",
+        });
+      } finally {
         setLoading(false);
       }
     };
 
-    loadEvents();
-  }, []);
+    loadData();
+  }, [user, toast]);
 
-  // Generate category data from events
-  const categoryData = [
-    { id: "all", name: "All Events", icon: "🎯", count: events.length },
-    { id: "music", name: "Music", icon: "🎵", count: events.filter(e => e.category === "music").length },
-    { id: "art", name: "Art", icon: "🎨", count: events.filter(e => e.category === "art").length },
-    { id: "photography", name: "Photography", icon: "📸", count: events.filter(e => e.category === "photography").length },
-    { id: "technology", name: "Technology", icon: "💻", count: events.filter(e => e.category === "technology").length },
-    { id: "wellness", name: "Wellness", icon: "🧘", count: events.filter(e => e.category === "wellness").length },
-    { id: "gaming", name: "Gaming", icon: "🎮", count: events.filter(e => e.category === "gaming").length },
-    { id: "education", name: "Education", icon: "📚", count: events.filter(e => e.category === "education").length },
-    { id: "food", name: "Food", icon: "🍽️", count: events.filter(e => e.category === "food").length },
-    { id: "fitness", name: "Fitness", icon: "💪", count: events.filter(e => e.category === "fitness").length },
-    { id: "business", name: "Business", icon: "💼", count: events.filter(e => e.category === "business").length },
-    { id: "outdoor", name: "Outdoor", icon: "🌲", count: events.filter(e => e.category === "outdoor").length }
-  ];
-
-  // Filter events based on search term and category
-  const filteredEvents = events.filter(event => {
-    const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.location.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || event.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-
-  // Sort events
-  const sortedEvents = [...filteredEvents].sort((a, b) => {
-    switch (sortBy) {
-      case "date":
-        return new Date(a.date).getTime() - new Date(b.date).getTime();
-      case "popularity":
-        return b.attendees - a.attendees;
-      case "price":
-        return (a.price || 0) - (b.price || 0);
-      case "rating":
-        return b.rating - a.rating;
-      default:
-        return 0;
-    }
-  });
-
-  // Get events to display (limited by eventsToShow)
-  const displayedEvents = sortedEvents.slice(0, eventsToShow);
-
-  // Reset pagination when filters change
+  // Filter and sort events
   useEffect(() => {
-    setEventsToShow(12);
-  }, [selectedCategory, searchTerm, sortBy]);
+    let filtered = [...events];
 
-  const loadMoreEvents = () => {
-    setEventsToShow(prev => prev + 12);
-  };
+    // Filter by category
+    if (activeCategory) {
+      filtered = filtered.filter(event => 
+        event.tags && event.tags.some((tag: string) => 
+          tag.toLowerCase() === activeCategory.toLowerCase()
+        )
+      );
+    }
 
+    // Filter by search query
+    if (searchQuery) {
+      filtered = filtered.filter(event =>
+        event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.venue_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.tags?.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    }
 
-  const handleCreateEvent = (eventData: any) => {
-    const newEvent = {
-      ...eventData,
-      id: (events.length + 1).toString(),
-      attendees: 0,
-      rating: 0,
-      isLiked: false,
-      isBookmarked: false,
-      organizer: {
-        name: "You",
-        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face",
-        verified: true,
-        isFollowing: false,
-      },
-    };
-    
-    setEvents(prevEvents => [newEvent, ...prevEvents]);
-    setShowCreateEvent(false);
-    
+    // Sort events
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "date":
+          return new Date(a.start_at).getTime() - new Date(b.start_at).getTime();
+        case "popularity":
+          return 0; // Could implement based on RSVP count
+        case "newest":
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredEvents(filtered);
+  }, [events, activeCategory, searchQuery, sortBy]);
+
+  const handleShare = (eventId: string) => {
+    navigator.clipboard.writeText(`${window.location.origin}/?event=${eventId}`);
     toast({
-      title: "Event Created",
-      description: `${newEvent.title} has been created successfully.`,
+      title: "Event link copied!",
+      description: "Share this link to invite others to the event.",
     });
   };
 
-  const handleFollowOrganizer = (organizerName: string) => {
-    setEvents(prev => prev.map(event => 
-      event.organizer.name === organizerName 
-        ? { 
-            ...event, 
-            organizer: { 
-              ...event.organizer, 
-              isFollowing: event.organizer.isFollowing !== undefined ? !event.organizer.isFollowing : true
-            } 
-          }
-        : event
-    ));
-    
-    const event = events.find(e => e.organizer.name === organizerName);
-    const isCurrentlyFollowing = event?.organizer.isFollowing;
-    toast({
-      title: isCurrentlyFollowing ? "Unfollowed" : "Following",
-      description: isCurrentlyFollowing 
-        ? `You unfollowed ${organizerName}`
-        : `You are now following ${organizerName}`,
-    });
+  const handleCreateEvent = () => {
+    if (!user) {
+      setShowAuth(true);
+      return;
+    }
+    setShowCreateDialog(true);
   };
+
+  if (loading) {
+    return <LoadingState />;
+  }
 
   return (
     <div className="min-h-screen bg-background">
-      <KolabHeader 
-        onCreateEvent={() => setShowCreateEvent(true)}
-        onOpenMessages={() => setShowMessages(true)}
-        onOpenNotifications={() => setShowNotifications(true)}
+      <KolabHeader
+        onCreateEvent={handleCreateEvent}
+        onOpenMessages={() => setShowMessagesDialog(true)}
+        onOpenNotifications={() => setShowNotificationsDialog(true)}
       />
-
-      {/* Hero Section */}
-      <section 
-        className="relative min-h-screen flex items-center justify-center overflow-hidden bg-cover bg-no-repeat"
-        style={{
-          backgroundImage: "url('/lovable-uploads/2c93db7f-d994-4dea-81df-8944d43e9b56.png')",
-          backgroundPosition: "center calc(15% - 200px)"
-        }}
-      >
-        <div className="absolute inset-0 bg-black/20"></div>
-        
-        <div className="relative z-10 text-center text-white px-4">
-          <h1 className="text-5xl md:text-7xl font-montserrat font-black mb-6 tracking-tight">
-            KOLAB
-          </h1>
-          <h2 className="text-3xl md:text-5xl font-montserrat font-bold mb-8 tracking-wide">
-            WHERE YOUR CITY COMES ALIVE
-          </h2>
-          <p className="text-lg md:text-xl mb-12 max-w-3xl mx-auto opacity-90">
-            Your backstage pass to the best gigs, shows, sports, and experiences happening near you – any day of the week.
-          </p>
-          <Button 
-            size="lg" 
-            className="bg-white/20 hover:bg-white/30 text-white border border-white/40 backdrop-blur-sm text-lg px-8 py-4"
-            onClick={() => setShowAuth(true)}
-            aria-label="Sign up for early access to Kolab"
-          >
-            Get Early Access
-          </Button>
-        </div>
-      </section>
       
-      <main className="container mx-auto px-4 py-8">
-        {/* Recommendations Carousel */}
-        <RecommendationsCarousel className="mb-12" />
-        
-        {/* Search and Filter Section */}
-        <div className="flex flex-col lg:flex-row gap-6 mb-8">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                type="text"
-                placeholder="Search events, locations, or topics..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full"
-              />
+      <main className="container px-4 py-8">
+        <div className="space-y-8">
+          {/* Hero Section */}
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              Discover Events & Collaborations
+            </h1>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Connect with creators, attend amazing events, and build meaningful relationships in our vibrant community.
+            </p>
+          </div>
+
+          {/* Recommendations Carousel */}
+          <RecommendationsCarousel />
+
+          {/* Quick Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center p-4 rounded-lg bg-card border">
+              <div className="text-2xl font-bold text-primary">{events.length}</div>
+              <div className="text-sm text-muted-foreground">Active Events</div>
+            </div>
+            <div className="text-center p-4 rounded-lg bg-card border">
+              <div className="text-2xl font-bold text-primary">1.2k</div>
+              <div className="text-sm text-muted-foreground">Community Members</div>
+            </div>
+            <div className="text-center p-4 rounded-lg bg-card border">
+              <div className="text-2xl font-bold text-primary">{Object.keys(userRSVPs).length}</div>
+              <div className="text-sm text-muted-foreground">Your RSVPs</div>
+            </div>
+            <div className="text-center p-4 rounded-lg bg-card border">
+              <div className="text-2xl font-bold text-primary">23</div>
+              <div className="text-sm text-muted-foreground">Venues Available</div>
             </div>
           </div>
-          
-          <div className="flex flex-wrap gap-3">
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="date">Date</SelectItem>
-                <SelectItem value="popularity">Popularity</SelectItem>
-                <SelectItem value="price">Price</SelectItem>
-                <SelectItem value="rating">Rating</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <Button
-              variant={viewMode === "grid" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setViewMode("grid")}
-            >
-              <Filter className="h-4 w-4 mr-1" />
-              Grid
-            </Button>
-            
-            <Button
-              variant={viewMode === "map" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setViewMode("map")}
-            >
-              <MapPin className="h-4 w-4 mr-1" />
-              Map
-            </Button>
-          </div>
-        </div>
 
-        {/* Category Filter */}
-          <CategoryFilter
-            categories={categoryData}
-            selectedCategory={selectedCategory}
-            onCategorySelect={setSelectedCategory}
+          {/* Search and Filters */}
+          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+            <div className="flex-1 max-w-md">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search events, organizers, or topics..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            
+            <div className="flex flex-wrap gap-2">
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-40">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="date">Upcoming</SelectItem>
+                  <SelectItem value="popularity">Most Popular</SelectItem>
+                  <SelectItem value="newest">Recently Added</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Button variant="outline" size="sm">
+                <Filter className="h-4 w-4 mr-2" />
+                More Filters
+              </Button>
+            </div>
+          </div>
+
+          {/* Category Filter */}
+          <CategoryFilter 
+            categories={categories}
+            selectedCategory={activeCategory}
+            onCategorySelect={setActiveCategory}
           />
 
-        {/* Stats Bar */}
-        <div className="flex flex-wrap gap-4 mb-6 text-sm text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <Calendar className="h-4 w-4" />
-            <span>{displayedEvents.length} events found</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Users className="h-4 w-4" />
-            <span>{displayedEvents.reduce((sum, event) => sum + event.attendees, 0)} total attendees</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <TrendingUp className="h-4 w-4" />
-            <span>Trending: Photography, Business, Music</span>
-          </div>
-        </div>
+          {/* Main Content Tabs */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="events" className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                Events ({filteredEvents.length})
+              </TabsTrigger>
+              <TabsTrigger value="map" className="flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                Map View
+              </TabsTrigger>
+              <TabsTrigger value="trending" className="flex items-center gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Trending
+              </TabsTrigger>
+            </TabsList>
 
-        {/* Main Content */}
-        <Tabs value={viewMode} onValueChange={setViewMode} className="space-y-6">
-          <TabsContent value="grid" className="space-y-6">
-            {loading ? (
-              <LoadingState variant="cards" count={12} />
-            ) : error ? (
-              <EmptyState
-                icon={AlertCircle}
-                title="Failed to load events"
-                description={error}
-                action={{
-                  label: "Try Again",
-                  onClick: () => window.location.reload()
-                }}
-              />
-            ) : displayedEvents.length > 0 ? (
-              <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
-                  {displayedEvents.map((event) => (
+            <TabsContent value="events" className="space-y-6">
+              {filteredEvents.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredEvents.map((event) => (
                     <EventCard
                       key={event.id}
                       event={event}
-                      onBookEvent={async (eventId) => {
-                        try {
-                          const { data, error } = await rsvpToEvent(eventId, 'going');
-                          if (error) throw error;
-                          
-                          toast({
-                            title: "RSVP Confirmed",
-                            description: "You're now going to this event!",
-                          });
-                        } catch (error: any) {
-                          toast({
-                            title: "RSVP Failed",
-                            description: error.message || "Please log in to RSVP to events",
-                            variant: "destructive",
-                          });
-                        }
-                      }}
-                      onRSVP={async (eventId, status) => {
-                        try {
-                          const { data, error } = await rsvpToEvent(eventId, status);
-                          if (error) throw error;
-                          
-                          toast({
-                            title: "RSVP Updated",
-                            description: `You're now ${status === 'going' ? 'going to' : 'interested in'} this event!`,
-                          });
-                        } catch (error: any) {
-                          toast({
-                            title: "RSVP Failed",
-                            description: error.message || "Please log in to RSVP to events",
-                            variant: "destructive",
-                          });
-                        }
-                      }}
-                       onLikeEvent={(eventId) => {
-                         setEvents(prev => prev.map(e => 
-                           e.id === eventId ? { ...e, isLiked: !e.isLiked } : e
-                         ));
-                         const event = events.find(e => e.id === eventId);
-                         toast({
-                           title: event?.isLiked ? "Removed from favorites" : "Added to favorites",
-                           description: event?.isLiked ? "Event removed from your favorites." : "Event added to your favorites.",
-                         });
-                       }}
-                       onShareEvent={(eventId) => {
-                         const event = events.find(e => e.id === eventId);
-                         if (event) {
-                           navigator.clipboard.writeText(`Check out this event: ${event.title} - ${window.location.origin}`);
-                           toast({
-                             title: "Event Shared",
-                             description: "Event link copied to clipboard!",
-                           });
-                         }
-                       }}
-                       onFollowOrganizer={handleFollowOrganizer}
+                      onShare={handleShare}
+                      userRSVP={userRSVPs[event.id] as 'going' | 'interested' | undefined}
                     />
                   ))}
                 </div>
-                
-                {/* Load More Button */}
-                {eventsToShow < sortedEvents.length && (
-                  <div className="flex justify-center mt-8">
-                    <Button 
-                      onClick={loadMoreEvents}
-                      variant="outline"
-                      size="lg"
-                      aria-label={`Load ${Math.min(12, sortedEvents.length - eventsToShow)} more events`}
-                    >
-                      View More Events
-                    </Button>
-                  </div>
-                )}
-              </>
-            ) : (
-              <EmptyState
-                icon={Calendar}
-                title="No events found"
-                description={
-                  searchTerm || selectedCategory !== "all"
-                    ? "Try adjusting your search terms or category filter."
-                    : "No events are currently available. Check back soon!"
-                }
-                action={{
-                  label: searchTerm || selectedCategory !== "all" ? "Clear filters" : "Create Event",
-                  onClick: () => {
-                    if (searchTerm || selectedCategory !== "all") {
-                      setSearchTerm("");
-                      setSelectedCategory("all");
-                    } else {
-                      setShowCreateEvent(true);
-                    }
-                  }
-                }}
-              />
-            )}
-          </TabsContent>
-          
-          <TabsContent value="map">
-            <EventMap events={displayedEvents.map(event => {
-              // Map real Melbourne venues to coordinates
-              const getCoordinatesForLocation = (location: string): [number, number] => {
-                const locationMap: Record<string, [number, number]> = {
-                  "Bennett's Lane Jazz Club, CBD": [144.9631, -37.8136],
-                  "SAE Creative Media Institute, South Melbourne": [144.9631, -37.8367],
-                  "The Corner Hotel, Richmond": [144.9847, -37.8136],
-                  "Melbourne Recital Centre, CBD": [144.9612, -37.8162],
-                  "ACMI, Fed Square": [144.9692, -37.8177],
-                  "NGV International, CBD": [144.9684, -37.8226],
-                  "Hosier Lane, CBD": [144.9692, -37.8172],
-                  "Royal Botanic Gardens Melbourne": [144.9796, -37.8304],
-                  "Melbourne Convention Centre": [144.9515, -37.8249],
-                  "Rod Laver Arena, Melbourne Park": [144.9783, -37.8219],
-                  "Queen Victoria Market": [144.9569, -37.8076],
-                  "St Kilda Foreshore": [144.9779, -37.8675],
-                  "Docklands Park": [144.9400, -37.8181],
-                  "Fitzroy Gardens": [144.9796, -37.8138],
-                  "Albert Park Lake": [144.9688, -37.8467],
-                  "Luna Park Melbourne": [144.9779, -37.8675],
-                  "Melbourne Cricket Ground (MCG)": [144.9844, -37.8200],
-                  "Eureka Skydeck": [144.9644, -37.8214],
-                  "Melbourne Museum": [144.9716, -37.8033],
-                  "State Library Victoria": [144.9648, -37.8097]
-                };
-                
-                // Find exact match first
-                if (locationMap[location]) {
-                  return locationMap[location];
-                }
-                
-                // Find partial match
-                for (const [key, coords] of Object.entries(locationMap)) {
-                  if (location.toLowerCase().includes(key.toLowerCase().split(',')[0])) {
-                    return coords;
-                  }
-                }
-                
-                // Default to Melbourne CBD with slight random offset
-                return [144.9631 + (Math.random() - 0.5) * 0.02, -37.8136 + (Math.random() - 0.5) * 0.02];
-              };
+              ) : (
+                <EmptyState
+                  icon={Calendar}
+                  title="No events found"
+                  description="No events match your current filters. Try adjusting your search or category selection."
+                  action={{
+                    label: "Create Event",
+                    onClick: () => user ? setShowCreateDialog(true) : setShowAuth(true)
+                  }}
+                />
+              )}
+            </TabsContent>
 
-              return {
-                id: event.id,
-                title: event.title,
-                description: event.description,
-                date: event.date,
-                time: event.time,
-                location: event.location,
-                category: event.category,
-                coordinates: getCoordinatesForLocation(event.location),
-                price: event.price,
-                attendees: event.attendees,
-                capacity: event.capacity || 50
-              };
-            })} />
-          </TabsContent>
-        </Tabs>
+            <TabsContent value="map" className="space-y-4">
+              <EventMap 
+                events={filteredEvents.map(event => ({
+                  id: event.id,
+                  title: event.title,
+                  description: event.description || "",
+                  location: event.venue_name || "Location TBD",
+                  coordinates: [144.9631 + (Math.random() - 0.5) * 0.1, -37.8136 + (Math.random() - 0.5) * 0.1],
+                  date: event.start_at,
+                  time: new Date(event.start_at).toLocaleTimeString(),
+                  attendees: 0,
+                  capacity: event.capacity || 0,
+                  category: event.tags?.[0] || "event"
+                }))}
+              />
+            </TabsContent>
+
+            <TabsContent value="trending" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredEvents.slice(0, 6).map((event) => (
+                  <EventCard
+                    key={event.id}
+                    event={event}
+                    onShare={handleShare}
+                    userRSVP={userRSVPs[event.id] as 'going' | 'interested' | undefined}
+                  />
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
       </main>
 
-      {/* Dialogs */}
       <CreateEventWizard
-        open={showCreateEvent}
-        onOpenChange={setShowCreateEvent}
-        onCreateEvent={handleCreateEvent}
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
       />
-      
       <MessagesDialog
-        open={showMessages}
-        onOpenChange={setShowMessages}
+        open={showMessagesDialog}
+        onOpenChange={setShowMessagesDialog}
       />
-      
       <NotificationsDrawer
-        open={showNotifications}
-        onOpenChange={setShowNotifications}
+        open={showNotificationsDialog}
+        onOpenChange={setShowNotificationsDialog}
       />
       
       <AuthDialog

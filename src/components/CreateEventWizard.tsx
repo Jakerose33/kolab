@@ -176,6 +176,7 @@ export function CreateEventWizard({
                       }
                     }}
                     initialFocus
+                    className="p-3 pointer-events-auto"
                   />
                 </PopoverContent>
               </Popover>
@@ -204,6 +205,7 @@ export function CreateEventWizard({
                       }
                     }}
                     initialFocus
+                    className="p-3 pointer-events-auto"
                   />
                 </PopoverContent>
               </Popover>
