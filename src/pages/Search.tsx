@@ -4,6 +4,8 @@ import { KolabHeader } from '@/components/KolabHeader'
 import { SmartSearchBox } from '@/components/SmartSearchBox'
 import { AdvancedSearchFilters } from '@/components/AdvancedSearchFilters'
 import { SearchResultsDisplay } from '@/components/SearchResultsDisplay'
+import { SavedSearches } from '@/components/SavedSearches'
+import { SaveSearchDialog } from '@/components/SaveSearchDialog'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -191,20 +193,35 @@ export default function Search() {
               <X className="h-4 w-4 mr-2" />
               Clear All
             </Button>
+
+            {user && filters.query && (
+              <SaveSearchDialog
+                query={filters.query}
+                filters={filters}
+              />
+            )}
           </div>
 
           {/* Search Results */}
-          <SearchResultsDisplay
-            events={searchResults.events}
-            totalCount={searchResults.totalCount}
-            loading={searchResults.loading}
-            query={filters.query}
-            activeFilters={activeFiltersForDisplay}
-            onClearFilter={handleClearFilter}
-            onClearAllFilters={clearFilters}
-            onShare={handleShare}
-            userRSVPs={userRSVPs}
-          />
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="lg:col-span-3">
+              <SearchResultsDisplay
+                events={searchResults.events}
+                totalCount={searchResults.totalCount}
+                loading={searchResults.loading}
+                query={filters.query}
+                activeFilters={activeFiltersForDisplay}
+                onClearFilter={handleClearFilter}
+                onClearAllFilters={clearFilters}
+                onShare={handleShare}
+                userRSVPs={userRSVPs}
+              />
+            </div>
+            
+            <div className="lg:col-span-1">
+              <SavedSearches />
+            </div>
+          </div>
         </div>
       </main>
     </div>

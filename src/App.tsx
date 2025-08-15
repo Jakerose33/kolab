@@ -103,6 +103,16 @@ function App() {
                     <LazyPages.Admin />
                   </ErrorBoundary>
                 } />
+                <Route path="/analytics" element={
+                  <ErrorBoundary>
+                    <LazyPages.Analytics />
+                  </ErrorBoundary>
+                } />
+                <Route path="/search" element={
+                  <ErrorBoundary>
+                    <LazyPages.Search />
+                  </ErrorBoundary>
+                } />
                 <Route path="*" element={<LazyPages.NotFound />} />
               </Routes>
             </Suspense>

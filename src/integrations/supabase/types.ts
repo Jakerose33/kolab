@@ -651,6 +651,42 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_searches: {
+        Row: {
+          alert_frequency: string | null
+          created_at: string | null
+          filters: Json | null
+          id: string
+          is_alert: boolean | null
+          name: string
+          query: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          alert_frequency?: string | null
+          created_at?: string | null
+          filters?: Json | null
+          id?: string
+          is_alert?: boolean | null
+          name: string
+          query: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          alert_frequency?: string | null
+          created_at?: string | null
+          filters?: Json | null
+          id?: string
+          is_alert?: boolean | null
+          name?: string
+          query?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_behavior_analytics: {
         Row: {
           bookings_made: number

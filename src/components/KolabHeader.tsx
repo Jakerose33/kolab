@@ -47,6 +47,7 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
     { name: "Events", path: "/", icon: Calendar },
     { name: "Venues", path: "/venues", icon: MapPin },
     { name: "Social", path: "/social", icon: Users },
+    { name: "Search", path: "/search", icon: Search },
     { name: "Careers", path: "/careers", icon: Briefcase },
   ];
 
@@ -185,6 +186,12 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
                     <Link to="/bookings" className="flex items-center">
                       <Calendar className="mr-2 h-4 w-4" />
                       My Bookings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/analytics" className="flex items-center">
+                      <Calendar className="mr-2 h-4 w-4" />
+                      Analytics
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>

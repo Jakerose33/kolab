@@ -12,6 +12,8 @@ export const LazyPages = {
   Messages: lazy(() => import('@/pages/Messages')),
   Auth: lazy(() => import('@/pages/Auth')),
   Admin: lazy(() => import('@/pages/Admin')),
+  Analytics: lazy(() => import('@/pages/Analytics')),
+  Search: lazy(() => import('@/pages/Search')),
   NotFound: lazy(() => import('@/pages/NotFound')),
 };
 
@@ -26,6 +28,8 @@ export const preloadRoutes = {
   venues: () => import('@/pages/Venues'),
   social: () => import('@/pages/Social'),
   auth: () => import('@/pages/Auth'),
+  analytics: () => import('@/pages/Analytics'),
+  search: () => import('@/pages/Search'),
 };
 
 // Intersection Observer for lazy loading images and components
