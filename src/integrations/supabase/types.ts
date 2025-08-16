@@ -1003,36 +1003,7 @@ export type Database = {
       }
     }
     Views: {
-      public_profiles_view: {
-        Row: {
-          avatar_url: string | null
-          bio: string | null
-          created_at: string | null
-          full_name: string | null
-          handle: string | null
-          id: string | null
-          user_id: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          bio?: string | null
-          created_at?: string | null
-          full_name?: string | null
-          handle?: string | null
-          id?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          bio?: string | null
-          created_at?: string | null
-          full_name?: string | null
-          handle?: string | null
-          id?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       calculate_daily_metrics: {
@@ -1085,6 +1056,18 @@ export type Database = {
         }[]
       }
       get_public_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          avatar_url: string
+          bio: string
+          created_at: string
+          full_name: string
+          handle: string
+          id: string
+          user_id: string
+        }[]
+      }
+      get_public_profiles_data: {
         Args: Record<PropertyKey, never>
         Returns: {
           avatar_url: string
