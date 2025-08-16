@@ -14,9 +14,12 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useSecureForm } from "@/hooks/useSecureForm";
+import { VenueValidation, MessageValidation } from "@/lib/validation";
 import { bookVenue } from "@/lib/supabase";
 import { CalendarIcon, MapPin, Users, MessageSquare } from "lucide-react";
 import { format } from "date-fns";
+import { z } from "zod";
 
 interface VenueBookingDialogProps {
   isOpen: boolean;
@@ -28,6 +31,15 @@ interface VenueBookingDialogProps {
     hourly_rate?: number;
   } | null;
 }
+
+const BookingSchema = z.object({
+  start_date: z.date(),
+  end_date: z.date(),
+  guest_count: z.number().positive("Guest count must be positive"),
+  event_type: z.string().optional(),
+  special_requests: z.string().optional(),
+  message: MessageValidation.content.optional(),
+});
 
 export function VenueBookingDialog({ isOpen, onClose, venue }: VenueBookingDialogProps) {
   const [isLoading, setIsLoading] = useState(false);

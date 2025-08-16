@@ -6,49 +6,58 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
+import { useSecureForm } from "@/hooks/useSecureForm";
+import { UserValidation } from "@/lib/validation";
 import { Mail, Lock, User, Loader2 } from "lucide-react";
+import { z } from "zod";
 
 interface AuthDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+const SignInSchema = z.object({
+  email: UserValidation.email,
+  password: z.string().min(1, "Password is required"),
+});
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    const { error } = await signIn(email, password);
+const SignUpSchema = z.object({
+  email: UserValidation.email,
+  password: UserValidation.password,
+  fullName: UserValidation.name,
+});
+
+export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
+  const { signIn, signUp } = useAuth();
+  
+  const signInForm = useSecureForm({
+    schema: SignInSchema,
+    sanitizeFields: ['email'],
+    rateLimitKey: 'auth'
+  });
+
+  const signUpForm = useSecureForm({
+    schema: SignUpSchema,
+    sanitizeFields: ['email', 'fullName'],
+    rateLimitKey: 'auth'
+  });
+
+  const handleSignIn = async (data: z.infer<typeof SignInSchema>) => {
+    const { error } = await signIn(data.email, data.password);
     
     if (!error) {
       onOpenChange(false);
-      setEmail("");
-      setPassword("");
+      signInForm.reset();
     }
-    
-    setIsLoading(false);
   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    const { error } = await signUp(email, password, fullName);
+  const handleSignUp = async (data: z.infer<typeof SignUpSchema>) => {
+    const { error } = await signUp(data.email, data.password, data.fullName);
     
     if (!error) {
       onOpenChange(false);
-      setEmail("");
-      setPassword("");
-      setFullName("");
+      signUpForm.reset();
     }
-    
-    setIsLoading(false);
   };
 
   return (
@@ -78,7 +87,7 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSignIn} className="space-y-4">
+                <form onSubmit={signInForm.secureSubmit(handleSignIn)} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="signin-email">Email</Label>
                     <div className="relative">
@@ -87,12 +96,13 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
                         id="signin-email"
                         type="email"
                         placeholder="Enter your email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        {...signInForm.register('email')}
                         className="pl-10"
-                        required
                       />
                     </div>
+                    {signInForm.formState.errors.email && (
+                      <p className="text-sm text-destructive">{signInForm.formState.errors.email.message}</p>
+                    )}
                   </div>
                   
                   <div className="space-y-2">
@@ -103,20 +113,21 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
                         id="signin-password"
                         type="password"
                         placeholder="Enter your password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        {...signInForm.register('password')}
                         className="pl-10"
-                        required
                       />
                     </div>
+                    {signInForm.formState.errors.password && (
+                      <p className="text-sm text-destructive">{signInForm.formState.errors.password.message}</p>
+                    )}
                   </div>
 
                   <Button 
                     type="submit" 
                     className="w-full bg-gradient-primary hover:opacity-90"
-                    disabled={isLoading}
+                    disabled={signInForm.formState.isSubmitting}
                   >
-                    {isLoading ? (
+                    {signInForm.formState.isSubmitting ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Signing in...
@@ -139,7 +150,7 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSignUp} className="space-y-4">
+                <form onSubmit={signUpForm.secureSubmit(handleSignUp)} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="signup-name">Full Name</Label>
                     <div className="relative">
@@ -148,12 +159,13 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
                         id="signup-name"
                         type="text"
                         placeholder="Enter your full name"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
+                        {...signUpForm.register('fullName')}
                         className="pl-10"
-                        required
                       />
                     </div>
+                    {signUpForm.formState.errors.fullName && (
+                      <p className="text-sm text-destructive">{signUpForm.formState.errors.fullName.message}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -164,12 +176,13 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
                         id="signup-email"
                         type="email"
                         placeholder="Enter your email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        {...signUpForm.register('email')}
                         className="pl-10"
-                        required
                       />
                     </div>
+                    {signUpForm.formState.errors.email && (
+                      <p className="text-sm text-destructive">{signUpForm.formState.errors.email.message}</p>
+                    )}
                   </div>
                   
                   <div className="space-y-2">
@@ -179,22 +192,22 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
                       <Input
                         id="signup-password"
                         type="password"
-                        placeholder="Choose a strong password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Choose a strong password (min 8 characters)"
+                        {...signUpForm.register('password')}
                         className="pl-10"
-                        required
-                        minLength={6}
                       />
                     </div>
+                    {signUpForm.formState.errors.password && (
+                      <p className="text-sm text-destructive">{signUpForm.formState.errors.password.message}</p>
+                    )}
                   </div>
 
                   <Button 
                     type="submit" 
                     className="w-full bg-gradient-primary hover:opacity-90"
-                    disabled={isLoading}
+                    disabled={signUpForm.formState.isSubmitting}
                   >
-                    {isLoading ? (
+                    {signUpForm.formState.isSubmitting ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Creating account...

@@ -14,6 +14,7 @@ import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { NotificationPreferences } from "@/components/NotificationPreferences";
 import { PushNotificationManager } from "@/components/PushNotificationManager";
+import { PrivacyControls } from "@/components/PrivacyControls";
 
 export default function Settings() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -146,11 +147,13 @@ export default function Settings() {
 
             {/* Privacy Tab */}
             <TabsContent value="privacy" className="space-y-6">
+              <PrivacyControls />
+              
               <Card className="kolab-card">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Shield className="h-5 w-5" />
-                    Privacy Settings
+                    <Globe className="h-5 w-5" />
+                    General Privacy Settings
                   </CardTitle>
                   <CardDescription>
                     Control who can see your information and activity
@@ -173,18 +176,6 @@ export default function Settings() {
                         <SelectItem value="private">Private</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
-                  <Separator />
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="show-location" className="text-base">Show Location</Label>
-                      <p className="text-sm text-muted-foreground">Display your location on your profile</p>
-                    </div>
-                    <Switch
-                      id="show-location"
-                      checked={settings.privacy.showLocation}
-                      onCheckedChange={(checked) => updateSetting('privacy', 'showLocation', checked)}
-                    />
                   </div>
                   <Separator />
                   <div className="flex items-center justify-between">

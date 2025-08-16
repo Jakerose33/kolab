@@ -297,3 +297,26 @@
 .skip-link:focus {
   top: 6px;
 }
+
+/* Content Security Policy styles */
+.csp-violation {
+  @apply text-destructive text-sm;
+}
+
+/* Security hardening - prevent information disclosure */
+.error-boundary {
+  @apply border border-destructive/20 bg-destructive/5 p-4 rounded-lg;
+}
+
+/* Performance optimization */
+.lazy-image {
+  @apply transition-opacity duration-300;
+}
+
+.lazy-image[data-loaded="false"] {
+  @apply opacity-0;
+}
+
+.lazy-image[data-loaded="true"] {
+  @apply opacity-100;
+}

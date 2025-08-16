@@ -15,9 +15,12 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useSecureForm } from "@/hooks/useSecureForm";
+import { EventValidation } from "@/lib/validation";
 import { createEvent } from "@/lib/supabase";
 import { CalendarIcon, MapPin, Users, Clock, Tag, X } from "lucide-react";
 import { format } from "date-fns";
+import { z } from "zod";
 
 interface CreateEventWizardProps {
   isOpen?: boolean;
@@ -31,6 +34,18 @@ const EVENT_TAGS = [
   'Music', 'Art', 'Food', 'Tech', 'Sports', 'Business', 'Education', 
   'Social', 'Gaming', 'Wellness', 'Creative', 'Community'
 ];
+
+const EventSchema = z.object({
+  title: EventValidation.title,
+  description: EventValidation.description.optional(),
+  start_at: EventValidation.startAt,
+  end_at: EventValidation.endAt.optional(),
+  venue_name: z.string().optional(),
+  venue_address: z.string().optional(),
+  capacity: z.number().positive().optional(),
+  tags: z.array(z.string()).optional(),
+  status: z.enum(['draft', 'published']),
+});
 
 export function CreateEventWizard({ 
   isOpen, 
