@@ -1003,7 +1003,7 @@ export type Database = {
       }
     }
     Views: {
-      public_profiles: {
+      public_profiles_view: {
         Row: {
           avatar_url: string | null
           bio: string | null
@@ -1074,6 +1074,18 @@ export type Database = {
       }
       get_public_profile: {
         Args: { profile_user_id: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          created_at: string
+          full_name: string
+          handle: string
+          id: string
+          user_id: string
+        }[]
+      }
+      get_public_profiles: {
+        Args: Record<PropertyKey, never>
         Returns: {
           avatar_url: string
           bio: string
