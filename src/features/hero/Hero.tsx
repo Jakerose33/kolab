@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Flame, Eye } from "lucide-react"
 import { cn } from "@/lib/utils"
+import heroImage from "@/assets/hero-boiler-room.jpg"
 
 interface HeroProps {
   className?: string
@@ -14,29 +15,15 @@ export default function Hero({ className }: HeroProps) {
     )}>
       {/* Background video/image container */}
       <div className="absolute inset-0">
-        {/* Fallback gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black" />
-        
-        {/* Video element - muted autoplay */}
-        <video
-          className="w-full h-full object-cover opacity-60 md:opacity-40"
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster="/media/hero-fallback.jpg"
-        >
-          <source src="/media/hero-teaser.mp4" type="video/mp4" />
-          {/* Fallback image if video fails */}
-          <img 
-            src="/media/hero-fallback.jpg" 
-            alt="Discover underground culture"
-            className="w-full h-full object-cover"
-          />
-        </video>
+        {/* Hero background image */}
+        <img 
+          src={heroImage}
+          alt="Underground electronic music scene"
+          className="w-full h-full object-cover opacity-70"
+        />
         
         {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/30" />
       </div>
 
       {/* Content container */}
