@@ -286,7 +286,7 @@ export type Database = {
           image_url: string | null
           latitude: number | null
           longitude: number | null
-          organizer_id: string
+          organizer_id: string | null
           start_at: string
           status: string
           tags: string[] | null
@@ -305,7 +305,7 @@ export type Database = {
           image_url?: string | null
           latitude?: number | null
           longitude?: number | null
-          organizer_id: string
+          organizer_id?: string | null
           start_at: string
           status?: string
           tags?: string[] | null
@@ -324,7 +324,7 @@ export type Database = {
           image_url?: string | null
           latitude?: number | null
           longitude?: number | null
-          organizer_id?: string
+          organizer_id?: string | null
           start_at?: string
           status?: string
           tags?: string[] | null
