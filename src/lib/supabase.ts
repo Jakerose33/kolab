@@ -86,7 +86,7 @@ export const getEvents = async (filters?: { status?: string; limit?: number }) =
     .from('events')
     .select(`
       *,
-      profiles!events_organizer_id_fkey(full_name, handle)
+      profiles!organizer_id(full_name, handle)
     `)
     .eq('status', 'published')
     .order('start_at', { ascending: true });
