@@ -573,6 +573,42 @@ export type Database = {
         }
         Relationships: []
       }
+      privacy_settings: {
+        Row: {
+          created_at: string | null
+          id: string
+          show_interests: boolean | null
+          show_linkedin: boolean | null
+          show_location: boolean | null
+          show_skills: boolean | null
+          show_website: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          show_interests?: boolean | null
+          show_linkedin?: boolean | null
+          show_location?: boolean | null
+          show_skills?: boolean | null
+          show_website?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          show_interests?: boolean | null
+          show_linkedin?: boolean | null
+          show_location?: boolean | null
+          show_skills?: boolean | null
+          show_website?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1035,6 +1071,18 @@ export type Database = {
           p_user_id: string
         }
         Returns: string
+      }
+      get_public_profile: {
+        Args: { profile_user_id: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          created_at: string
+          full_name: string
+          handle: string
+          id: string
+          user_id: string
+        }[]
       }
       is_user_blocked: {
         Args: { blocked_id: string; blocker_id: string }
