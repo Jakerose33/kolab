@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -151,6 +152,7 @@ function getNotificationColor(type: string) {
 export function NotificationsDrawer({ open, onOpenChange }: NotificationsDrawerProps) {
   const [notifications, setNotifications] = useState(mockNotifications);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const unreadCount = notifications.filter(n => n.isUnread).length;
 
@@ -187,11 +189,23 @@ export function NotificationsDrawer({ open, onOpenChange }: NotificationsDrawerP
     }
     
     if (notification.actionUrl) {
-      // In a real app, this would navigate to the URL
-      toast({
-        title: "Navigation",
-        description: `Would navigate to: ${notification.actionUrl}`,
-      });
+      // Navigate to the URL - handle both internal and external links
+      try {
+        if (notification.actionUrl.startsWith('http')) {
+          // External link
+          window.open(notification.actionUrl, '_blank', 'noopener,noreferrer');
+        } else {
+          // Internal link
+          navigate(notification.actionUrl);
+          onOpenChange(false); // Close the drawer
+        }
+      } catch (error) {
+        toast({
+          title: "Navigation Error",
+          description: "Unable to navigate to the requested page.",
+          variant: "destructive"
+        });
+      }
     }
   };
 

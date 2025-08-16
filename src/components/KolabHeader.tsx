@@ -17,7 +17,7 @@ import {
   BookOpen,
   LogOut
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,8 +41,17 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
   const [searchQuery, setSearchQuery] = useState("");
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { user, profile, signOut, isAuthenticated } = useAuth();
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+    }
+  };
 
   const navItems = [
     { name: "Events", path: "/", icon: Calendar },
@@ -90,7 +99,7 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
 
         {/* Search Bar - Hidden on mobile */}
         <div className="hidden md:flex flex-1 max-w-md mx-8">
-          <div className="relative w-full">
+          <form onSubmit={handleSearchSubmit} className="relative w-full">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search events, collaborators..."
@@ -98,7 +107,7 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 bg-background-secondary border-0 focus:ring-2 focus:ring-primary/20"
             />
-          </div>
+          </form>
         </div>
 
         {/* Action Buttons */}
@@ -250,9 +259,11 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
                   );
                 })}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Search className="mr-2 h-4 w-4" />
-                  Search
+                <DropdownMenuItem asChild>
+                  <Link to="/search" className="flex items-center">
+                    <Search className="mr-2 h-4 w-4" />
+                    Search
+                  </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

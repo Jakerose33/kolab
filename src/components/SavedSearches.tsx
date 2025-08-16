@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Search, Bookmark, Clock, Trash2, Star, Play } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Button } from './ui/button'
@@ -12,6 +13,7 @@ import { formatDistanceToNow } from 'date-fns'
 
 export function SavedSearches() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([])
   const { toast } = useToast()
@@ -68,7 +70,7 @@ export function SavedSearches() {
       if (error) throw error
       
       // Navigate to search page with results
-      window.location.href = `/search?q=${encodeURIComponent(search.query)}`
+      navigate(`/search?q=${encodeURIComponent(search.query)}`)
     } catch (error) {
       console.error('Error executing saved search:', error)
       toast({
