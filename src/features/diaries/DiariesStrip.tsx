@@ -229,7 +229,7 @@ export default function DiariesStrip({ className }: DiariesStripProps) {
           <div className="text-center mt-8">
             <Button 
               variant="outline" 
-              className="border-white/20 text-white hover:bg-white/10 transition-all duration-300"
+              className="border-white/20 bg-white/10 text-black hover:bg-white/20 transition-all duration-300"
             >
               View all diaries
             </Button>
