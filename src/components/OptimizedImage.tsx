@@ -1,164 +1,108 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { useLazyLoading } from '@/lib/lazyLoading';
-import { Skeleton } from '@/components/ui/skeleton';
+import { useState, useRef, useEffect } from 'react'
+import { cn } from '@/lib/utils'
 
-interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
-  src: string;
-  alt: string;
-  lazy?: boolean;
-  aspectRatio?: 'square' | 'video' | 'portrait' | 'landscape';
-  fallback?: string;
-  sizes?: string;
-  priority?: boolean;
+interface OptimizedImageProps {
+  src: string
+  alt: string
+  className?: string
+  aspectRatio?: string
+  priority?: boolean
+  sizes?: string
+  placeholder?: 'blur' | 'empty'
+  onLoad?: () => void
+  fallbackSrc?: string
 }
 
-export function OptimizedImage({
+export const OptimizedImage = ({
   src,
   alt,
   className,
-  lazy = true,
-  aspectRatio,
-  fallback = '/placeholder.svg',
-  sizes,
+  aspectRatio = '16/9',
   priority = false,
-  ...props
-}: OptimizedImageProps) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
-  const [imageSrc, setImageSrc] = useState(priority ? src : '');
-  const imgRef = useRef<HTMLImageElement>(null);
-  const { observeElement } = useLazyLoading();
+  sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
+  placeholder = 'blur',
+  onLoad,
+  fallbackSrc = '/placeholder.svg'
+}: OptimizedImageProps) => {
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [hasError, setHasError] = useState(false)
+  const [isInView, setIsInView] = useState(priority)
+  const imgRef = useRef<HTMLImageElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  // Aspect ratio classes
-  const aspectRatioClasses = {
-    square: 'aspect-square',
-    video: 'aspect-video',
-    portrait: 'aspect-[3/4]',
-    landscape: 'aspect-[4/3]',
-  };
-
-  // Handle lazy loading
+  // Intersection Observer for lazy loading
   useEffect(() => {
-    if (!lazy || priority) {
-      setImageSrc(src);
-      return;
-    }
-
-    const img = imgRef.current;
-    if (!img) return;
-
-    img.dataset.src = src;
-    observeElement(img);
+    if (priority || isInView) return
 
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setImageSrc(src);
-            observer.unobserve(img);
-          }
-        });
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true)
+          observer.disconnect()
+        }
       },
-      { rootMargin: '50px 0px' }
-    );
+      {
+        rootMargin: '50px'
+      }
+    )
 
-    observer.observe(img);
+    if (containerRef.current) {
+      observer.observe(containerRef.current)
+    }
 
-    return () => {
-      observer.disconnect();
-    };
-  }, [src, lazy, priority, observeElement]);
+    return () => observer.disconnect()
+  }, [priority, isInView])
 
   const handleLoad = () => {
-    setIsLoading(false);
-    setHasError(false);
-  };
+    setIsLoaded(true)
+    onLoad?.()
+  }
 
   const handleError = () => {
-    setIsLoading(false);
-    setHasError(true);
-    setImageSrc(fallback);
-  };
+    setHasError(true)
+    if (imgRef.current && fallbackSrc) {
+      imgRef.current.src = fallbackSrc
+    }
+  }
 
   return (
-    <div className={cn(
-      'relative overflow-hidden bg-muted',
-      aspectRatio && aspectRatioClasses[aspectRatio],
-      className
-    )}>
-      {isLoading && (
-        <Skeleton className="absolute inset-0 w-full h-full" />
+    <div 
+      ref={containerRef}
+      className={cn(
+        'relative overflow-hidden bg-muted/20',
+        className
       )}
-      
-      <img
-        ref={imgRef}
-        src={imageSrc}
-        alt={alt}
-        sizes={sizes}
-        loading={lazy && !priority ? 'lazy' : 'eager'}
-        decoding="async"
-        onLoad={handleLoad}
-        onError={handleError}
-        className={cn(
-          'w-full h-full object-cover transition-opacity duration-300',
-          isLoading ? 'opacity-0' : 'opacity-100',
-          hasError && 'opacity-50'
-        )}
-        {...props}
-      />
-      
-      {hasError && (
-        <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm">
-          Failed to load image
+      style={{ aspectRatio }}
+    >
+      {/* Placeholder */}
+      {!isLoaded && placeholder === 'blur' && (
+        <div className="absolute inset-0 bg-gradient-to-br from-muted/30 to-muted/60 animate-pulse" />
+      )}
+
+      {/* Main Image */}
+      {(isInView || priority) && (
+        <img
+          ref={imgRef}
+          src={hasError ? fallbackSrc : src}
+          alt={alt}
+          sizes={sizes}
+          className={cn(
+            'w-full h-full object-cover transition-opacity duration-500',
+            isLoaded ? 'opacity-100' : 'opacity-0'
+          )}
+          onLoad={handleLoad}
+          onError={handleError}
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
+        />
+      )}
+
+      {/* Loading indicator */}
+      {!isLoaded && (isInView || priority) && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
         </div>
       )}
     </div>
-  );
-}
-
-// Higher-order component for lazy loading any component
-export function withLazyLoading<T extends object>(
-  Component: React.ComponentType<T>,
-  fallback?: React.ReactNode
-) {
-  const LazyComponent = (props: T) => {
-    const [isVisible, setIsVisible] = useState(false);
-    const elementRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-      const element = elementRef.current;
-      if (!element) return;
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              setIsVisible(true);
-              observer.unobserve(element);
-            }
-          });
-        },
-        { rootMargin: '50px 0px' }
-      );
-
-      observer.observe(element);
-
-      return () => {
-        observer.disconnect();
-      };
-    }, []);
-
-    return (
-      <div ref={elementRef}>
-        {isVisible ? (
-          <Component {...props} />
-        ) : (
-          fallback || <Skeleton className="w-full h-48" />
-        )}
-      </div>
-    );
-  };
-
-  return LazyComponent;
+  )
 }

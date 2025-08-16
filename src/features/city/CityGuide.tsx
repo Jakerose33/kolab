@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { OptimizedImage } from "@/components/OptimizedImage"
 import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { cityGuidesData, neighbourhoods, getGuidesByNeighbourhood, type CityGuide } from "@/data/city-guides"
@@ -13,11 +14,12 @@ interface CityGuideProps {
 const GuideCard = ({ guide }: { guide: CityGuide }) => (
   <Card className="group cursor-pointer overflow-hidden border border-border/50 bg-card hover:bg-card-hover transition-all duration-500 hover:scale-[1.02] hover:shadow-lg">
     <div className="aspect-[4/5] relative overflow-hidden">
-      <img 
-        src={guide.image} 
-        alt={guide.title}
-        className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110"
-        loading="lazy"
+      <OptimizedImage
+        src={guide.image}
+        alt={guide.imageAlt || guide.title}
+        aspectRatio="4/5"
+        className="filter grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110"
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-500" />
       

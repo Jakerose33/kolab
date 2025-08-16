@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { OptimizedImage } from "@/components/OptimizedImage"
 import { Flame, Eye, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { editorialData, type EditorialItem } from "@/data/editorial"
@@ -15,11 +16,12 @@ const EventCard = ({ item }: { item: EditorialItem }) => (
   <Link to={`/events/${item.id}`}>
     <Card className="kolab-card group cursor-pointer overflow-hidden border-0 hover:scale-[1.02]">
       <div className="aspect-[4/5] relative overflow-hidden">
-        <img 
-          src={item.image} 
-          alt={item.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          loading="lazy"
+        <OptimizedImage
+          src={item.image}
+          alt={item.imageAlt || item.title}
+          aspectRatio="4/5"
+          className="transition-transform duration-500 group-hover:scale-105"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
         
@@ -53,11 +55,12 @@ const EventCard = ({ item }: { item: EditorialItem }) => (
 const CityGuideCard = ({ item }: { item: EditorialItem }) => (
   <Card className="group cursor-pointer overflow-hidden border border-border/50 bg-card hover:bg-card-hover transition-all duration-300 hover:scale-[1.02]">
     <div className="aspect-[4/5] relative overflow-hidden">
-      <img 
-        src={item.image} 
-        alt={item.title}
-        className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
-        loading="lazy"
+      <OptimizedImage
+        src={item.image}
+        alt={item.imageAlt || item.title}
+        aspectRatio="4/5"
+        className="filter grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
       
@@ -78,11 +81,12 @@ const CityGuideCard = ({ item }: { item: EditorialItem }) => (
 const StoryCard = ({ item }: { item: EditorialItem }) => (
   <Card className="group cursor-pointer overflow-hidden border-0 bg-card hover:bg-card-hover transition-all duration-300 hover:scale-[1.02]">
     <div className="aspect-[4/5] relative overflow-hidden">
-      <img 
-        src={item.image} 
-        alt={item.title}
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        loading="lazy"
+      <OptimizedImage
+        src={item.image}
+        alt={item.imageAlt || item.title}
+        aspectRatio="4/5"
+        className="transition-transform duration-500 group-hover:scale-105"
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
       

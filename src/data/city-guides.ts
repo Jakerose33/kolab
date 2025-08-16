@@ -4,10 +4,14 @@ export interface CityGuide {
   subtitle: string
   neighbourhood: string
   image: string
+  imageAlt?: string
   category: string
   featured: boolean
   slug: string
   description?: string
+  metaDescription?: string
+  callToAction?: string
+  highlights?: string[]
 }
 
 export const neighbourhoods = [
@@ -30,10 +34,14 @@ export const cityGuidesData: CityGuide[] = [
     subtitle: 'Where locals drink after midnight',
     neighbourhood: 'Shoreditch',
     image: '/images/city-guides/hidden-bars.jpg',
+    imageAlt: 'Dimly lit speakeasy entrance with neon sign and intimate bar interior visible through doorway',
     category: 'Nightlife',
     featured: true,
     slug: 'hidden-bars-east-london',
-    description: 'A curated list of the most secretive drinking establishments in East London.'
+    description: 'A curated guide to East London\'s most secretive drinking establishments. From hidden speakeasies to locals-only pubs.',
+    metaDescription: 'Discover hidden bars and speakeasies in East London. Secret entrances, intimate venues, and where locals drink after hours.',
+    callToAction: 'Explore Hidden Bars',
+    highlights: ['Password-protected speakeasies', 'Locals-only pub backrooms', 'After-hours cocktail dens', 'Hidden rooftop terraces']
   },
   {
     id: '2',

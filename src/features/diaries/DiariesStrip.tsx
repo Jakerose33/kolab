@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { OptimizedImage } from "@/components/OptimizedImage"
 import { ChevronLeft, ChevronRight, X, Camera } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { diariesData, type DiaryEntry } from "@/data/diaries"
@@ -204,11 +205,12 @@ export default function DiariesStrip({ className }: DiariesStripProps) {
                 }}
                 aria-label={`Open diary entry: ${entry.caption || 'Untitled'}`}
               >
-                <img
+                <OptimizedImage
                   src={entry.image}
-                  alt={entry.caption || 'Diary entry'}
-                  className="w-full h-full object-cover filter contrast-125 saturate-0 group-hover:saturate-100 transition-all duration-500"
-                  loading="lazy"
+                  alt={entry.imageAlt || entry.caption || `Diary entry from ${entry.location}`}
+                  aspectRatio="1/1"
+                  className="filter contrast-125 saturate-0 group-hover:saturate-100 transition-all duration-500"
+                  sizes="(max-width: 640px) 25vw, (max-width: 1024px) 12.5vw, 8.33vw"
                 />
                 
                 {/* Timestamp overlay */}

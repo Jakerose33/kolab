@@ -1,31 +1,40 @@
 export interface DiaryEntry {
   id: string
   image: string
+  imageAlt?: string
   timestamp: string
   location: string
   photographer?: string
   caption?: string
   event?: string
+  tags?: string[]
+  mood?: string
 }
 
 export const diariesData: DiaryEntry[] = [
   {
     id: '1',
     image: '/diaries/sample/portrait-1.jpg',
+    imageAlt: 'Person silhouetted against strobing lights in underground venue, lost in music',
     timestamp: '03:47 AM',
     location: 'Fabric, EC1',
     photographer: 'Marcus Steel',
     caption: 'Lost in the strobes',
-    event: 'Warehouse Rave'
+    event: 'Warehouse Rave',
+    tags: ['nightlife', 'music', 'underground'],
+    mood: 'euphoric'
   },
   {
     id: '2',
     image: '/diaries/sample/portrait-2.jpg',
+    imageAlt: 'Group of people gathered outside industrial building, anticipation in their expressions',
     timestamp: '11:23 PM',
     location: 'Hackney Wick',
     photographer: 'Sarah Chen',
     caption: 'Before the doors open',
-    event: 'Underground Art Opening'
+    event: 'Underground Art Opening',
+    tags: ['art', 'community', 'anticipation'],
+    mood: 'anticipatory'
   },
   {
     id: '3',

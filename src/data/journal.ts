@@ -9,6 +9,10 @@ export interface JournalArticle {
   tags: string[]
   featured?: boolean
   excerpt?: string
+  image?: string
+  imageAlt?: string
+  metaDescription?: string
+  callToAction?: string
 }
 
 export const journalArticles: JournalArticle[] = [
@@ -22,7 +26,11 @@ export const journalArticles: JournalArticle[] = [
     readTime: 8,
     tags: ['Photography', 'Culture', 'Nightlife'],
     featured: true,
-    excerpt: 'Through the lens of photographer Marcus Steel, we explore the remnants of London\'s warehouse scene and what we lose when these spaces disappear forever.'
+    excerpt: 'Through the lens of photographer Marcus Steel, we explore the remnants of London\'s warehouse scene and what we lose when these spaces disappear forever.',
+    image: '/images/journal/last-warehouse-hero.jpg',
+    imageAlt: 'Empty warehouse interior with light streaming through industrial windows, equipment remnants scattered on concrete floor',
+    metaDescription: 'A photographic exploration of London\'s disappearing warehouse rave culture. Stories and images from the spaces that shaped underground music.',
+    callToAction: 'Read Full Essay'
   },
   {
     id: '2',
@@ -34,7 +42,11 @@ export const journalArticles: JournalArticle[] = [
     readTime: 12,
     tags: ['Interviews', 'Community', 'Culture'],
     featured: true,
-    excerpt: 'In-depth interviews with the people shaping London\'s alternative cultural landscape, from venue owners to collective organizers.'
+    excerpt: 'In-depth interviews with the people shaping London\'s alternative cultural landscape, from venue owners to collective organizers.',
+    image: '/images/journal/voices-underground-hero.jpg',
+    imageAlt: 'Portrait collage of diverse cultural organizers and venue owners in London\'s underground scene',
+    metaDescription: 'Interviews with London\'s underground cultural architects. Meet the people building community and shaping alternative culture.',
+    callToAction: 'Read Interviews'
   },
   {
     id: '3',
