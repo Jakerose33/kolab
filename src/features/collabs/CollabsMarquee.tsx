@@ -52,7 +52,7 @@ export default function CollabsMarquee({ className }: CollabsMarqueeProps) {
               Collaborators
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Working with London's most influential venues, labels, and collectives
+              Working with Melbourne's most influential venues, labels, and collectives
             </p>
           </div>
         </div>

@@ -10,31 +10,31 @@ export interface Collaborator {
 export const collaborators: Collaborator[] = [
   {
     id: '1',
-    name: 'Fabric',
-    logo: '/logos/fabric.svg',
-    description: 'Legendary underground club',
-    website: 'https://fabriclondon.com',
+    name: 'Corner Hotel',
+    logo: '/logos/corner-hotel.svg',
+    description: 'Iconic Melbourne live music venue',
+    website: 'https://cornerhotel.com',
     category: 'venue'
   },
   {
     id: '2',
-    name: 'The Nest',
-    logo: '/logos/the-nest.svg',
-    description: 'Alternative venue space',
+    name: 'Revolver Upstairs',
+    logo: '/logos/revolver.svg',
+    description: 'Underground club and venue',
     category: 'venue'
   },
   {
     id: '3',
-    name: 'Mixmag',
-    logo: '/logos/mixmag.svg',
-    description: 'Electronic music publication',
+    name: 'Beat Magazine',
+    logo: '/logos/beat-mag.svg',
+    description: 'Melbourne music publication',
     category: 'publication'
   },
   {
     id: '4',
-    name: 'NTS Radio',
-    logo: '/logos/nts.svg',
-    description: 'Independent radio station',
+    name: 'PBS 106.7FM',
+    logo: '/logos/pbs.svg',
+    description: 'Community radio station',
     category: 'publication'
   },
   {
@@ -46,37 +46,37 @@ export const collaborators: Collaborator[] = [
   },
   {
     id: '6',
-    name: 'XL Recordings',
-    logo: '/logos/xl-recordings.svg',
-    description: 'Independent record label',
+    name: 'Flightless Records',
+    logo: '/logos/flightless.svg',
+    description: 'Independent Melbourne record label',
     category: 'brand'
   },
   {
     id: '7',
-    name: 'Peckham Audio',
-    logo: '/logos/peckham-audio.svg',
-    description: 'Sound system collective',
+    name: 'Northside Records',
+    logo: '/logos/northside.svg',
+    description: 'Fitzroy record store collective',
     category: 'collective'
   },
   {
     id: '8',
-    name: 'Oval Space',
-    logo: '/logos/oval-space.svg',
-    description: 'Multi-disciplinary venue',
+    name: 'Forum Melbourne',
+    logo: '/logos/forum.svg',
+    description: 'Historic live music theatre',
     category: 'venue'
   },
   {
     id: '9',
-    name: 'FACT Magazine',
-    logo: '/logos/fact.svg',
-    description: 'Music and culture publication',
+    name: 'The Music',
+    logo: '/logos/themusic.svg',
+    description: 'Australian music publication',
     category: 'publication'
   },
   {
     id: '10',
-    name: 'Warehouse Project',
-    logo: '/logos/warehouse-project.svg',
-    description: 'Event series',
+    name: 'Let Them Eat Cake',
+    logo: '/logos/ltec.svg',
+    description: 'Melbourne festival collective',
     category: 'collective'
   },
   {
@@ -88,31 +88,31 @@ export const collaborators: Collaborator[] = [
   },
   {
     id: '12',
-    name: 'Resident Advisor',
-    logo: '/logos/ra.svg',
+    name: 'Rave Magazine',
+    logo: '/logos/rave.svg',
     description: 'Electronic music platform',
     category: 'publication'
   },
   {
     id: '13',
-    name: 'Corsica Studios',
-    logo: '/logos/corsica.svg',
-    description: 'Underground venue',
+    name: 'Brown Alley',
+    logo: '/logos/brown-alley.svg',
+    description: 'Underground warehouse venue',
     category: 'venue'
   },
   {
     id: '14',
-    name: 'Ninja Tune',
-    logo: '/logos/ninja-tune.svg',
+    name: 'I OH YOU',
+    logo: '/logos/iohyou.svg',
     description: 'Independent record label',
     category: 'brand'
   },
   {
     id: '15',
-    name: 'Hackney Colliery Band',
-    logo: '/logos/hackney-colliery.svg',
-    description: 'Brass band collective',
-    category: 'artist'
+    name: 'Thornbury Theatre',
+    logo: '/logos/thornbury.svg',
+    description: 'Intimate live music venue',
+    category: 'venue'
   }
 ]
 
