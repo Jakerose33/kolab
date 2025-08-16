@@ -141,7 +141,7 @@ export function EventCard({
       <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5">
         {event.image_url ? (
           <img 
-            src={event.image_url} 
+            src={event.image_url.startsWith('/') ? event.image_url : `/${event.image_url}`} 
             alt={event.title}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
