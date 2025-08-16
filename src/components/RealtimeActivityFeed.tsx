@@ -1,17 +1,29 @@
+import { useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
-import { Activity, Users, Calendar, MapPin, MessageSquare, UserPlus, Heart, Star } from 'lucide-react'
+import { Activity, Users, Calendar, MapPin, MessageSquare, UserPlus, Heart, Star, ChevronDown, ChevronUp } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { ScrollArea } from './ui/scroll-area'
 import { Badge } from './ui/badge'
+import { Button } from './ui/button'
 import { Separator } from './ui/separator'
 import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications'
+import { useAuth } from '@/hooks/useAuth'
 import { LoadingState } from './LoadingState'
 import { EmptyState } from './EmptyState'
 import { cn } from '@/lib/utils'
 
 export function RealtimeActivityFeed() {
+  const { user } = useAuth()
   const { activityFeed, loading } = useRealtimeNotifications()
+  const [showAll, setShowAll] = useState(false)
+  
+  // Don't show activity feed if user is not signed in
+  if (!user) {
+    return null
+  }
+  
+  const displayedActivities = showAll ? activityFeed : activityFeed.slice(0, 4)
 
   const getActivityIcon = (actionType: string) => {
     switch (actionType) {
@@ -129,9 +141,9 @@ export function RealtimeActivityFeed() {
             />
           </div>
         ) : (
-          <ScrollArea className="h-96">
-            <div className="p-2">
-              {activityFeed.map((activity, index) => (
+          <div className="p-2">
+            <div className="space-y-1">
+              {displayedActivities.map((activity, index) => (
                 <div key={activity.id}>
                   <div className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
                     <div className={cn(
@@ -163,11 +175,35 @@ export function RealtimeActivityFeed() {
                       </div>
                     </div>
                   </div>
-                  {index < activityFeed.length - 1 && <Separator className="my-1" />}
+                  {index < displayedActivities.length - 1 && <Separator className="my-1" />}
                 </div>
               ))}
             </div>
-          </ScrollArea>
+            
+            {/* Show More/Less Button */}
+            {activityFeed.length > 4 && (
+              <div className="p-3 pt-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowAll(!showAll)}
+                  className="w-full text-sm text-muted-foreground hover:text-foreground"
+                >
+                  {showAll ? (
+                    <>
+                      <ChevronUp className="w-4 h-4 mr-2" />
+                      Show less
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-4 h-4 mr-2" />
+                      Show {activityFeed.length - 4} more
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+          </div>
         )}
       </CardContent>
     </Card>

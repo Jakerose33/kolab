@@ -1,17 +1,28 @@
+import { useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
-import { Bell, Check, CheckCheck, Clock, Users, MapPin, Calendar, MessageSquare } from 'lucide-react'
+import { Bell, Check, CheckCheck, Clock, Users, MapPin, Calendar, MessageSquare, ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from './ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Badge } from './ui/badge'
 import { ScrollArea } from './ui/scroll-area'
 import { Separator } from './ui/separator'
 import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications'
+import { useAuth } from '@/hooks/useAuth'
 import { LoadingState } from './LoadingState'
 import { EmptyState } from './EmptyState'
 import { cn } from '@/lib/utils'
 
 export function RealtimeNotificationsList() {
+  const { user } = useAuth()
   const { notifications, unreadCount, loading, markAsRead, markAllAsRead } = useRealtimeNotifications()
+  const [showAll, setShowAll] = useState(false)
+  
+  // Don't show notifications if user is not signed in
+  if (!user) {
+    return null
+  }
+  
+  const displayedNotifications = showAll ? notifications : notifications.slice(0, 4)
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -93,9 +104,9 @@ export function RealtimeNotificationsList() {
             />
           </div>
         ) : (
-          <ScrollArea className="h-96">
-            <div className="p-2">
-              {notifications.map((notification, index) => (
+          <div className="p-2">
+            <div className="space-y-1">
+              {displayedNotifications.map((notification, index) => (
                 <div key={notification.id}>
                   <div
                     className={cn(
@@ -154,11 +165,35 @@ export function RealtimeNotificationsList() {
                       </div>
                     </div>
                   </div>
-                  {index < notifications.length - 1 && <Separator className="my-1" />}
+                  {index < displayedNotifications.length - 1 && <Separator className="my-1" />}
                 </div>
               ))}
             </div>
-          </ScrollArea>
+            
+            {/* Show More/Less Button */}
+            {notifications.length > 4 && (
+              <div className="p-3 pt-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowAll(!showAll)}
+                  className="w-full text-sm text-muted-foreground hover:text-foreground"
+                >
+                  {showAll ? (
+                    <>
+                      <ChevronUp className="w-4 h-4 mr-2" />
+                      Show less
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-4 h-4 mr-2" />
+                      Show {notifications.length - 4} more
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+          </div>
         )}
       </CardContent>
     </Card>
