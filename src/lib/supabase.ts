@@ -85,8 +85,7 @@ export const getEvents = async (filters?: { status?: string; limit?: number }) =
   let query = supabase
     .from('events')
     .select(`
-      *,
-      profiles!organizer_id(full_name, handle)
+      *
     `)
     .eq('status', 'published')
     .order('start_at', { ascending: true });
