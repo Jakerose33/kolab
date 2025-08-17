@@ -39,6 +39,15 @@ export default function EventRSVPBar({
     const newStatus = isCurrentStatus ? null : status
     
     setLoading(status)
+    
+    // Add micro-interaction class
+    const buttonElement = document.querySelector(`[data-rsvp="${status}"]`)
+    if (buttonElement) {
+      buttonElement.classList.add('micro-rsvp', 'pressed')
+      setTimeout(() => {
+        buttonElement.classList.remove('pressed')
+      }, 250)
+    }
 
     await rsvpWithAnimation(async () => {
       // Optimistic UI updates
@@ -110,8 +119,9 @@ export default function EventRSVPBar({
           onClick={() => handleRSVP('going')}
           disabled={loading === 'going'}
           variant={optimisticUserRSVP === 'going' ? 'default' : 'outline'}
+          data-rsvp="going"
           className={cn(
-            "w-full justify-between h-12 text-base font-semibold",
+            "w-full justify-between h-12 text-base font-semibold micro-rsvp",
             optimisticUserRSVP === 'going' && "bg-red-500 hover:bg-red-600 text-white"
           )}
         >
@@ -128,8 +138,9 @@ export default function EventRSVPBar({
           onClick={() => handleRSVP('interested')}
           disabled={loading === 'interested'}
           variant={optimisticUserRSVP === 'interested' ? 'default' : 'outline'}
+          data-rsvp="interested"
           className={cn(
-            "w-full justify-between h-12 text-base font-semibold",
+            "w-full justify-between h-12 text-base font-semibold micro-rsvp",
             optimisticUserRSVP === 'interested' && "bg-blue-500 hover:bg-blue-600 text-white"
           )}
         >
@@ -165,7 +176,7 @@ export default function EventRSVPBar({
         <Button
           variant="ghost"
           onClick={handleShare}
-          className="w-full h-10 text-sm"
+          className="w-full h-10 text-sm micro-spring"
         >
           <Share2 className="w-4 h-4 mr-2" />
           Share Event

@@ -15,11 +15,11 @@ export default function Hero({ className }: HeroProps) {
     )}>
       {/* Background video/image container */}
       <div className="absolute inset-0">
-        {/* Hero background image */}
+        {/* Hero background image with scroll parallax */}
         <img 
           src={heroImage}
           alt="Underground electronic music scene"
-          className="w-full h-full object-cover opacity-70"
+          className="w-full h-full object-cover opacity-70 scroll-parallax"
         />
         
         {/* Overlay gradient */}

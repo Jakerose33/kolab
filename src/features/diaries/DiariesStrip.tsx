@@ -176,7 +176,7 @@ export default function DiariesStrip({ className }: DiariesStripProps) {
 
   return (
     <>
-      <section className={cn("py-16 bg-black performance-auto-large", className)}>
+      <section className={cn("py-16 bg-black performance-auto-large scroll-fade-up", className)}>
         <div className="container mx-auto px-4">
           {/* Section header */}
           <div className="mb-12">
@@ -188,12 +188,12 @@ export default function DiariesStrip({ className }: DiariesStripProps) {
             </p>
           </div>
 
-          {/* Contact sheet grid */}
-          <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12 gap-2 lg:gap-3">
+          {/* Contact sheet grid with scroll animation */}
+          <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12 gap-2 lg:gap-3 scroll-strip">
             {recentDiaries.map((entry, index) => (
               <div
                 key={entry.id}
-                className="group cursor-pointer aspect-square overflow-hidden bg-gray-900 hover:scale-105 transition-all duration-300"
+                className="group cursor-pointer aspect-square overflow-hidden bg-gray-900 hover:scale-105 transition-all duration-300 micro-bounce"
                 onClick={() => handleImageClick(index)}
                 role="button"
                 tabIndex={0}

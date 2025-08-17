@@ -57,13 +57,13 @@ const EventCard = ({ event }: { event: Event }) => {
             <h3 className="kolab-heading-small text-white mb-1 line-clamp-2">{event.title}</h3>
             <p className="text-white/70 text-sm mb-3">{event.venue_address?.split(',')[1]?.trim()}</p>
             
-            {/* RSVP chips */}
+            {/* RSVP chips with micro-interactions */}
             <div className="flex gap-2">
-              <Badge variant="secondary" className="bg-red-500/20 text-red-300 border-red-500/30 hover:bg-red-500/30">
+              <Badge variant="secondary" className="bg-red-500/20 text-red-300 border-red-500/30 hover:bg-red-500/30 micro-bounce cursor-pointer">
                 <Flame className="w-3 h-3 mr-1" />
                 {Math.floor(Math.random() * 200) + 50} Going
               </Badge>
-              <Badge variant="secondary" className="bg-blue-500/20 text-blue-300 border-blue-500/30 hover:bg-blue-500/30">
+              <Badge variant="secondary" className="bg-blue-500/20 text-blue-300 border-blue-500/30 hover:bg-blue-500/30 micro-bounce cursor-pointer">
                 <Eye className="w-3 h-3 mr-1" />
                 {Math.floor(Math.random() * 150) + 30} Interested
               </Badge>
@@ -125,8 +125,8 @@ export default function EditorialGrid({ className }: EditorialGridProps) {
   }
 
   return (
-    <section className={cn("py-16 bg-background editorial-section", className)}>
-      <div className="container mx-auto px-4">
+    <section className={cn("py-16 bg-background editorial-section scroll-fade-up", className)}>
+      <div className="container mx-auto px-4 container-responsive">
         {/* Section header with tabs */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-12">
           <div className="mb-6 sm:mb-0">
@@ -135,7 +135,7 @@ export default function EditorialGrid({ className }: EditorialGridProps) {
               <Button
                 variant={activeTab === 'tonight' ? 'default' : 'ghost'}
                 onClick={() => setActiveTab('tonight')}
-                className="kolab-heading-large h-auto p-0 bg-transparent hover:bg-transparent text-foreground hover:text-primary transition-colors duration-300"
+                className="kolab-heading-large h-auto p-0 bg-transparent hover:bg-transparent text-foreground hover:text-primary transition-colors duration-300 micro-spring"
               >
                 Tonight
               </Button>
@@ -143,21 +143,21 @@ export default function EditorialGrid({ className }: EditorialGridProps) {
               <Button
                 variant={activeTab === 'week' ? 'default' : 'ghost'}
                 onClick={() => setActiveTab('week')}
-                className="kolab-heading-large h-auto p-0 bg-transparent hover:bg-transparent text-foreground hover:text-primary transition-colors duration-300"
+                className="kolab-heading-large h-auto p-0 bg-transparent hover:bg-transparent text-foreground hover:text-primary transition-colors duration-300 micro-spring"
               >
                 This week
               </Button>
             </div>
           </div>
           
-          <Button variant="outline" className="kolab-button-ghost self-start sm:self-center group border-border/40 hover:border-primary/40">
+          <Button variant="outline" className="kolab-button-ghost self-start sm:self-center group border-border/40 hover:border-primary/40 micro-spring">
             <span className="kolab-caption">View all</span>
             <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
           </Button>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 events-grid">
+        {/* Grid with container queries */}
+        <div className="grid-responsive gap-6 lg:gap-8 events-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {displayEvents.map(event => (
             <EventCard key={event.id} event={event} />
           ))}

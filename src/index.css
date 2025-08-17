@@ -396,3 +396,134 @@
   content-visibility: auto;
   contain-intrinsic-size: auto 400px;
 }
+
+/* Scroll-driven animation keyframes */
+@keyframes parallax-hero {
+  from { 
+    transform: translateY(0) scale(1.05); 
+    opacity: 1;
+  }
+  to { 
+    transform: translateY(-50px) scale(1); 
+    opacity: 0.8;
+  }
+}
+
+@keyframes fade-up-scroll {
+  from { 
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes strip-slide {
+  from { transform: translateX(0); }
+  to { transform: translateX(-20px); }
+}
+
+/* Micro-interaction springs */
+@keyframes bounce-scale {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+@keyframes spring-press {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+/* Scroll-driven animations classes */
+.scroll-parallax {
+  animation: parallax-hero linear;
+  animation-timeline: scroll(root);
+  animation-range: 0% 100vh;
+}
+
+.scroll-fade-up {
+  animation: fade-up-scroll linear;
+  animation-timeline: view();
+  animation-range: entry 0% entry 80%;
+}
+
+.scroll-strip {
+  animation: strip-slide linear;
+  animation-timeline: view();
+  animation-range: entry 0% exit 100%;
+}
+
+/* Container queries for responsive layouts */
+.container-responsive {
+  container-type: inline-size;
+}
+
+@container (max-width: 500px) {
+  .container-responsive .grid-responsive {
+    grid-template-columns: 1fr;
+  }
+}
+
+@container (min-width: 501px) and (max-width: 800px) {
+  .container-responsive .grid-responsive {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@container (min-width: 801px) {
+  .container-responsive .grid-responsive {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Micro-interactions */
+.micro-bounce {
+  transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.micro-bounce:active {
+  animation: bounce-scale 0.2s ease-out;
+}
+
+.micro-spring {
+  transition: all 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.micro-spring:active {
+  animation: spring-press 0.15s ease-out;
+}
+
+.micro-rsvp {
+  transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.micro-rsvp.pressed {
+  animation: bounce-scale 0.25s ease-out;
+}
+
+/* Reduced motion alternatives for scroll animations */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-parallax,
+  .scroll-fade-up,
+  .scroll-strip {
+    animation: none !important;
+  }
+  
+  .scroll-fade-up {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .scroll-parallax {
+    transform: translateY(0) scale(1) !important;
+    opacity: 1 !important;
+  }
+  
+  .scroll-strip {
+    transform: translateX(0) !important;
+  }
+}
