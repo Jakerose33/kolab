@@ -1,7 +1,5 @@
 import React, { createContext, useContext, useEffect, ReactNode } from 'react';
-import { useSecureAuth } from '@/hooks/useSecureAuth';
 import { CSRFManager } from '@/lib/securityHeaders';
-import { LoadingState } from '@/components/LoadingState';
 
 interface SecurityContextType {
   csrfToken: string | null;
@@ -15,7 +13,6 @@ interface SecurityProviderProps {
 }
 
 export function SecurityProvider({ children }: SecurityProviderProps) {
-  const { loading } = useSecureAuth();
   const [csrfToken, setCsrfToken] = React.useState<string | null>(null);
   const [isSecureContext] = React.useState(() => {
     return window.isSecureContext || location.protocol === 'https:';
@@ -57,10 +54,6 @@ export function SecurityProvider({ children }: SecurityProviderProps) {
       };
     }
   }, [isSecureContext]);
-
-  if (loading) {
-    return <LoadingState />;
-  }
 
   return (
     <SecurityContext.Provider value={{ csrfToken, isSecureContext }}>
