@@ -81,9 +81,9 @@ export default function CityGuide({ className }: CityGuideProps) {
           </Button>
         </div>
 
-        {/* Filter pills */}
+        {/* Filter pills with scroll snap */}
         <div className="mb-8 lg:mb-12">
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide scroll-snap-x-mandatory scroll-smooth">
             {neighbourhoods.map((neighbourhood) => (
               <Button
                 key={neighbourhood}
@@ -91,8 +91,8 @@ export default function CityGuide({ className }: CityGuideProps) {
                 size="sm"
                 onClick={() => setSelectedNeighbourhood(neighbourhood)}
                 className={cn(
-                  "whitespace-nowrap font-medium tracking-wide",
-                  "sticky top-0 z-10 backdrop-blur-sm",
+                  "whitespace-nowrap font-medium tracking-wide scroll-snap-align-start micro-spring",
+                  "sticky top-0 z-10 backdrop-blur-sm flex-none",
                   selectedNeighbourhood === neighbourhood 
                     ? "bg-primary text-primary-foreground" 
                     : "bg-background/80 hover:bg-background"

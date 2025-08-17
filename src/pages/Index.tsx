@@ -18,6 +18,7 @@ import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { EmptyState } from "@/components/EmptyState";
 import { LoadingState } from "@/components/LoadingState";
+import { WebsiteJsonLD, OrganizationJsonLD, CollectionPageJsonLD } from "@/components/SEOJsonLD";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -207,12 +208,42 @@ export default function Index() {
     setShowCreateDialog(true);
   };
 
+  // Prepare event data for JSON-LD
+  const eventListItems = React.useMemo(() => 
+    events.slice(0, 10).map(event => ({
+      id: event.id,
+      title: event.title,
+      url: `/events/${event.id}`,
+      image: event.image_url
+    })), [events]
+  );
+
   if (loading) {
     return <LoadingState />;
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      {/* SEO structured data */}
+      <WebsiteJsonLD 
+        name="Kolab"
+        url={typeof window !== 'undefined' ? window.location.origin : ''}
+        description="Your backstage pass to the city's best-kept secrets. Discover underground culture, exclusive events, and hidden venues."
+      />
+      <OrganizationJsonLD 
+        name="Kolab"
+        url={typeof window !== 'undefined' ? window.location.origin : ''}
+        description="Underground culture platform connecting you to exclusive events and hidden venues"
+        sameAs={[]}
+      />
+      <CollectionPageJsonLD 
+        name="Tonight's Events"
+        description="Discover the best underground events happening tonight"
+        url={typeof window !== 'undefined' ? `${window.location.origin}/` : '/'}
+        events={eventListItems}
+      />
+      
+      <div className="min-h-screen bg-background">
       <KolabHeader
         onCreateEvent={handleCreateEvent}
         onOpenMessages={() => setShowMessagesDialog(true)}
@@ -401,6 +432,7 @@ export default function Index() {
         open={showAuth}
         onOpenChange={setShowAuth}
       />
-    </div>
+      </div>
+    </>
   );
 }

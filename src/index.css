@@ -527,3 +527,61 @@
     transform: translateX(0) !important;
   }
 }
+
+/* CSS Scroll Snap utilities */
+.scroll-snap-x-mandatory {
+  scroll-snap-type: x mandatory;
+}
+
+.scroll-snap-y-mandatory {
+  scroll-snap-type: y mandatory;
+}
+
+.scroll-snap-align-start {
+  scroll-snap-align: start;
+}
+
+.scroll-snap-align-center {
+  scroll-snap-align: center;
+}
+
+.scroll-snap-align-end {
+  scroll-snap-align: end;
+}
+
+/* Smooth momentum scrolling */
+.scroll-smooth {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbars but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Snap carousel indicator animations */
+.snap-indicator {
+  transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.snap-indicator.active {
+  transform: scale(1.25);
+}
+
+/* Accessibility: Respect motion preferences for scroll snap */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-smooth {
+    scroll-behavior: auto;
+  }
+  
+  .scroll-snap-x-mandatory,
+  .scroll-snap-y-mandatory {
+    scroll-snap-type: none;
+  }
+}

@@ -7,6 +7,7 @@ import EventHeader from "@/features/events/EventHeader"
 import EventGallery from "@/features/events/EventGallery"
 import EventRSVPBar from "@/features/events/EventRSVPBar"
 import { LoadingState } from "@/components/LoadingState"
+import { EventJsonLD, BreadcrumbJsonLD } from "@/components/SEOJsonLD"
 import { editorialData } from "@/data/editorial"
 
 // Extended event data for detail view
@@ -113,8 +114,42 @@ export default function EventDetail() {
     )
   }
 
+  // Format dates for JSON-LD
+  const eventStartDate = new Date()
+  eventStartDate.setHours(23, 0, 0, 0) // Set to 11 PM today
+  const eventEndDate = new Date(eventStartDate)
+  eventEndDate.setHours(eventStartDate.getHours() + 4) // Assume 4-hour events
+
+  const breadcrumbItems = [
+    { name: "Home", url: "/" },
+    { name: "Events", url: "/" },
+    { name: event.title, url: `/events/${event.id}` }
+  ]
+
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      {/* SEO JSON-LD structured data */}
+      <EventJsonLD 
+        event={{
+          id: event.id,
+          title: event.title,
+          description: event.description,
+          startDate: eventStartDate.toISOString(),
+          endDate: eventEndDate.toISOString(),
+          venue: event.venue,
+          venueAddress: event.venueAddress,
+          image: event.image,
+          ticketUrl: event.ticketUrl,
+          organizer: event.organizer,
+          capacity: event.capacity,
+          tags: event.tags,
+          going: event.going,
+          interested: event.interested
+        }}
+      />
+      <BreadcrumbJsonLD items={breadcrumbItems} />
+      
+      <div className="min-h-screen bg-background">
       {/* Back button */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b">
         <div className="container mx-auto px-4 py-4">
@@ -226,6 +261,7 @@ export default function EventDetail() {
           />
         </div>
       </div>
-    </div>
+      </div>
+    </>
   )
 }
