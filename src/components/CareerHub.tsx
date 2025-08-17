@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,8 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Briefcase, MapPin, Clock, Star, Users, Award, Search } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Briefcase, MapPin, Clock, Star, Users, Award, Search, BookmarkPlus, Bookmark, ChevronDown, SlidersHorizontal, Filter, DollarSign } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useViewTransition } from "@/hooks/useViewTransition";
+import { cn } from "@/lib/utils";
 
 // Mock job data
 const mockJobs = [
@@ -17,7 +23,7 @@ const mockJobs = [
     company: "Creative Events Co.",
     location: "New York, NY",
     type: "Full-time",
-    salary: "$45,000 - $60,000",
+    salary: 52500,
     description: "Join our dynamic team to coordinate innovative collaborative events and workshops.",
     requirements: ["2+ years event planning", "Strong communication", "Project management"],
     postedDate: "2 days ago",
@@ -30,7 +36,7 @@ const mockJobs = [
     company: "Tech Startup Hub",
     location: "San Francisco, CA",
     type: "Full-time",
-    salary: "$55,000 - $70,000",
+    salary: 62500,
     description: "Build and manage vibrant tech communities through events and digital engagement.",
     requirements: ["Community building experience", "Social media expertise", "Event management"],
     postedDate: "1 week ago",
@@ -43,7 +49,7 @@ const mockJobs = [
     company: "Various Clients",
     location: "Remote",
     type: "Contract",
-    salary: "$500 - $1,500 per event",
+    salary: 75000,
     description: "Capture stunning moments at collaborative events and creative workshops.",
     requirements: ["Professional portfolio", "Event photography experience", "Own equipment"],
     postedDate: "3 days ago",
@@ -98,36 +104,85 @@ export function CareerHub() {
   const [jobSearchQuery, setJobSearchQuery] = useState("");
   const [jobType, setJobType] = useState("all");
   const [mentorSearchQuery, setMentorSearchQuery] = useState("");
+  const [salaryRange, setSalaryRange] = useState<number[]>([0, 200000]);
+  const [remoteOnly, setRemoteOnly] = useState(false);
+  const [savedJobs, setSavedJobs] = useState<Set<string>>(new Set());
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [sortBy, setSortBy] = useState<string>("relevance");
   const { toast } = useToast();
+  const { updateWithAnimation } = useViewTransition();
 
-  const filteredJobs = jobs.filter(job => {
-    const matchesSearch = !jobSearchQuery || 
-      job.title.toLowerCase().includes(jobSearchQuery.toLowerCase()) ||
-      job.company.toLowerCase().includes(jobSearchQuery.toLowerCase());
-    const matchesType = jobType === "all" || job.type.toLowerCase() === jobType;
-    
-    return matchesSearch && matchesType;
-  });
-
-  const filteredMentors = mentors.filter(mentor => {
-    return !mentorSearchQuery || 
-      mentor.name.toLowerCase().includes(mentorSearchQuery.toLowerCase()) ||
-      mentor.expertise.some(skill => skill.toLowerCase().includes(mentorSearchQuery.toLowerCase()));
-  });
-
-  const handleApplyJob = (jobId: string, jobTitle: string) => {
-    toast({
-      title: "Application Submitted",
-      description: `Your application for ${jobTitle} has been submitted successfully.`,
+  const filteredJobs = useMemo(() => {
+    let filtered = jobs.filter(job => {
+      const matchesSearch = !jobSearchQuery || 
+        job.title.toLowerCase().includes(jobSearchQuery.toLowerCase()) ||
+        job.company.toLowerCase().includes(jobSearchQuery.toLowerCase());
+      const matchesType = jobType === "all" || job.type.toLowerCase() === jobType;
+      const matchesSalary = job.salary >= salaryRange[0] && job.salary <= salaryRange[1];
+      const matchesRemote = !remoteOnly || job.location.toLowerCase().includes("remote");
+      
+      return matchesSearch && matchesType && matchesSalary && matchesRemote;
     });
-  };
 
-  const handleContactMentor = (mentorId: string, mentorName: string) => {
-    toast({
-      title: "Mentorship Request Sent",
-      description: `Your mentorship request to ${mentorName} has been sent.`,
-    });
-  };
+    // Sort jobs
+    if (sortBy === "salary") {
+      filtered.sort((a, b) => b.salary - a.salary);
+    } else if (sortBy === "applicants") {
+      filtered.sort((a, b) => a.applicants - b.applicants);
+    } else if (sortBy === "recent") {
+      filtered.sort((a, b) => new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime());
+    }
+
+    return filtered;
+  }, [jobs, jobSearchQuery, jobType, salaryRange, remoteOnly, sortBy]);
+
+  const filteredMentors = useMemo(() => 
+    mentors.filter(mentor => {
+      return !mentorSearchQuery || 
+        mentor.name.toLowerCase().includes(mentorSearchQuery.toLowerCase()) ||
+        mentor.expertise.some(skill => skill.toLowerCase().includes(mentorSearchQuery.toLowerCase()));
+    }), [mentors, mentorSearchQuery]
+  );
+
+  const handleApplyJob = useCallback(async (jobId: string, jobTitle: string) => {
+    await updateWithAnimation(() => {
+      toast({
+        title: "Application Submitted",
+        description: `Your application for ${jobTitle} has been submitted successfully.`,
+      });
+    }, "micro-spring");
+  }, [toast, updateWithAnimation]);
+
+  const handleContactMentor = useCallback(async (mentorId: string, mentorName: string) => {
+    await updateWithAnimation(() => {
+      toast({
+        title: "Mentorship Request Sent",
+        description: `Your mentorship request to ${mentorName} has been sent.`,
+      });
+    }, "micro-spring");
+  }, [toast, updateWithAnimation]);
+
+  const handleSaveJob = useCallback(async (jobId: string) => {
+    await updateWithAnimation(() => {
+      setSavedJobs(prev => {
+        const newSaved = new Set(prev);
+        if (newSaved.has(jobId)) {
+          newSaved.delete(jobId);
+          toast({
+            title: "Job Removed",
+            description: "Job removed from saved list",
+          });
+        } else {
+          newSaved.add(jobId);
+          toast({
+            title: "Job Saved",
+            description: "Job added to your saved list",
+          });
+        }
+        return newSaved;
+      });
+    }, "micro-bounce");
+  }, [toast, updateWithAnimation]);
 
   return (
     <div className="space-y-8">
@@ -149,35 +204,103 @@ export function CareerHub() {
         {/* Jobs Tab */}
         <TabsContent value="jobs" className="space-y-6">
           {/* Job Search Filters */}
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <div className="w-full lg:w-96 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search jobs..."
-                value={jobSearchQuery}
-                onChange={(e) => setJobSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+          <div className="space-y-4">
+            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+              <div className="w-full lg:w-96 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search jobs..."
+                  value={jobSearchQuery}
+                  onChange={(e) => setJobSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              
+              <div className="flex gap-2">
+                <Select value={jobType} onValueChange={setJobType}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Job Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="full-time">Full-time</SelectItem>
+                    <SelectItem value="part-time">Part-time</SelectItem>
+                    <SelectItem value="contract">Contract</SelectItem>
+                    <SelectItem value="freelance">Freelance</SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="relevance">Relevance</SelectItem>
+                    <SelectItem value="salary">Salary</SelectItem>
+                    <SelectItem value="recent">Most Recent</SelectItem>
+                    <SelectItem value="applicants">Least Applied</SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                  className="micro-spring"
+                >
+                  <SlidersHorizontal className="h-4 w-4 mr-2" />
+                  Filters
+                  <ChevronDown className={cn("h-4 w-4 ml-2 transition-transform", showAdvancedFilters && "rotate-180")} />
+                </Button>
+              </div>
             </div>
-            
-            <Select value={jobType} onValueChange={setJobType}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Job Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="full-time">Full-time</SelectItem>
-                <SelectItem value="part-time">Part-time</SelectItem>
-                <SelectItem value="contract">Contract</SelectItem>
-                <SelectItem value="freelance">Freelance</SelectItem>
-              </SelectContent>
-            </Select>
+
+            <Collapsible open={showAdvancedFilters} onOpenChange={setShowAdvancedFilters}>
+              <CollapsibleContent className="animate-fade-in">
+                <Card className="p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label>Salary Range: ${salaryRange[0].toLocaleString()} - ${salaryRange[1].toLocaleString()}</Label>
+                      <Slider
+                        value={salaryRange}
+                        onValueChange={setSalaryRange}
+                        max={200000}
+                        step={5000}
+                        className="w-full"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Job Type Filter</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {["Full-time", "Part-time", "Contract", "Freelance"].map((type) => (
+                          <Badge
+                            key={type}
+                            variant={jobType === type.toLowerCase() ? "default" : "outline"}
+                            className="cursor-pointer micro-bounce"
+                            onClick={() => setJobType(jobType === type.toLowerCase() ? "all" : type.toLowerCase())}
+                          >
+                            {type}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="remote-only"
+                        checked={remoteOnly}
+                        onCheckedChange={setRemoteOnly}
+                      />
+                      <Label htmlFor="remote-only">Remote Only</Label>
+                    </div>
+                  </div>
+                </Card>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
 
           {/* Jobs List */}
           <div className="space-y-4">
             {filteredJobs.map((job) => (
-              <Card key={job.id} className="kolab-card">
+              <Card key={job.id} className="kolab-card hover-scale transition-all duration-300">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-4">
@@ -190,7 +313,21 @@ export function CareerHub() {
                         <CardDescription className="text-base">{job.company}</CardDescription>
                       </div>
                     </div>
-                    <Badge variant="outline">{job.type}</Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="micro-bounce">{job.type}</Badge>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSaveJob(job.id)}
+                        className="micro-spring"
+                      >
+                        {savedJobs.has(job.id) ? (
+                          <Bookmark className="h-4 w-4 fill-current" />
+                        ) : (
+                          <BookmarkPlus className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
                 </CardHeader>
                 
@@ -203,8 +340,8 @@ export function CareerHub() {
                       {job.location}
                     </div>
                     <div className="flex items-center gap-1">
-                      <Briefcase className="h-4 w-4" />
-                      {job.salary}
+                      <DollarSign className="h-4 w-4" />
+                      ${job.salary.toLocaleString()}
                     </div>
                     <div className="flex items-center gap-1">
                       <Clock className="h-4 w-4" />
@@ -221,7 +358,7 @@ export function CareerHub() {
                     <h4 className="font-medium mb-2">Requirements:</h4>
                     <div className="flex flex-wrap gap-2">
                       {job.requirements.map((req, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
+                        <Badge key={index} variant="secondary" className="text-xs micro-bounce">
                           {req}
                         </Badge>
                       ))}
@@ -230,13 +367,17 @@ export function CareerHub() {
 
                   <div className="flex gap-3 pt-2">
                     <Button 
-                      className="kolab-button-primary"
+                      className="kolab-button-primary micro-rsvp"
                       onClick={() => handleApplyJob(job.id, job.title)}
                     >
                       Apply Now
                     </Button>
-                    <Button variant="outline">
-                      Save Job
+                    <Button 
+                      variant="outline" 
+                      onClick={() => handleSaveJob(job.id)}
+                      className="micro-spring"
+                    >
+                      {savedJobs.has(job.id) ? "Saved" : "Save Job"}
                     </Button>
                   </div>
                 </CardContent>
@@ -261,7 +402,7 @@ export function CareerHub() {
           {/* Mentors Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredMentors.map((mentor) => (
-              <Card key={mentor.id} className="kolab-card">
+              <Card key={mentor.id} className="kolab-card hover-scale transition-all duration-300">
                 <CardHeader className="text-center">
                   <Avatar className="w-20 h-20 mx-auto">
                     <AvatarImage src={mentor.avatar} />
@@ -282,7 +423,7 @@ export function CareerHub() {
                   {/* Expertise Tags */}
                   <div className="flex flex-wrap gap-1">
                     {mentor.expertise.map((skill) => (
-                      <Badge key={skill} variant="outline" className="text-xs">
+                      <Badge key={skill} variant="outline" className="text-xs micro-bounce">
                         {skill}
                       </Badge>
                     ))}
@@ -308,7 +449,7 @@ export function CareerHub() {
                   </div>
 
                   <Button 
-                    className="w-full kolab-button-primary"
+                    className="w-full kolab-button-primary micro-spring"
                     onClick={() => handleContactMentor(mentor.id, mentor.name)}
                   >
                     Request Mentorship
