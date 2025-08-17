@@ -286,7 +286,7 @@ export type Database = {
           image_url: string | null
           latitude: number | null
           longitude: number | null
-          organizer_id: string | null
+          organizer_id: string
           start_at: string
           status: string
           tags: string[] | null
@@ -305,7 +305,7 @@ export type Database = {
           image_url?: string | null
           latitude?: number | null
           longitude?: number | null
-          organizer_id?: string | null
+          organizer_id: string
           start_at: string
           status?: string
           tags?: string[] | null
@@ -324,7 +324,7 @@ export type Database = {
           image_url?: string | null
           latitude?: number | null
           longitude?: number | null
-          organizer_id?: string | null
+          organizer_id?: string
           start_at?: string
           status?: string
           tags?: string[] | null
@@ -1043,6 +1043,29 @@ export type Database = {
         }
         Returns: string
       }
+      get_event_with_privacy: {
+        Args: { event_id: string }
+        Returns: {
+          capacity: number
+          created_at: string
+          description: string
+          end_at: string
+          id: string
+          image_url: string
+          latitude: number
+          longitude: number
+          organizer_id: string
+          organizer_info: Json
+          start_at: string
+          status: string
+          tags: string[]
+          title: string
+          updated_at: string
+          venue_address: string
+          venue_name: string
+          visibility: string
+        }[]
+      }
       get_profile_with_privacy: {
         Args: { target_user_id: string }
         Returns: {
@@ -1058,6 +1081,24 @@ export type Database = {
           skills: string[]
           user_id: string
           website: string
+        }[]
+      }
+      get_public_events: {
+        Args: { event_limit?: number; search_query?: string }
+        Returns: {
+          capacity: number
+          description: string
+          end_at: string
+          id: string
+          image_url: string
+          organizer_avatar: string
+          organizer_handle: string
+          organizer_name: string
+          start_at: string
+          tags: string[]
+          title: string
+          venue_area: string
+          venue_name: string
         }[]
       }
       get_public_profile: {
