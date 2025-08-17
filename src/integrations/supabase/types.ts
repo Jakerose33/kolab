@@ -1043,6 +1043,23 @@ export type Database = {
         }
         Returns: string
       }
+      get_profile_with_privacy: {
+        Args: { target_user_id: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          created_at: string
+          full_name: string
+          handle: string
+          id: string
+          interests: string[]
+          linkedin_url: string
+          location: string
+          skills: string[]
+          user_id: string
+          website: string
+        }[]
+      }
       get_public_profile: {
         Args: { profile_user_id: string }
         Returns: {
@@ -1078,6 +1095,10 @@ export type Database = {
           id: string
           user_id: string
         }[]
+      }
+      get_user_privacy_setting: {
+        Args: { setting_name: string; target_user_id: string }
+        Returns: boolean
       }
       is_user_blocked: {
         Args: { blocked_id: string; blocker_id: string }

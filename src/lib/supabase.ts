@@ -38,16 +38,28 @@ export const getCurrentUser = async () => {
 
 // Profile functions
 export const getUserProfile = async (userId?: string) => {
-  const targetUserId = userId || (await getCurrentUser())?.id;
+  const currentUser = await getCurrentUser();
+  const targetUserId = userId || currentUser?.id;
   if (!targetUserId) return { data: null, error: new Error('No user ID provided') };
 
+  // If requesting own profile, use direct table access
+  if (currentUser?.id === targetUserId) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('user_id', targetUserId)
+      .single();
+    
+    return { data, error };
+  }
+
+  // For other users' profiles, use privacy-aware function
   const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('user_id', targetUserId)
-    .single();
+    .rpc('get_profile_with_privacy', { target_user_id: targetUserId });
   
-  return { data, error };
+  // Convert the function result to match expected format
+  const profileData = data && data.length > 0 ? data[0] : null;
+  return { data: profileData, error };
 };
 
 export const updateUserProfile = async (updates: any) => {
