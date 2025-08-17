@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { CSRFManager } from '@/lib/securityHeaders';
 
 interface SecurityContextType {
@@ -13,12 +13,16 @@ interface SecurityProviderProps {
 }
 
 export function SecurityProvider({ children }: SecurityProviderProps) {
-  const [csrfToken, setCsrfToken] = React.useState<string | null>(null);
-  const [isSecureContext] = React.useState(() => {
+  const [csrfToken, setCsrfToken] = useState<string | null>(null);
+  const [isSecureContext] = useState(() => {
+    if (typeof window === 'undefined') return false;
     return window.isSecureContext || location.protocol === 'https:';
   });
 
   useEffect(() => {
+    // Ensure we're in browser environment
+    if (typeof window === 'undefined') return;
+    
     // Generate CSRF token
     const token = CSRFManager.generateToken();
     setCsrfToken(token);
@@ -43,7 +47,7 @@ export function SecurityProvider({ children }: SecurityProviderProps) {
     }
 
     // Disable right-click context menu in production
-    if (process.env.NODE_ENV === 'production') {
+    if (typeof process !== 'undefined' && process.env.NODE_ENV === 'production') {
       const handleContextMenu = (e: MouseEvent) => {
         e.preventDefault();
       };
