@@ -19,11 +19,11 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				'sans': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-				'display': ['Playfair Display', 'serif'],
-				'heading': ['Inter', 'system-ui', 'sans-serif'],
-				'body': ['Inter', 'system-ui', 'sans-serif'],
-				'accent': ['Montserrat', 'sans-serif'],
+				'sans': ['Inter Variable', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+				'display': ['Playfair Display Variable', 'Playfair Display', 'serif'],
+				'heading': ['Inter Variable', 'Inter', 'system-ui', 'sans-serif'],
+				'body': ['Inter Variable', 'Inter', 'system-ui', 'sans-serif'],
+				'accent': ['Inter Variable', 'Inter', 'sans-serif'],
 			},
 			fontSize: {
 				'xs': ['0.75rem', { lineHeight: '1rem', letterSpacing: '0.02em' }],

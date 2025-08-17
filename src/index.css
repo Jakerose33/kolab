@@ -57,12 +57,12 @@
     
     --radius: 0.25rem;
     
-    /* Enhanced Typography System */
-    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-display: 'Playfair Display', serif;
-    --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-accent: 'Montserrat', sans-serif;
+    /* Enhanced Typography System - Variable fonts with optical sizing */
+    --font-sans: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
+    --font-display: 'Playfair Display Variable', 'Playfair Display', serif;
+    --font-heading: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
+    --font-body: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
+    --font-accent: 'Inter Variable', 'Inter', sans-serif;
     
     /* Typography Scale */
     --text-xs: 0.75rem;
@@ -132,7 +132,8 @@
     @apply bg-background text-foreground;
     font-family: var(--font-body);
     font-feature-settings: 'cv11', 'ss01';
-    font-variation-settings: 'opsz' auto;
+    font-variation-settings: 'opsz' auto, 'wght' 400;
+    font-optical-sizing: auto;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -161,41 +162,59 @@
     @apply bg-transparent border border-transparent text-foreground/80 font-medium py-3 px-6 rounded-lg transition-all duration-300 hover:bg-muted/50 hover:text-foreground;
   }
 
-  /* Typography Classes */
+  /* Typography Classes - Magazine-style with optical sizing */
   .kolab-display-text {
     @apply font-display font-bold text-6xl lg:text-8xl leading-none tracking-tighter bg-gradient-to-br from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent;
+    font-variation-settings: 'opsz' 72, 'wght' 800;
+    font-optical-sizing: auto;
   }
 
   .kolab-hero-text {
     @apply font-heading font-bold text-4xl lg:text-6xl xl:text-7xl leading-tight tracking-tight text-foreground;
+    font-variation-settings: 'opsz' 48, 'wght' 700;
+    font-optical-sizing: auto;
   }
 
   .kolab-heading-large {
     @apply font-heading font-bold text-3xl lg:text-4xl leading-tight tracking-tight text-foreground;
+    font-variation-settings: 'opsz' 32, 'wght' 700;
+    font-optical-sizing: auto;
   }
 
   .kolab-heading-medium {
     @apply font-heading font-semibold text-xl lg:text-2xl leading-snug tracking-normal text-foreground;
+    font-variation-settings: 'opsz' 24, 'wght' 600;
+    font-optical-sizing: auto;
   }
 
   .kolab-heading-small {
     @apply font-heading font-semibold text-lg leading-snug tracking-normal text-foreground;
+    font-variation-settings: 'opsz' 18, 'wght' 600;
+    font-optical-sizing: auto;
   }
 
   .kolab-body-large {
     @apply font-body text-lg leading-relaxed text-foreground/80;
+    font-variation-settings: 'opsz' 18, 'wght' 400;
+    font-optical-sizing: auto;
   }
 
   .kolab-body-text {
     @apply font-body text-base leading-relaxed text-foreground/80;
+    font-variation-settings: 'opsz' 16, 'wght' 400;
+    font-optical-sizing: auto;
   }
 
   .kolab-caption {
     @apply font-body text-sm leading-normal text-muted-foreground;
+    font-variation-settings: 'opsz' 14, 'wght' 400;
+    font-optical-sizing: auto;
   }
 
   .kolab-accent-text {
     @apply font-accent font-medium text-sm uppercase tracking-wider text-primary;
+    font-variation-settings: 'opsz' 14, 'wght' 500;
+    font-optical-sizing: auto;
   }
 
   /* Layout Utilities */
@@ -216,7 +235,7 @@
   }
 }
 
-/* Accessibility improvements */
+/* Enhanced accessibility - Respect motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -225,6 +244,25 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+    transform: none !important;
+  }
+  
+  /* Disable parallax and complex motions */
+  [data-parallax],
+  [data-scroll-animation] {
+    transform: none !important;
+    animation: none !important;
+  }
+  
+  /* Provide fade alternatives for complex animations */
+  .motion-safe\:animate-bounce {
+    animation: none;
+    opacity: 1;
+  }
+  
+  .motion-safe\:animate-pulse {
+    animation: none;
+    opacity: 0.8;
   }
 }
 

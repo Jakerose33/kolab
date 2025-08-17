@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Flame, Eye, ExternalLink, Share2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
+import { useViewTransition } from "@/hooks/useViewTransition"
 
 interface EventRSVPBarProps {
   eventId: string
@@ -31,27 +32,31 @@ export default function EventRSVPBar({
   const [optimisticInterested, setOptimisticInterested] = useState(interested)
   const [optimisticUserRSVP, setOptimisticUserRSVP] = useState(userRSVP)
   const { toast } = useToast()
+  const { rsvpWithAnimation } = useViewTransition()
 
   const handleRSVP = async (status: 'going' | 'interested') => {
     const isCurrentStatus = optimisticUserRSVP === status
     const newStatus = isCurrentStatus ? null : status
     
-    // Optimistic UI updates
-    setOptimisticUserRSVP(newStatus)
     setLoading(status)
 
-    // Update counts optimistically
-    if (optimisticUserRSVP === 'going') {
-      setOptimisticGoing(prev => prev - 1)
-    } else if (optimisticUserRSVP === 'interested') {
-      setOptimisticInterested(prev => prev - 1)
-    }
+    await rsvpWithAnimation(async () => {
+      // Optimistic UI updates
+      setOptimisticUserRSVP(newStatus)
 
-    if (newStatus === 'going') {
-      setOptimisticGoing(prev => prev + 1)
-    } else if (newStatus === 'interested') {
-      setOptimisticInterested(prev => prev + 1)
-    }
+      // Update counts optimistically
+      if (optimisticUserRSVP === 'going') {
+        setOptimisticGoing(prev => prev - 1)
+      } else if (optimisticUserRSVP === 'interested') {
+        setOptimisticInterested(prev => prev - 1)
+      }
+
+      if (newStatus === 'going') {
+        setOptimisticGoing(prev => prev + 1)
+      } else if (newStatus === 'interested') {
+        setOptimisticInterested(prev => prev + 1)
+      }
+    })
 
     try {
       // Simulate API call
@@ -66,9 +71,11 @@ export default function EventRSVPBar({
       })
     } catch (error) {
       // Revert optimistic updates on error
-      setOptimisticGoing(going)
-      setOptimisticInterested(interested)
-      setOptimisticUserRSVP(userRSVP)
+      await rsvpWithAnimation(async () => {
+        setOptimisticGoing(going)
+        setOptimisticInterested(interested)
+        setOptimisticUserRSVP(userRSVP)
+      })
       
       toast({
         title: "Something went wrong",

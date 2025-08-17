@@ -11,6 +11,7 @@ import { SecurityProvider } from "@/components/SecurityProvider";
 import { initAnalytics } from "./lib/analytics";
 import { LazyPages } from "./lib/lazyLoading";
 import { SecurityMiddleware } from "./lib/securityHeaders";
+import { addViewTransitionStyles } from "./lib/viewTransitions";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,9 +30,10 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  // Initialize analytics tracking and security
+  // Initialize analytics tracking, security, and view transitions
   React.useEffect(() => {
     initAnalytics();
+    addViewTransitionStyles();
     
     // Set CSP meta tag
     const meta = document.createElement('meta');
