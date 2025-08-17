@@ -936,6 +936,13 @@ export type Database = {
             referencedRelation: "venues"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "venue_bookings_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       venues: {
@@ -1003,7 +1010,63 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      venues_public: {
+        Row: {
+          address: string | null
+          amenities: string[] | null
+          capacity: number | null
+          created_at: string | null
+          description: string | null
+          hourly_rate: number | null
+          id: string | null
+          images: string[] | null
+          latitude: number | null
+          longitude: number | null
+          name: string | null
+          opening_hours: Json | null
+          owner_id: string | null
+          status: string | null
+          tags: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          amenities?: string[] | null
+          capacity?: number | null
+          created_at?: string | null
+          description?: string | null
+          hourly_rate?: number | null
+          id?: string | null
+          images?: string[] | null
+          latitude?: number | null
+          longitude?: number | null
+          name?: string | null
+          opening_hours?: Json | null
+          owner_id?: string | null
+          status?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          amenities?: string[] | null
+          capacity?: number | null
+          created_at?: string | null
+          description?: string | null
+          hourly_rate?: number | null
+          id?: string | null
+          images?: string[] | null
+          latitude?: number | null
+          longitude?: number | null
+          name?: string | null
+          opening_hours?: Json | null
+          owner_id?: string | null
+          status?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       calculate_daily_metrics: {
