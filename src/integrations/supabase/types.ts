@@ -1071,6 +1071,17 @@ export type Database = {
         Args: { check_role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
       }
+      get_basic_profile_info: {
+        Args: { target_user_id: string }
+        Returns: {
+          avatar_url: string
+          created_at: string
+          full_name: string
+          handle: string
+          id: string
+          user_id: string
+        }[]
+      }
       get_event_with_privacy: {
         Args: { event_id: string }
         Returns: {
@@ -1208,9 +1219,41 @@ export type Database = {
           tags: string[]
         }[]
       }
+      get_user_analytics_masked: {
+        Args: { target_user_id?: string }
+        Returns: {
+          created_at: string
+          event_name: string
+          id: string
+          page_url: string
+          session_id: string
+        }[]
+      }
       get_user_privacy_setting: {
         Args: { setting_name: string; target_user_id: string }
         Returns: boolean
+      }
+      get_venue_public_info: {
+        Args: { venue_id: string }
+        Returns: {
+          address: string
+          amenities: string[]
+          capacity: number
+          created_at: string
+          description: string
+          hourly_rate: number
+          id: string
+          images: string[]
+          latitude: number
+          longitude: number
+          name: string
+          opening_hours: Json
+          owner_avatar: string
+          owner_handle: string
+          owner_name: string
+          status: string
+          tags: string[]
+        }[]
       }
       get_venue_with_contact: {
         Args: { venue_id: string }
