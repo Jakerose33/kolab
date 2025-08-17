@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RoleManager } from "./RoleManager";
 import { 
   BarChart, 
   Bar, 
@@ -260,6 +261,7 @@ export function AdminDashboard() {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="events">Event Activity</TabsTrigger>
           <TabsTrigger value="engagement">User Engagement</TabsTrigger>
+          <TabsTrigger value="roles">Role Management</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
@@ -367,6 +369,10 @@ export function AdminDashboard() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="roles" className="space-y-4">
+          <RoleManager />
         </TabsContent>
       </Tabs>
     </div>
