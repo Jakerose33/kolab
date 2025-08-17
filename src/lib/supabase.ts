@@ -183,43 +183,53 @@ export const getVenues = async (filters?: {
   capacity?: number; 
   limit?: number 
 }) => {
-  let query = supabase
-    .from('venues')
-    .select(`
-      *,
-      profiles!venues_owner_id_fkey(full_name, handle)
-    `)
-    .eq('status', 'active')
-    .order('created_at', { ascending: false });
+  // Use privacy-aware function for public venue listings
+  const { data, error } = await supabase.rpc('get_public_venues', {
+    venue_limit: filters?.limit || 50,
+    search_query: filters?.search || null,
+    venue_tags: filters?.tags || null,
+    min_capacity: filters?.capacity || null
+  });
 
-  if (filters?.search) {
-    query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%,address.ilike.%${filters.search}%`);
-  }
+  // Transform data to match expected Venue interface for compatibility
+  const transformedData = data?.map((venue: any) => ({
+    ...venue,
+    // Map owner info back to profiles structure for compatibility
+    profiles: {
+      full_name: venue.owner_name,
+      handle: venue.owner_handle,
+      avatar_url: venue.owner_avatar
+    },
+    // Remove contact info fields to ensure they're not exposed
+    contact_email: undefined,
+    contact_phone: undefined,
+    owner_id: undefined // Don't expose owner_id in public listings
+  })) || [];
 
-  if (filters?.capacity) {
-    query = query.gte('capacity', filters.capacity);
-  }
-
-  if (filters?.limit) {
-    query = query.limit(filters.limit);
-  }
-
-  const { data, error } = await query;
-  return { data, error };
+  return { data: transformedData, error };
 };
 
+// Get single venue with privacy-aware contact information
 export const getVenue = async (venueId: string) => {
-  const { data, error } = await supabase
-    .from('venues')
-    .select(`
-      *,
-      profiles!venues_owner_id_fkey(full_name, handle, avatar_url)
-    `)
-    .eq('id', venueId)
-    .eq('status', 'active')
-    .single();
+  const { data, error } = await supabase.rpc('get_venue_with_contact', {
+    venue_id: venueId
+  });
+
+  // Convert array result to single object
+  const venueData = data && data.length > 0 ? data[0] : null;
   
-  return { data, error };
+  // Transform data to match expected Venue interface
+  const transformedData = venueData ? {
+    ...venueData,
+    // Map owner_info back to profiles structure for compatibility
+    profiles: venueData.owner_info || {
+      full_name: 'Anonymous',
+      handle: 'anonymous',
+      avatar_url: null
+    }
+  } : null;
+
+  return { data: transformedData, error };
 };
 
 export const bookVenue = async (bookingData: {

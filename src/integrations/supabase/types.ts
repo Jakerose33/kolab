@@ -1137,9 +1137,59 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_public_venues: {
+        Args: {
+          min_capacity?: number
+          search_query?: string
+          venue_limit?: number
+          venue_tags?: string[]
+        }
+        Returns: {
+          address: string
+          amenities: string[]
+          capacity: number
+          description: string
+          hourly_rate: number
+          id: string
+          images: string[]
+          latitude: number
+          longitude: number
+          name: string
+          opening_hours: Json
+          owner_avatar: string
+          owner_handle: string
+          owner_name: string
+          status: string
+          tags: string[]
+        }[]
+      }
       get_user_privacy_setting: {
         Args: { setting_name: string; target_user_id: string }
         Returns: boolean
+      }
+      get_venue_with_contact: {
+        Args: { venue_id: string }
+        Returns: {
+          address: string
+          amenities: string[]
+          capacity: number
+          contact_email: string
+          contact_phone: string
+          created_at: string
+          description: string
+          hourly_rate: number
+          id: string
+          images: string[]
+          latitude: number
+          longitude: number
+          name: string
+          opening_hours: Json
+          owner_id: string
+          owner_info: Json
+          status: string
+          tags: string[]
+          updated_at: string
+        }[]
       }
       is_user_blocked: {
         Args: { blocked_id: string; blocker_id: string }
