@@ -93,21 +93,41 @@ export const createEvent = async (eventData: any) => {
   return { data, error };
 };
 
-export const getEvents = async (filters?: { status?: string; limit?: number }) => {
-  let query = supabase
-    .from('events')
-    .select(`
-      *
-    `)
-    .eq('status', 'published')
-    .order('start_at', { ascending: true });
+export const getEvents = async (filters?: { status?: string; limit?: number; search?: string }) => {
+  // Use the new privacy-aware function for public event listings
+  const { data, error } = await supabase.rpc('get_public_events', {
+    event_limit: filters?.limit || 50,
+    search_query: filters?.search || null
+  });
 
-  if (filters?.limit) {
-    query = query.limit(filters.limit);
-  }
+  // Transform the data to match the expected Event interface
+  const transformedData = data?.map((event: any) => ({
+    ...event,
+    venue_address: event.venue_area, // Map venue_area back to venue_address for compatibility
+    status: 'published', // All public events are published
+    visibility: 'public', // All public events are public
+    organizer_id: null, // Don't expose organizer_id in public listings
+    latitude: null, // Don't expose precise coordinates in public listings
+    longitude: null, // Don't expose precise coordinates in public listings
+    profiles: {
+      full_name: event.organizer_name,
+      handle: event.organizer_handle,
+      avatar_url: event.organizer_avatar
+    }
+  })) || [];
 
-  const { data, error } = await query;
-  return { data, error };
+  return { data: transformedData, error };
+};
+
+// Get single event with full details
+export const getEvent = async (eventId: string) => {
+  const { data, error } = await supabase.rpc('get_event_with_privacy', {
+    event_id: eventId
+  });
+
+  // Convert array result to single object
+  const eventData = data && data.length > 0 ? data[0] : null;
+  return { data: eventData, error };
 };
 
 export const getUserEvents = async () => {
