@@ -358,3 +358,41 @@
 .lazy-image[data-loaded="true"] {
   @apply opacity-100;
 }
+
+/* Performance-by-default with content-visibility */
+.performance-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
+.performance-auto-large {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
+.performance-auto-small {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 300px;
+}
+
+/* Performance optimization for grids */
+.grid-performance {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400px;
+}
+
+/* Specific performance classes for different sections */
+.editorial-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
+.events-grid {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
+.venue-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400px;
+}

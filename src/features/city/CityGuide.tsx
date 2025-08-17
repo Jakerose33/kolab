@@ -62,7 +62,7 @@ export default function CityGuide({ className }: CityGuideProps) {
   const filteredGuides = getGuidesByNeighbourhood(selectedNeighbourhood)
 
   return (
-    <section className={cn("py-16 bg-background-secondary", className)}>
+    <section className={cn("py-16 bg-background-secondary venue-section", className)}>
       <div className="container mx-auto px-4">
         {/* Section header */}
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-12">

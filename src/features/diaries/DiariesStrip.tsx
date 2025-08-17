@@ -176,7 +176,7 @@ export default function DiariesStrip({ className }: DiariesStripProps) {
 
   return (
     <>
-      <section className={cn("py-16 bg-black", className)}>
+      <section className={cn("py-16 bg-black performance-auto-large", className)}>
         <div className="container mx-auto px-4">
           {/* Section header */}
           <div className="mb-12">

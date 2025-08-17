@@ -43,7 +43,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useRealtime } from "@/hooks/useRealtime";
 import { useOfflineQueue } from "@/hooks/useOfflineQueue";
-import { usePerformanceMetrics } from "@/hooks/usePerformanceMetrics";
+import { usePerformanceOptimizations } from "@/hooks/usePerformanceOptimizations";
 import EventMap from "@/components/EventMap";
 import { getEvents, getUserRSVPs } from "@/lib/supabase";
 import React from "react";
@@ -64,7 +64,7 @@ export default function Index() {
   const { toast } = useToast();
   const { user } = useAuth();
   const { isOnline } = useOfflineQueue();
-  usePerformanceMetrics();
+  usePerformanceOptimizations();
 
   // Generate categories from events
   const categories = React.useMemo(() => {

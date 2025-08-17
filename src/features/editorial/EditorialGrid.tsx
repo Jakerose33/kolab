@@ -125,7 +125,7 @@ export default function EditorialGrid({ className }: EditorialGridProps) {
   }
 
   return (
-    <section className={cn("py-16 bg-background", className)}>
+    <section className={cn("py-16 bg-background editorial-section", className)}>
       <div className="container mx-auto px-4">
         {/* Section header with tabs */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-12">
@@ -157,7 +157,7 @@ export default function EditorialGrid({ className }: EditorialGridProps) {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 events-grid">
           {displayEvents.map(event => (
             <EventCard key={event.id} event={event} />
           ))}
