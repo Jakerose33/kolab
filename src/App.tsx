@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { LoadingState } from "@/components/LoadingState";
+import { SecurityProvider } from "@/components/SecurityProvider";
 import { initAnalytics } from "./lib/analytics";
 import { LazyPages } from "./lib/lazyLoading";
 import { SecurityMiddleware } from "./lib/securityHeaders";
@@ -45,12 +46,13 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <OfflineIndicator />
-          <BrowserRouter>
+      <SecurityProvider>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <OfflineIndicator />
+            <BrowserRouter>
             <Suspense fallback={<LoadingState />}>
               <Routes>
                 <Route path="/" element={
@@ -127,8 +129,9 @@ function App() {
               </Routes>
             </Suspense>
           </BrowserRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </SecurityProvider>
     </ErrorBoundary>
   );
 }

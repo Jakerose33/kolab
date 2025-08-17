@@ -110,8 +110,8 @@ export const SecurityMiddleware = {
   },
 };
 
-// Hook for security validation
-export function useSecurity() {
+// Hook for security validation utilities
+export function useSecurityUtils() {
   const sanitize = (input: string) => SecurityMiddleware.sanitizeInput(input);
   const validateEmail = (email: string) => SecurityMiddleware.validateEmail(email);
   const validateURL = (url: string) => SecurityMiddleware.validateURL(url);
