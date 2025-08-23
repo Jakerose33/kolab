@@ -1,27 +1,27 @@
-import { KolabHeader } from "@/components/KolabHeader";
+import { AppLayout } from "@/components/AppLayout";
 import { CareerHub } from "@/components/CareerHub";
 import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
+import { AuthDialog } from "@/components/AuthDialog";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Careers() {
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showMessagesDialog, setShowMessagesDialog] = useState(false);
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
   const { toast } = useToast();
 
   return (
-    <div className="min-h-screen bg-background">
-      <KolabHeader
-        onCreateEvent={() => setShowCreateDialog(true)}
-        onOpenMessages={() => setShowMessagesDialog(true)}
+    <>
+      <AppLayout 
         onOpenNotifications={() => setShowNotificationsDialog(true)}
-      />
-      
-      <main className="container px-4 py-8">
-        <CareerHub />
-      </main>
+        onOpenAuth={() => setShowAuth(true)}
+      >
+        <main className="container px-4 py-8">
+          <CareerHub />
+        </main>
+      </AppLayout>
       
       <MessagesDialog
         open={showMessagesDialog}
@@ -31,6 +31,10 @@ export default function Careers() {
         open={showNotificationsDialog}
         onOpenChange={setShowNotificationsDialog}
       />
-    </div>
+      <AuthDialog
+        open={showAuth}
+        onOpenChange={setShowAuth}
+      />
+    </>
   );
 }

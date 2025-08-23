@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { KolabHeader } from "@/components/KolabHeader";
+import { AppLayout } from "@/components/AppLayout";
 import Hero from "@/features/hero/Hero";
 import EditorialGrid from "@/features/editorial/EditorialGrid";
 import CityGuide from "@/features/city/CityGuide";
 import DiariesStrip from "@/features/diaries/DiariesStrip";
 import CollabsMarquee from "@/features/collabs/CollabsMarquee";
 import { EventCard } from "@/components/EventCard";
+import { MobileEventCard } from "@/components/MobileEventCard";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { CreateEventWizard } from "@/components/CreateEventWizard";
 import { MessagesDialog } from "@/components/MessagesDialog";
@@ -22,7 +23,9 @@ import { WebsiteJsonLD, OrganizationJsonLD, CollectionPageJsonLD } from "@/compo
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { 
   Select,
   SelectContent,
@@ -38,10 +41,13 @@ import {
   Users,
   Clock,
   Search,
-  AlertCircle
+  AlertCircle,
+  SlidersHorizontal,
+  X
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useRealtime } from "@/hooks/useRealtime";
 import { useOfflineQueue } from "@/hooks/useOfflineQueue";
 import { usePerformanceOptimizations } from "@/hooks/usePerformanceOptimizations";
@@ -58,6 +64,8 @@ export default function Index() {
   const [showMessagesDialog, setShowMessagesDialog] = useState(false);
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
+  const [showSearchSheet, setShowSearchSheet] = useState(false);
+  const [showFiltersSheet, setShowFiltersSheet] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState("date");
   const [searchQuery, setSearchQuery] = useState("");
@@ -65,6 +73,7 @@ export default function Index() {
   const { toast } = useToast();
   const { user } = useAuth();
   const { isOnline } = useOfflineQueue();
+  const isMobile = useIsMobile();
   usePerformanceOptimizations();
 
   // Generate categories from events
@@ -243,174 +252,213 @@ export default function Index() {
         events={eventListItems}
       />
       
-      <div className="min-h-screen bg-background">
-      <KolabHeader
-        onCreateEvent={handleCreateEvent}
-        onOpenMessages={() => setShowMessagesDialog(true)}
+      <AppLayout 
         onOpenNotifications={() => setShowNotificationsDialog(true)}
-      />
-      
-      {/* Hero Section */}
-      <Hero />
-      
-      {/* Editorial Grid */}
-      <EditorialGrid />
-      
-      {/* City Guide */}
-      <CityGuide />
-      
-      <main className="container px-4 py-8">
-        <div className="space-y-8">
-          {/* Recommendations Carousel */}
-          <RecommendationsCarousel />
+        onOpenSearch={() => setShowSearchSheet(true)}
+        onOpenAuth={() => setShowAuth(true)}
+      >
+        {/* Hero Section */}
+        <Hero />
+        
+        {/* Editorial Grid */}
+        <EditorialGrid />
+        
+        {/* City Guide */}
+        <CityGuide />
+        
+        <main className="container px-4 py-8">
+          <div className="space-y-8">
+            {/* Search and Filters - Mobile First */}
+            {isMobile ? (
+              <div className="space-y-4">
+                {/* Mobile Search Sheet */}
+                <Sheet open={showSearchSheet} onOpenChange={setShowSearchSheet}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" className="w-full justify-start">
+                      <Search className="h-4 w-4 mr-2" />
+                      Search events...
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="top" className="h-[90vh]">
+                    <SheetHeader>
+                      <SheetTitle>Search Events</SheetTitle>
+                    </SheetHeader>
+                    <div className="space-y-4 pt-4">
+                      <Input
+                        placeholder="Search events, organizers, or topics..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        autoFocus
+                      />
+                      <CategoryFilter 
+                        categories={categories}
+                        selectedCategory={activeCategory}
+                        onCategorySelect={setActiveCategory}
+                      />
+                    </div>
+                  </SheetContent>
+                </Sheet>
 
-          {/* Real-time Activity Feed and Notifications */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <RealtimeActivityFeed />
-            <RealtimeNotificationsList />
-          </div>
+                {/* Mobile Filters */}
+                <div className="flex justify-between items-center">
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="date">Upcoming</SelectItem>
+                      <SelectItem value="popularity">Popular</SelectItem>
+                      <SelectItem value="newest">Recent</SelectItem>
+                    </SelectContent>
+                  </Select>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-4 rounded-lg bg-card border">
-              <div className="text-2xl font-bold text-primary">{events.length}</div>
-              <div className="text-sm text-muted-foreground">Active Events</div>
-            </div>
-            <div className="text-center p-4 rounded-lg bg-card border">
-              <div className="text-2xl font-bold text-primary">1.2k</div>
-              <div className="text-sm text-muted-foreground">Community Members</div>
-            </div>
-            <div className="text-center p-4 rounded-lg bg-card border">
-              <div className="text-2xl font-bold text-primary">{Object.keys(userRSVPs).length}</div>
-              <div className="text-sm text-muted-foreground">Your RSVPs</div>
-            </div>
-            <div className="text-center p-4 rounded-lg bg-card border">
-              <div className="text-2xl font-bold text-primary">23</div>
-              <div className="text-sm text-muted-foreground">Venues Available</div>
-            </div>
-          </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setShowFiltersSheet(true)}
+                  >
+                    <SlidersHorizontal className="h-4 w-4 mr-2" />
+                    Filters
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              /* Desktop Search and Filters */
+              <div className="space-y-4">
+                <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+                  <div className="flex-1 max-w-md">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search events, organizers, or topics..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                      <SelectTrigger className="w-40">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="date">Upcoming</SelectItem>
+                        <SelectItem value="popularity">Most Popular</SelectItem>
+                        <SelectItem value="newest">Recently Added</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
 
-          {/* Search and Filters */}
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <div className="flex-1 max-w-md">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search events, organizers, or topics..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                <CategoryFilter 
+                  categories={categories}
+                  selectedCategory={activeCategory}
+                  onCategorySelect={setActiveCategory}
                 />
               </div>
-            </div>
-            
-            <div className="flex flex-wrap gap-2">
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="date">Upcoming</SelectItem>
-                  <SelectItem value="popularity">Most Popular</SelectItem>
-                  <SelectItem value="newest">Recently Added</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
-                More Filters
-              </Button>
-            </div>
-          </div>
+            )}
 
-          {/* Category Filter */}
-          <CategoryFilter 
-            categories={categories}
-            selectedCategory={activeCategory}
-            onCategorySelect={setActiveCategory}
-          />
-
-          {/* Main Content Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="events" className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                Events ({filteredEvents.length})
-              </TabsTrigger>
-              <TabsTrigger value="map" className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
-                Map View
-              </TabsTrigger>
-              <TabsTrigger value="trending" className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                Trending
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="events" className="space-y-6">
-              {filteredEvents.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredEvents.map((event) => (
+            {/* Events Display */}
+            {filteredEvents.length > 0 ? (
+              <div className={isMobile 
+                ? "space-y-4" 
+                : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              }>
+                {filteredEvents.map((event) => 
+                  isMobile ? (
+                    <MobileEventCard
+                      key={event.id}
+                      event={event}
+                      onShare={() => handleShare(event.id)}
+                      userRSVP={userRSVPs[event.id] as 'going' | 'interested' | undefined}
+                    />
+                  ) : (
                     <EventCard
                       key={event.id}
                       event={event}
-                      onShare={handleShare}
+                      onShare={() => handleShare(event.id)}
                       userRSVP={userRSVPs[event.id] as 'going' | 'interested' | undefined}
                     />
-                  ))}
-                </div>
-              ) : (
-                <EmptyState
-                  icon={Calendar}
-                  title="No events found"
-                  description="No events match your current filters. Try adjusting your search or category selection."
-                  action={{
-                    label: "Create Event",
-                    onClick: () => user ? setShowCreateDialog(true) : setShowAuth(true)
-                  }}
-                />
-              )}
-            </TabsContent>
-
-            <TabsContent value="map" className="space-y-4">
-              <EventMap 
-                events={filteredEvents.map(event => ({
-                  id: event.id,
-                  title: event.title,
-                  description: event.description || "",
-                  location: event.venue_name || "Location TBD",
-                  coordinates: [144.9631 + (Math.random() - 0.5) * 0.1, -37.8136 + (Math.random() - 0.5) * 0.1],
-                  date: event.start_at,
-                  time: new Date(event.start_at).toLocaleTimeString(),
-                  attendees: 0,
-                  capacity: event.capacity || 0,
-                  category: event.tags?.[0] || "event"
-                }))}
-              />
-            </TabsContent>
-
-            <TabsContent value="trending" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredEvents.slice(0, 6).map((event) => (
-                  <EventCard
-                    key={event.id}
-                    event={event}
-                    onShare={handleShare}
-                    userRSVP={userRSVPs[event.id] as 'going' | 'interested' | undefined}
-                  />
-                ))}
+                  )
+                )}
               </div>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </main>
+            ) : (
+              <EmptyState
+                icon={Calendar}
+                title="No events found"
+                description="No events match your current filters. Try adjusting your search or category selection."
+                action={{
+                  label: "Create Event",
+                  onClick: () => user ? setShowCreateDialog(true) : setShowAuth(true)
+                }}
+              />
+            )}
 
-      {/* Collabs Marquee */}
-      <CollabsMarquee />
+            {/* Recommendations Carousel - Only on desktop */}
+            {!isMobile && <RecommendationsCarousel />}
 
-      {/* Kolab Diaries Strip */}
-      <DiariesStrip />
+            {/* Real-time Activity Feed - Only on desktop */}
+            {!isMobile && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <RealtimeActivityFeed />
+                <RealtimeNotificationsList />
+              </div>
+            )}
 
+            {/* Quick Stats - Mobile optimized */}
+            <div className={`grid ${isMobile ? 'grid-cols-2 gap-3' : 'grid-cols-2 md:grid-cols-4 gap-4'}`}>
+              <Card className="p-4 text-center">
+                <CardContent className="p-0">
+                  <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-primary`}>
+                    {events.length}
+                  </div>
+                  <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
+                    Active Events
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="p-4 text-center">
+                <CardContent className="p-0">
+                  <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-primary`}>
+                    1.2k
+                  </div>
+                  <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
+                    Members
+                  </div>
+                </CardContent>
+              </Card>
+              {!isMobile && (
+                <>
+                  <Card className="p-4 text-center">
+                    <CardContent className="p-0">
+                      <div className="text-2xl font-bold text-primary">
+                        {Object.keys(userRSVPs).length}
+                      </div>
+                      <div className="text-sm text-muted-foreground">Your RSVPs</div>
+                    </CardContent>
+                  </Card>
+                  <Card className="p-4 text-center">
+                    <CardContent className="p-0">
+                      <div className="text-2xl font-bold text-primary">23</div>
+                      <div className="text-sm text-muted-foreground">Venues</div>
+                    </CardContent>
+                  </Card>
+                </>
+              )}
+            </div>
+          </div>
+        </main>
+
+        {/* Collabs Marquee */}
+        <CollabsMarquee />
+
+        {/* Kolab Diaries Strip */}
+        <DiariesStrip />
+      </AppLayout>
+
+      
       <CreateEventWizard
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
@@ -432,7 +480,6 @@ export default function Index() {
         open={showAuth}
         onOpenChange={setShowAuth}
       />
-      </div>
     </>
   );
 }
