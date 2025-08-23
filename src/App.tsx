@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -31,7 +31,7 @@ const queryClient = new QueryClient({
 
 function App() {
   // Initialize analytics tracking, security, and view transitions
-  React.useEffect(() => {
+  useEffect(() => {
     initAnalytics();
     addViewTransitionStyles();
     
