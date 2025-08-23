@@ -27,7 +27,7 @@ export function useSecureAuth() {
   }, []);
 
   // Secure sign up with validation and rate limiting
-  const signUp = useCallback(async (email: string, password: string, userData?: any) => {
+  const signUp = useCallback(async (email: string, password: string, fullName?: string) => {
     const clientId = window.navigator.userAgent;
     
     // Rate limiting check
@@ -51,25 +51,33 @@ export function useSecureAuth() {
         password: validatedPassword,
         options: {
           emailRedirectTo: redirectUrl,
-          data: userData ? {
-            ...userData,
-            full_name: UserValidation.name.parse(userData.full_name || ''),
+          data: fullName ? {
+            full_name: UserValidation.name.parse(fullName),
           } : undefined,
         }
       });
 
       if (error) {
+        // Handle specific error cases
+        if (error.message === 'User already registered') {
+          toast({
+            title: "Account Already Exists",
+            description: "This email is already registered. Try signing in instead, or check your email for a confirmation link.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Sign Up Failed",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
         setAuthState(prev => ({ ...prev, error: error.message }));
-        toast({
-          title: "Sign Up Failed",
-          description: error.message,
-          variant: "destructive",
-        });
       } else {
         rateLimiters.auth.reset(clientId);
         toast({
-          title: "Sign Up Successful",
-          description: "Please check your email to verify your account.",
+          title: "Check Your Email",
+          description: "We've sent you a confirmation link. Click it to activate your account.",
         });
       }
 

@@ -13,12 +13,11 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { signUp, signIn } from "@/lib/supabase";
 
 export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { user, loading } = useAuth();
+  const { user, loading, signUp, signIn } = useAuth();
 
   // Redirect if already authenticated
   if (loading) {
@@ -44,21 +43,11 @@ export default function Auth() {
       const name = formData.get('name') as string;
 
       if (type === 'signup') {
-        const { data, error } = await signUp(email, password, { full_name: name });
+        const { error } = await signUp(email, password, name);
         if (error) throw error;
-        
-        toast({
-          title: "Account created!",
-          description: "Check your email to verify your account.",
-        });
       } else {
-        const { data, error } = await signIn(email, password);
+        const { error } = await signIn(email, password);
         if (error) throw error;
-        
-        toast({
-          title: "Welcome back!",
-          description: "You've been successfully logged in.",
-        });
       }
     } catch (error: any) {
       toast({
