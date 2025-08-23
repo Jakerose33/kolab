@@ -229,7 +229,14 @@ export function NotificationsDrawer({ open, onOpenChange }: NotificationsDrawerP
                   Mark all read
                 </Button>
               )}
-              <Button variant="ghost" size="icon">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => {
+                  navigate('/settings');
+                  onOpenChange(false);
+                }}
+              >
                 <Settings className="h-4 w-4" />
               </Button>
             </div>
