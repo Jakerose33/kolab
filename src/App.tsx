@@ -1,3 +1,4 @@
+
 import React, { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -28,8 +29,8 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <ErrorBoundary>
-      <SecurityProvider>
-        <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <SecurityProvider>
           <TooltipProvider>
             <Toaster />
             <Sonner />
@@ -117,8 +118,8 @@ function App() {
               </Suspense>
             </BrowserRouter>
           </TooltipProvider>
-        </QueryClientProvider>
-      </SecurityProvider>
+        </SecurityProvider>
+      </QueryClientProvider>
     </ErrorBoundary>
   );
 }
