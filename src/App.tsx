@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,10 +8,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { LoadingState } from "@/components/LoadingState";
 import { SecurityProvider } from "@/components/SecurityProvider";
-import { initAnalytics } from "./lib/analytics";
 import { LazyPages } from "./lib/lazyLoading";
-import { SecurityMiddleware } from "./lib/securityHeaders";
-import { addViewTransitionStyles } from "./lib/viewTransitions";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,22 +27,6 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  // Initialize analytics tracking, security, and view transitions
-  useEffect(() => {
-    initAnalytics();
-    addViewTransitionStyles();
-    
-    // Set CSP meta tag
-    const meta = document.createElement('meta');
-    meta.httpEquiv = 'Content-Security-Policy';
-    meta.content = SecurityMiddleware.generateCSP();
-    document.head.appendChild(meta);
-    
-    return () => {
-      document.head.removeChild(meta);
-    };
-  }, []);
-
   return (
     <ErrorBoundary>
       <SecurityProvider>
@@ -60,6 +41,11 @@ function App() {
                 <Route path="/" element={
                   <ErrorBoundary>
                     <LazyPages.Index />
+                  </ErrorBoundary>
+                } />
+                <Route path="/events" element={
+                  <ErrorBoundary>
+                    <LazyPages.Events />
                   </ErrorBoundary>
                 } />
                 <Route path="/events/:id" element={
@@ -80,11 +66,6 @@ function App() {
                 <Route path="/social" element={
                   <ErrorBoundary>
                     <LazyPages.Social />
-                  </ErrorBoundary>
-                } />
-                <Route path="/events" element={
-                  <ErrorBoundary>
-                    <LazyPages.Events />
                   </ErrorBoundary>
                 } />
                 <Route path="/careers" element={
