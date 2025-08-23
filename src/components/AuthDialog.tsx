@@ -68,7 +68,7 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
             Welcome to Kolab
           </DialogTitle>
           <DialogDescription className="text-center text-muted-foreground">
-            Join the community and start collaborating
+            Join the community and start collaborating with creators
           </DialogDescription>
         </DialogHeader>
 
