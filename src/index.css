@@ -41,6 +41,15 @@
     --input: 0 0% 96%;
     --ring: 0 0% 8%;
     
+    /* Sidebar Colors */
+    --sidebar: 0 0% 98%;
+    --sidebar-foreground: 0 0% 15%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-primary: 0 0% 8%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 0 0% 95%;
+    --sidebar-accent-foreground: 0 0% 8%;
+    
     /* Gradients - Vibrant and dynamic */
     --gradient-primary: linear-gradient(135deg, hsl(280 100% 70%), hsl(260 100% 75%), hsl(240 100% 80%));
     --gradient-accent: linear-gradient(135deg, hsl(210 100% 56%), hsl(210 80% 48%));
@@ -113,6 +122,15 @@
     --border: 220 16% 15%;
     --input: 220 16% 15%;
     --ring: 0 84% 60%;
+    
+    /* Dark Sidebar Colors */
+    --sidebar: 220 16% 8%;
+    --sidebar-foreground: 220 14% 85%;
+    --sidebar-border: 220 16% 15%;
+    --sidebar-primary: 220 14% 96%;
+    --sidebar-primary-foreground: 220 16% 8%;
+    --sidebar-accent: 220 16% 12%;
+    --sidebar-accent-foreground: 220 14% 85%;
     
     /* Dark gradients */
     --gradient-primary: linear-gradient(135deg, hsl(0 84% 60%), hsl(0 70% 50%));
