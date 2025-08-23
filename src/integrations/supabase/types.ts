@@ -336,6 +336,143 @@ export type Database = {
         }
         Relationships: []
       }
+      job_applications: {
+        Row: {
+          applicant_id: string
+          applied_at: string
+          cover_letter: string | null
+          id: string
+          job_id: string
+          resume_url: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          applicant_id: string
+          applied_at?: string
+          cover_letter?: string | null
+          id?: string
+          job_id: string
+          resume_url?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          applicant_id?: string
+          applied_at?: string
+          cover_letter?: string | null
+          id?: string
+          job_id?: string
+          resume_url?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jobs: {
+        Row: {
+          application_count: number | null
+          application_deadline: string | null
+          benefits: string[] | null
+          company: string
+          created_at: string
+          currency: string | null
+          description: string
+          id: string
+          is_active: boolean | null
+          is_remote: boolean | null
+          job_type: string
+          location: string
+          posted_by: string | null
+          requirements: string[] | null
+          salary_max: number | null
+          salary_min: number | null
+          title: string
+          updated_at: string
+          view_count: number | null
+        }
+        Insert: {
+          application_count?: number | null
+          application_deadline?: string | null
+          benefits?: string[] | null
+          company: string
+          created_at?: string
+          currency?: string | null
+          description: string
+          id?: string
+          is_active?: boolean | null
+          is_remote?: boolean | null
+          job_type: string
+          location: string
+          posted_by?: string | null
+          requirements?: string[] | null
+          salary_max?: number | null
+          salary_min?: number | null
+          title: string
+          updated_at?: string
+          view_count?: number | null
+        }
+        Update: {
+          application_count?: number | null
+          application_deadline?: string | null
+          benefits?: string[] | null
+          company?: string
+          created_at?: string
+          currency?: string | null
+          description?: string
+          id?: string
+          is_active?: boolean | null
+          is_remote?: boolean | null
+          job_type?: string
+          location?: string
+          posted_by?: string | null
+          requirements?: string[] | null
+          salary_max?: number | null
+          salary_min?: number | null
+          title?: string
+          updated_at?: string
+          view_count?: number | null
+        }
+        Relationships: []
+      }
+      mentor_requests: {
+        Row: {
+          id: string
+          mentee_id: string
+          mentor_id: string
+          message: string | null
+          requested_at: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          mentee_id: string
+          mentor_id: string
+          message?: string | null
+          requested_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          mentee_id?: string
+          mentor_id?: string
+          message?: string | null
+          requested_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           attachment_url: string | null
@@ -614,12 +751,20 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           created_at: string
+          experience_level: string | null
           full_name: string | null
+          github_url: string | null
           handle: string | null
+          hourly_rate: number | null
           id: string
           interests: string[] | null
+          is_mentor: boolean | null
           linkedin_url: string | null
           location: string | null
+          mentor_bio: string | null
+          mentor_expertise: string[] | null
+          portfolio_url: string | null
+          resume_url: string | null
           skills: string[] | null
           updated_at: string
           user_id: string
@@ -629,12 +774,20 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          experience_level?: string | null
           full_name?: string | null
+          github_url?: string | null
           handle?: string | null
+          hourly_rate?: number | null
           id?: string
           interests?: string[] | null
+          is_mentor?: boolean | null
           linkedin_url?: string | null
           location?: string | null
+          mentor_bio?: string | null
+          mentor_expertise?: string[] | null
+          portfolio_url?: string | null
+          resume_url?: string | null
           skills?: string[] | null
           updated_at?: string
           user_id: string
@@ -644,12 +797,20 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          experience_level?: string | null
           full_name?: string | null
+          github_url?: string | null
           handle?: string | null
+          hourly_rate?: number | null
           id?: string
           interests?: string[] | null
+          is_mentor?: boolean | null
           linkedin_url?: string | null
           location?: string | null
+          mentor_bio?: string | null
+          mentor_expertise?: string[] | null
+          portfolio_url?: string | null
+          resume_url?: string | null
           skills?: string[] | null
           updated_at?: string
           user_id?: string
@@ -686,6 +847,35 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      saved_jobs: {
+        Row: {
+          id: string
+          job_id: string
+          saved_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          job_id: string
+          saved_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          job_id?: string
+          saved_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_jobs_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       saved_searches: {
         Row: {
@@ -1337,6 +1527,10 @@ export type Database = {
           check_user_id: string
         }
         Returns: boolean
+      }
+      increment_job_view_count: {
+        Args: { job_uuid: string }
+        Returns: undefined
       }
       is_admin_or_moderator: {
         Args: { check_user_id?: string }
