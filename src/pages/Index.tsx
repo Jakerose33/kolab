@@ -7,6 +7,7 @@ import DiariesStrip from "@/features/diaries/DiariesStrip";
 import CollabsMarquee from "@/features/collabs/CollabsMarquee";
 import { EventCard } from "@/components/EventCard";
 import { MobileEventCard } from "@/components/MobileEventCard";
+import { PreviewEventCard } from "@/components/PreviewEventCard";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { CreateEventWizard } from "@/components/CreateEventWizard";
 import { MessagesDialog } from "@/components/MessagesDialog";
@@ -366,23 +367,33 @@ export default function Index() {
                 ? "space-y-4" 
                 : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               }>
-                {filteredEvents.map((event) => 
-                  isMobile ? (
-                    <MobileEventCard
-                      key={event.id}
-                      event={event}
-                      onShare={() => handleShare(event.id)}
-                      userRSVP={userRSVPs[event.id] as 'going' | 'interested' | undefined}
-                    />
-                  ) : (
-                    <EventCard
-                      key={event.id}
-                      event={event}
-                      onShare={() => handleShare(event.id)}
-                      userRSVP={userRSVPs[event.id] as 'going' | 'interested' | undefined}
-                    />
-                  )
-                )}
+                {filteredEvents.map((event) => {
+                  if (user) {
+                    return isMobile ? (
+                      <MobileEventCard
+                        key={event.id}
+                        event={event}
+                        onShare={() => handleShare(event.id)}
+                        userRSVP={userRSVPs[event.id] as 'going' | 'interested' | undefined}
+                      />
+                    ) : (
+                      <EventCard
+                        key={event.id}
+                        event={event}
+                        onShare={() => handleShare(event.id)}
+                        userRSVP={userRSVPs[event.id] as 'going' | 'interested' | undefined}
+                      />
+                    );
+                  } else {
+                    return (
+                      <PreviewEventCard
+                        key={event.id}
+                        event={event}
+                        onSignInRequired={() => setShowAuth(true)}
+                      />
+                    );
+                  }
+                })}
               </div>
             ) : (
               <EmptyState

@@ -1,5 +1,6 @@
 import { AppLayout } from "@/components/AppLayout";
 import { VenueBooking } from "@/components/VenueBooking";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { AuthDialog } from "@/components/AuthDialog";
@@ -20,9 +21,11 @@ export default function Venues() {
         onOpenNotifications={() => setShowNotificationsDialog(true)}
         onOpenAuth={() => setShowAuth(true)}
       >
-        <main className="container px-4 py-8">
-          <VenueBooking />
-        </main>
+        <ProtectedRoute>
+          <main className="container px-4 py-8">
+            <VenueBooking />
+          </main>
+        </ProtectedRoute>
       </AppLayout>
       
       <CreateEventWizard

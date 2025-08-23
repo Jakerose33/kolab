@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { KolabHeader } from "@/components/KolabHeader";
-import { CreateEventWizard } from "@/components/CreateEventWizard";
+import { AppLayout } from "@/components/AppLayout";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { PreviewMessagesList } from "@/components/PreviewMessagesList";
 import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
+import { AuthDialog } from "@/components/AuthDialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,7 +85,7 @@ const mockMessages = [
 
 export default function Messages() {
   const { toast } = useToast();
-  const [showCreateEvent, setShowCreateEvent] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
   const [showMessages, setShowMessages] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [selectedConversation, setSelectedConversation] = useState(mockConversations[1]);
@@ -95,7 +97,6 @@ export default function Messages() {
       title: "Event Created",
       description: `${eventData.title} has been created successfully.`,
     });
-    setShowCreateEvent(false);
   };
 
   const filteredConversations = mockConversations.filter(conv =>
@@ -113,14 +114,20 @@ export default function Messages() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <KolabHeader 
-        onCreateEvent={() => setShowCreateEvent(true)}
-        onOpenMessages={() => setShowMessages(true)}
+    <>
+      <AppLayout 
         onOpenNotifications={() => setShowNotifications(true)}
-      />
-
-      <div className="container mx-auto px-4 py-8">
+        onOpenAuth={() => setShowAuth(true)}
+      >
+        <ProtectedRoute 
+          showPreview={true}
+          fallback={
+            <main className="container px-4 py-8">
+              <PreviewMessagesList onSignInRequired={() => setShowAuth(true)} />
+            </main>
+          }
+        >
+          <main className="container px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Messages</h1>
           <p className="text-muted-foreground">
@@ -293,15 +300,10 @@ export default function Messages() {
               </div>
             )}
           </Card>
-        </div>
-      </div>
-
-      {/* Dialogs */}
-      <CreateEventWizard
-        open={showCreateEvent}
-        onOpenChange={setShowCreateEvent}
-        onCreateEvent={handleCreateEvent}
-      />
+          </div>
+          </main>
+        </ProtectedRoute>
+      </AppLayout>
       
       <MessagesDialog
         open={showMessages}
@@ -312,6 +314,11 @@ export default function Messages() {
         open={showNotifications}
         onOpenChange={setShowNotifications}
       />
-    </div>
+
+      <AuthDialog
+        open={showAuth}
+        onOpenChange={setShowAuth}
+      />
+    </>
   );
 }

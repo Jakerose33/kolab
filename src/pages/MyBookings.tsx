@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import { KolabHeader } from "@/components/KolabHeader";
+import { AppLayout } from "@/components/AppLayout";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { CreateEventWizard } from "@/components/CreateEventWizard";
 import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
+import { AuthDialog } from "@/components/AuthDialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -157,7 +159,7 @@ const mockBookings = [
 ];
 
 export default function MyBookings() {
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
   const [showMessagesDialog, setShowMessagesDialog] = useState(false);
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
   const [bookings, setBookings] = useState(mockBookings);
@@ -331,14 +333,13 @@ export default function MyBookings() {
   const pastBookings = filteredAndSortedBookings.filter(b => b.status === "cancelled");
 
   return (
-    <div className="min-h-screen bg-background">
-      <KolabHeader
-        onCreateEvent={() => setShowCreateDialog(true)}
-        onOpenMessages={() => setShowMessagesDialog(true)}
+    <>
+      <AppLayout 
         onOpenNotifications={() => setShowNotificationsDialog(true)}
-      />
-      
-      <main className="container px-4 py-8">
+        onOpenAuth={() => setShowAuth(true)}
+      >
+        <ProtectedRoute>
+          <main className="container px-4 py-8">
         <div className="space-y-8">
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-bold">My Bookings</h1>
@@ -631,19 +632,10 @@ export default function MyBookings() {
               )}
             </TabsContent>
           </Tabs>
-        </div>
-      </main>
-      
-      <CreateEventWizard
-        open={showCreateDialog}
-        onOpenChange={setShowCreateDialog}
-        onCreateEvent={(eventData) => {
-          toast({
-            title: "Event Created",
-            description: `${eventData.title} has been created successfully.`,
-          });
-        }}
-      />
+          </div>
+          </main>
+        </ProtectedRoute>
+      </AppLayout>
       
       <MessagesDialog
         open={showMessagesDialog}
@@ -654,6 +646,10 @@ export default function MyBookings() {
         open={showNotificationsDialog}
         onOpenChange={setShowNotificationsDialog}
       />
-    </div>
+      <AuthDialog
+        open={showAuth}
+        onOpenChange={setShowAuth}
+      />
+    </>
   );
 }

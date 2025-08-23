@@ -1,4 +1,5 @@
-import { KolabHeader } from "@/components/KolabHeader";
+import { AppLayout } from "@/components/AppLayout";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,9 +15,10 @@ import { useToast } from "@/hooks/use-toast";
 import { User, Edit2, Camera, MapPin, Briefcase, Calendar, Star, Award } from "lucide-react";
 import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
+import { AuthDialog } from "@/components/AuthDialog";
 
 export default function Profile() {
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
   const [showMessagesDialog, setShowMessagesDialog] = useState(false);
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -61,14 +63,13 @@ export default function Profile() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <KolabHeader
-        onCreateEvent={() => setShowCreateDialog(true)}
-        onOpenMessages={() => setShowMessagesDialog(true)}
+    <>
+      <AppLayout 
         onOpenNotifications={() => setShowNotificationsDialog(true)}
-      />
-      
-      <main className="container px-4 py-8 max-w-4xl">
+        onOpenAuth={() => setShowAuth(true)}
+      >
+        <ProtectedRoute>
+          <main className="container px-4 py-8 max-w-4xl">
         <div className="space-y-8">
           {/* Profile Header */}
           <Card className="kolab-card">
@@ -223,8 +224,10 @@ export default function Profile() {
               </div>
             </CardContent>
           </Card>
-        </div>
-      </main>
+          </div>
+          </main>
+        </ProtectedRoute>
+      </AppLayout>
       
       <MessagesDialog
         open={showMessagesDialog}
@@ -234,6 +237,10 @@ export default function Profile() {
         open={showNotificationsDialog}
         onOpenChange={setShowNotificationsDialog}
       />
-    </div>
+      <AuthDialog
+        open={showAuth}
+        onOpenChange={setShowAuth}
+      />
+    </>
   );
 }

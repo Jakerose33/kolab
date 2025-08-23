@@ -1,5 +1,6 @@
 import { AppLayout } from "@/components/AppLayout";
 import { CareerHub } from "@/components/CareerHub";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { AuthDialog } from "@/components/AuthDialog";
@@ -18,9 +19,11 @@ export default function Careers() {
         onOpenNotifications={() => setShowNotificationsDialog(true)}
         onOpenAuth={() => setShowAuth(true)}
       >
-        <main className="container px-4 py-8">
-          <CareerHub />
-        </main>
+        <ProtectedRoute>
+          <main className="container px-4 py-8">
+            <CareerHub />
+          </main>
+        </ProtectedRoute>
       </AppLayout>
       
       <MessagesDialog

@@ -1,5 +1,6 @@
 import { AppLayout } from "@/components/AppLayout";
 import { EventCard } from "@/components/EventCard";
+import { PreviewEventCard } from "@/components/PreviewEventCard";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
@@ -8,6 +9,7 @@ import { CreateEventWizard } from "@/components/CreateEventWizard";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/hooks/useAuth";
 
 // Sample events data
 const sampleEvents = [
@@ -87,6 +89,7 @@ export default function Events() {
   const [showAuth, setShowAuth] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const { toast } = useToast();
+  const { user } = useAuth();
   const isMobile = useIsMobile();
 
   return (
@@ -113,13 +116,21 @@ export default function Events() {
             
             {/* Events Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sampleEvents.map((event) => (
-                <EventCard 
-                  key={event.id} 
-                  event={event}
-                  onShare={(eventId) => toast({ title: "Event shared!" })}
-                />
-              ))}
+              {sampleEvents.map((event) => 
+                user ? (
+                  <EventCard 
+                    key={event.id} 
+                    event={event}
+                    onShare={(eventId) => toast({ title: "Event shared!" })}
+                  />
+                ) : (
+                  <PreviewEventCard 
+                    key={event.id} 
+                    event={event}
+                    onSignInRequired={() => setShowAuth(true)}
+                  />
+                )
+              )}
             </div>
           </div>
         </main>

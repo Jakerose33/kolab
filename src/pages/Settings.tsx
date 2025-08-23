@@ -1,4 +1,5 @@
-import { KolabHeader } from "@/components/KolabHeader";
+import { AppLayout } from "@/components/AppLayout";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,12 +13,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Bell, Shield, User, Palette, Globe, Smartphone, Download } from "lucide-react";
 import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
+import { AuthDialog } from "@/components/AuthDialog";
 import { NotificationPreferences } from "@/components/NotificationPreferences";
 import { PushNotificationManager } from "@/components/PushNotificationManager";
 import { PrivacyControls } from "@/components/PrivacyControls";
 
 export default function Settings() {
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
   const [showMessagesDialog, setShowMessagesDialog] = useState(false);
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
   const [settings, setSettings] = useState({
@@ -66,14 +68,13 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <KolabHeader
-        onCreateEvent={() => setShowCreateDialog(true)}
-        onOpenMessages={() => setShowMessagesDialog(true)}
+    <>
+      <AppLayout 
         onOpenNotifications={() => setShowNotificationsDialog(true)}
-      />
-      
-      <main className="container px-4 py-8 max-w-4xl">
+        onOpenAuth={() => setShowAuth(true)}
+      >
+        <ProtectedRoute>
+          <main className="container px-4 py-8 max-w-4xl">
         <div className="space-y-8">
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-bold">Settings</h1>
@@ -321,8 +322,10 @@ export default function Settings() {
               Save All Settings
             </Button>
           </div>
-        </div>
-      </main>
+          </div>
+          </main>
+        </ProtectedRoute>
+      </AppLayout>
       
       <MessagesDialog
         open={showMessagesDialog}
@@ -332,6 +335,10 @@ export default function Settings() {
         open={showNotificationsDialog}
         onOpenChange={setShowNotificationsDialog}
       />
-    </div>
+      <AuthDialog
+        open={showAuth}
+        onOpenChange={setShowAuth}
+      />
+    </>
   );
 }
