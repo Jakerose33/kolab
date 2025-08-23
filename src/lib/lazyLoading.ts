@@ -3,6 +3,7 @@ import { lazy } from 'react';
 // Lazy load pages with loading states
 export const LazyPages = {
   Index: lazy(() => import('@/pages/Index')),
+  Events: lazy(() => import('@/pages/Events')),
   EventDetail: lazy(() => import('@/pages/EventDetail')),
   JournalArchive: lazy(() => import('@/pages/JournalArchive')),
   Venues: lazy(() => import('@/pages/Venues')),

@@ -82,6 +82,11 @@ function App() {
                     <LazyPages.Social />
                   </ErrorBoundary>
                 } />
+                <Route path="/events" element={
+                  <ErrorBoundary>
+                    <LazyPages.Events />
+                  </ErrorBoundary>
+                } />
                 <Route path="/careers" element={
                   <ErrorBoundary>
                     <LazyPages.Careers />
