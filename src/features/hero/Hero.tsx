@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Flame, Eye } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useViewTransition } from "@/hooks/useViewTransition"
 import heroImage from "@/assets/hero-boiler-room.jpg"
 
 interface HeroProps {
@@ -8,6 +9,16 @@ interface HeroProps {
 }
 
 export default function Hero({ className }: HeroProps) {
+  const { navigateWithAnimation } = useViewTransition();
+
+  const handleTonightClick = () => {
+    navigateWithAnimation('/search?filter=today');
+  };
+
+  const handleExploreVenuesClick = () => {
+    navigateWithAnimation('/venues');
+  };
+
   return (
     <section className={cn(
       "relative min-h-[80vh] md:min-h-[90vh] overflow-hidden bg-black",
@@ -51,6 +62,7 @@ export default function Hero({ className }: HeroProps) {
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
               <Button 
                 size="lg"
+                onClick={handleTonightClick}
                 className="kolab-button-primary bg-white text-black hover:bg-white/90 hover:scale-105 transition-all duration-300 font-semibold px-10 py-4 h-auto text-base shadow-premium"
               >
                 <Flame className="w-5 h-5 mr-2 text-red-500" />
@@ -60,6 +72,7 @@ export default function Hero({ className }: HeroProps) {
               <Button 
                 variant="outline"
                 size="lg"
+                onClick={handleExploreVenuesClick}
                 className="kolab-glass border-white/20 bg-white/10 text-black hover:bg-white/20 hover:border-white/40 transition-all duration-300 font-semibold px-10 py-4 h-auto text-base backdrop-blur-md"
               >
                 <Eye className="w-5 h-5 mr-2" />
