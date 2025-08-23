@@ -1,7 +1,6 @@
 import { useForm, UseFormProps, FieldValues, Path } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useSecurity } from '@/components/SecurityProvider';
 import { sanitizeInput, rateLimiters } from '@/lib/validation';
 import { useToast } from '@/hooks/use-toast';
 
@@ -17,7 +16,6 @@ export function useSecureForm<T extends FieldValues>({
   sanitizeFields = [],
   ...formOptions
 }: SecureFormOptions<T>) {
-  const { csrfToken } = useSecurity();
   const { toast } = useToast();
 
   const form = useForm<T>({
@@ -53,10 +51,7 @@ export function useSecureForm<T extends FieldValues>({
         }
       });
 
-      // Add CSRF token if available
-      if (csrfToken) {
-        (sanitizedData as any)._csrf = csrfToken;
-      }
+      // CSRF protection removed for now
 
       try {
         await onSubmit(sanitizedData);
