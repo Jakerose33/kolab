@@ -139,6 +139,26 @@ function App() {
                       <LazyPages.AboutUs />
                     </ErrorBoundary>
                   } />
+                  <Route path="/contact" element={
+                    <ErrorBoundary>
+                      <LazyPages.Contact />
+                    </ErrorBoundary>
+                  } />
+                  <Route path="/help" element={
+                    <ErrorBoundary>
+                      <LazyPages.Help />
+                    </ErrorBoundary>
+                  } />
+                  <Route path="/safety" element={
+                    <ErrorBoundary>
+                      <LazyPages.Safety />
+                    </ErrorBoundary>
+                  } />
+                  <Route path="/cookies" element={
+                    <ErrorBoundary>
+                      <LazyPages.CookiePolicy />
+                    </ErrorBoundary>
+                  } />
                   <Route path="*" element={<LazyPages.NotFound />} />
                   </Routes>
                 </Suspense>

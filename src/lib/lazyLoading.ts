@@ -22,6 +22,10 @@ export const LazyPages = {
   PrivacyPolicy: lazy(() => import('@/pages/PrivacyPolicy')),
   TermsOfService: lazy(() => import('@/pages/TermsOfService')),
   AboutUs: lazy(() => import('@/pages/AboutUs')),
+  Contact: lazy(() => import('@/pages/Contact')),
+  Help: lazy(() => import('@/pages/Help')),
+  Safety: lazy(() => import('@/pages/Safety')),
+  CookiePolicy: lazy(() => import('@/pages/CookiePolicy')),
 };
 
 // Lazy load components - only map view for now since others don't have default exports
