@@ -14,57 +14,48 @@ import { Bell, Shield, User, Palette, Globe, Smartphone, Download } from "lucide
 import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { AuthDialog } from "@/components/AuthDialog";
-import { NotificationPreferences } from "@/components/NotificationPreferences";
-import { PushNotificationManager } from "@/components/PushNotificationManager";
-import { PrivacyControls } from "@/components/PrivacyControls";
+import { useAuth } from "@/features/auth/AuthProvider";
+import { useSettings } from "@/hooks/useSettings";
 
 export default function Settings() {
   const [showAuth, setShowAuth] = useState(false);
   const [showMessagesDialog, setShowMessagesDialog] = useState(false);
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
-  const [settings, setSettings] = useState({
-    notifications: {
-      emailUpdates: true,
-      pushNotifications: true,
-      eventReminders: true,
-      socialUpdates: false,
-    },
-    privacy: {
-      profileVisibility: "public",
-      showLocation: true,
-      showEmail: false,
-    },
-    preferences: {
-      theme: "system",
-      language: "en",
-      timezone: "America/New_York",
-    }
-  });
   const { toast } = useToast();
+  const { session } = useAuth();
+  const { 
+    notificationPrefs, 
+    privacySettings, 
+    updateNotificationPrefs, 
+    updatePrivacySettings,
+    isUpdatingNotifications,
+    isUpdatingPrivacy
+  } = useSettings();
 
-  const handleSaveSettings = () => {
-    toast({
-      title: "Settings Saved",
-      description: "Your preferences have been updated successfully.",
-    });
+  const handleDeleteAccount = async () => {
+    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+      toast({
+        title: "Account Deletion",
+        description: "This feature will be available soon. Please contact support.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDeleteAccount = () => {
-    toast({
-      title: "Account Deletion",
-      description: "This feature will be available soon. Please contact support.",
-      variant: "destructive",
-    });
+  const handleNotificationChange = async (key: string, value: boolean) => {
+    try {
+      await updateNotificationPrefs({ [key]: value });
+    } catch (error) {
+      console.error('Failed to update notification preference:', error);
+    }
   };
 
-  const updateSetting = (category: string, key: string, value: any) => {
-    setSettings(prev => ({
-      ...prev,
-      [category]: {
-        ...prev[category as keyof typeof prev],
-        [key]: value
-      }
-    }));
+  const handlePrivacyChange = async (key: string, value: boolean) => {
+    try {
+      await updatePrivacySettings({ [key]: value });
+    } catch (error) {
+      console.error('Failed to update privacy setting:', error);
+    }
   };
 
   return (
@@ -94,7 +85,83 @@ export default function Settings() {
 
             {/* Notifications Tab */}
             <TabsContent value="notifications" className="space-y-6">
-              <NotificationPreferences />
+              <Card className="kolab-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Bell className="h-5 w-5" />
+                    Notification Preferences
+                  </CardTitle>
+                  <CardDescription>
+                    Choose what notifications you want to receive
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="email-enabled" className="text-base">Email Notifications</Label>
+                      <p className="text-sm text-muted-foreground">Receive notifications via email</p>
+                    </div>
+                    <Switch
+                      id="email-enabled"
+                      checked={notificationPrefs?.email_enabled ?? true}
+                      onCheckedChange={(checked) => handleNotificationChange('email_enabled', checked)}
+                      disabled={isUpdatingNotifications}
+                    />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="push-enabled" className="text-base">Push Notifications</Label>
+                      <p className="text-sm text-muted-foreground">Receive push notifications in your browser</p>
+                    </div>
+                    <Switch
+                      id="push-enabled"
+                      checked={notificationPrefs?.push_enabled ?? true}
+                      onCheckedChange={(checked) => handleNotificationChange('push_enabled', checked)}
+                      disabled={isUpdatingNotifications}
+                    />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="event-reminders" className="text-base">Event Reminders</Label>
+                      <p className="text-sm text-muted-foreground">Get reminded about upcoming events</p>
+                    </div>
+                    <Switch
+                      id="event-reminders"
+                      checked={notificationPrefs?.event_reminders ?? true}
+                      onCheckedChange={(checked) => handleNotificationChange('event_reminders', checked)}
+                      disabled={isUpdatingNotifications}
+                    />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="new-messages" className="text-base">New Messages</Label>
+                      <p className="text-sm text-muted-foreground">Notifications for new direct messages</p>
+                    </div>
+                    <Switch
+                      id="new-messages"
+                      checked={notificationPrefs?.new_messages ?? true}
+                      onCheckedChange={(checked) => handleNotificationChange('new_messages', checked)}
+                      disabled={isUpdatingNotifications}
+                    />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="booking-confirmations" className="text-base">Booking Confirmations</Label>
+                      <p className="text-sm text-muted-foreground">Notifications for booking updates</p>
+                    </div>
+                    <Switch
+                      id="booking-confirmations"
+                      checked={notificationPrefs?.booking_confirmations ?? true}
+                      onCheckedChange={(checked) => handleNotificationChange('booking_confirmations', checked)}
+                      disabled={isUpdatingNotifications}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             {/* PWA/Mobile App Tab */}
@@ -110,7 +177,9 @@ export default function Settings() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <PushNotificationManager />
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">Push notifications coming soon...</p>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -148,46 +217,79 @@ export default function Settings() {
 
             {/* Privacy Tab */}
             <TabsContent value="privacy" className="space-y-6">
-              <PrivacyControls />
-              
               <Card className="kolab-card">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Globe className="h-5 w-5" />
-                    General Privacy Settings
+                    <Shield className="h-5 w-5" />
+                    Privacy Settings
                   </CardTitle>
                   <CardDescription>
-                    Control who can see your information and activity
+                    Control what information others can see about you
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div>
-                    <Label htmlFor="profile-visibility" className="text-base">Profile Visibility</Label>
-                    <p className="text-sm text-muted-foreground mb-3">Who can see your profile</p>
-                    <Select
-                      value={settings.privacy.profileVisibility}
-                      onValueChange={(value) => updateSetting('privacy', 'profileVisibility', value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="public">Public</SelectItem>
-                        <SelectItem value="connections">Connections Only</SelectItem>
-                        <SelectItem value="private">Private</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="show-location" className="text-base">Show Location</Label>
+                      <p className="text-sm text-muted-foreground">Allow others to see your location</p>
+                    </div>
+                    <Switch
+                      id="show-location"
+                      checked={privacySettings?.show_location ?? false}
+                      onCheckedChange={(checked) => handlePrivacyChange('show_location', checked)}
+                      disabled={isUpdatingPrivacy}
+                    />
                   </div>
                   <Separator />
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label htmlFor="show-email" className="text-base">Show Email</Label>
-                      <p className="text-sm text-muted-foreground">Allow others to see your email address</p>
+                      <Label htmlFor="show-website" className="text-base">Show Website</Label>
+                      <p className="text-sm text-muted-foreground">Display your website on your profile</p>
                     </div>
                     <Switch
-                      id="show-email"
-                      checked={settings.privacy.showEmail}
-                      onCheckedChange={(checked) => updateSetting('privacy', 'showEmail', checked)}
+                      id="show-website"
+                      checked={privacySettings?.show_website ?? false}
+                      onCheckedChange={(checked) => handlePrivacyChange('show_website', checked)}
+                      disabled={isUpdatingPrivacy}
+                    />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="show-linkedin" className="text-base">Show LinkedIn</Label>
+                      <p className="text-sm text-muted-foreground">Display your LinkedIn profile</p>
+                    </div>
+                    <Switch
+                      id="show-linkedin"
+                      checked={privacySettings?.show_linkedin ?? false}
+                      onCheckedChange={(checked) => handlePrivacyChange('show_linkedin', checked)}
+                      disabled={isUpdatingPrivacy}
+                    />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="show-skills" className="text-base">Show Skills</Label>
+                      <p className="text-sm text-muted-foreground">Display your skills and expertise</p>
+                    </div>
+                    <Switch
+                      id="show-skills"
+                      checked={privacySettings?.show_skills ?? true}
+                      onCheckedChange={(checked) => handlePrivacyChange('show_skills', checked)}
+                      disabled={isUpdatingPrivacy}
+                    />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="show-interests" className="text-base">Show Interests</Label>
+                      <p className="text-sm text-muted-foreground">Display your interests and hobbies</p>
+                    </div>
+                    <Switch
+                      id="show-interests"
+                      checked={privacySettings?.show_interests ?? true}
+                      onCheckedChange={(checked) => handlePrivacyChange('show_interests', checked)}
+                      disabled={isUpdatingPrivacy}
                     />
                   </div>
                 </CardContent>
@@ -211,8 +313,8 @@ export default function Settings() {
                     <Label htmlFor="theme" className="text-base">Theme</Label>
                     <p className="text-sm text-muted-foreground mb-3">Choose your preferred theme</p>
                     <Select
-                      value={settings.preferences.theme}
-                      onValueChange={(value) => updateSetting('preferences', 'theme', value)}
+                      value="system"
+                      onValueChange={(value) => toast({ title: "Coming Soon", description: "Theme selection will be available soon." })}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -229,8 +331,8 @@ export default function Settings() {
                     <Label htmlFor="language" className="text-base">Language</Label>
                     <p className="text-sm text-muted-foreground mb-3">Select your preferred language</p>
                     <Select
-                      value={settings.preferences.language}
-                      onValueChange={(value) => updateSetting('preferences', 'language', value)}
+                      value="en"
+                      onValueChange={(value) => toast({ title: "Coming Soon", description: "Language selection will be available soon." })}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -248,8 +350,8 @@ export default function Settings() {
                     <Label htmlFor="timezone" className="text-base">Timezone</Label>
                     <p className="text-sm text-muted-foreground mb-3">Your local timezone for events</p>
                     <Select
-                      value={settings.preferences.timezone}
-                      onValueChange={(value) => updateSetting('preferences', 'timezone', value)}
+                      value="America/New_York"
+                      onValueChange={(value) => toast({ title: "Coming Soon", description: "Timezone selection will be available soon." })}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -286,11 +388,11 @@ export default function Settings() {
                     <Input
                       id="current-email"
                       type="email"
-                      value="jake@kolab.com"
+                      value={session?.user?.email || 'Not set'}
                       disabled
                       className="mt-2"
                     />
-                    <Button variant="outline" size="sm" className="mt-2">
+                    <Button variant="outline" size="sm" className="mt-2" onClick={() => toast({ title: "Coming Soon", description: "Email change will be available soon." })}>
                       Change Email
                     </Button>
                   </div>
@@ -298,13 +400,13 @@ export default function Settings() {
                   <div>
                     <Label className="text-base">Password</Label>
                     <p className="text-sm text-muted-foreground mb-3">Keep your account secure</p>
-                    <Button variant="outline">Change Password</Button>
+                    <Button variant="outline" onClick={() => toast({ title: "Coming Soon", description: "Password change will be available soon." })}>Change Password</Button>
                   </div>
                   <Separator />
                   <div>
                     <Label className="text-base">Download Your Data</Label>
                     <p className="text-sm text-muted-foreground mb-3">Get a copy of your account data</p>
-                    <Button variant="outline">Request Data Export</Button>
+                    <Button variant="outline" onClick={() => toast({ title: "Coming Soon", description: "Data export will be available soon." })}>Request Data Export</Button>
                   </div>
                   <Separator />
                   <div>
@@ -318,8 +420,11 @@ export default function Settings() {
           </Tabs>
 
           <div className="flex justify-end">
-            <Button onClick={handleSaveSettings} className="kolab-button-primary">
-              Save All Settings
+            <Button 
+              onClick={() => toast({ title: "Settings Auto-Saved", description: "Your changes are saved automatically." })}
+              className="kolab-button-primary"
+            >
+              Settings Auto-Save
             </Button>
           </div>
           </div>

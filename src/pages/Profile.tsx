@@ -10,48 +10,98 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { User, Edit2, Camera, MapPin, Briefcase, Calendar, Star, Award } from "lucide-react";
+import { User, Edit2, Camera, MapPin, Briefcase, Calendar, Star, Award, Upload } from "lucide-react";
 import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { AuthDialog } from "@/components/AuthDialog";
+import { useAuth } from "@/features/auth/AuthProvider";
+import { useProfile } from "@/hooks/useProfile";
+import { FunctionalityTester } from "@/components/FunctionalityTester";
 
 export default function Profile() {
   const [showAuth, setShowAuth] = useState(false);
   const [showMessagesDialog, setShowMessagesDialog] = useState(false);
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [profileData, setProfileData] = useState({
-    name: "Jake Rose",
-    title: "Creative Event Organizer",
-    bio: "Passionate about bringing people together through collaborative events and meaningful experiences.",
-    location: "New York, NY",
-    website: "www.jakerose.dev",
-    skills: ["Event Planning", "Community Building", "Creative Direction", "Social Media"],
-    experience: "5+ years",
+  const [editData, setEditData] = useState({
+    full_name: '',
+    bio: '',
+    location: '',
+    website: '',
+    experience_level: '',
   });
   const { toast } = useToast();
+  const { session } = useAuth();
+  const { profile, isLoading, updateProfile, uploadAvatar, uploading } = useProfile();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSaveProfile = () => {
-    setIsEditing(false);
-    toast({
-      title: "Profile Updated",
-      description: "Your profile has been updated successfully.",
-    });
+  const handleSaveProfile = async () => {
+    try {
+      await updateProfile(editData);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Failed to save profile:', error);
+    }
   };
 
-  const handleAddSkill = () => {
+  const handleEditClick = () => {
+    if (profile) {
+      setEditData({
+        full_name: profile.full_name || '',
+        bio: profile.bio || '',
+        location: profile.location || '',
+        website: profile.website || '',
+        experience_level: profile.experience_level || '',
+      });
+    }
+    setIsEditing(true);
+  };
+
+  const handleAddSkill = async () => {
     const newSkill = prompt("Enter a new skill:");
-    if (newSkill && newSkill.trim()) {
-      setProfileData({
-        ...profileData,
-        skills: [...profileData.skills, newSkill.trim()]
-      });
-      toast({
-        title: "Skill Added",
-        description: `${newSkill} has been added to your skills.`,
-      });
+    if (newSkill && newSkill.trim() && profile) {
+      const updatedSkills = [...(profile.skills || []), newSkill.trim()];
+      try {
+        await updateProfile({ skills: updatedSkills });
+      } catch (error) {
+        console.error('Failed to add skill:', error);
+      }
+    }
+  };
+
+  const handleRemoveSkill = async (skillToRemove: string) => {
+    if (profile) {
+      const updatedSkills = (profile.skills || []).filter(skill => skill !== skillToRemove);
+      try {
+        await updateProfile({ skills: updatedSkills });
+      } catch (error) {
+        console.error('Failed to remove skill:', error);
+      }
+    }
+  };
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast({ title: "Error", description: "Please select an image file.", variant: "destructive" });
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({ title: "Error", description: "File size must be less than 5MB.", variant: "destructive" });
+        return;
+      }
+      
+      await uploadAvatar(file);
     }
   };
 
@@ -61,6 +111,9 @@ export default function Profile() {
     { label: "Connections", value: "156", icon: User },
     { label: "Rating", value: "4.9", icon: Star },
   ];
+
+  const displayName = profile?.full_name || profile?.handle || 'Anonymous User';
+  const userInitials = displayName.split(' ').map(n => n[0]).join('').toUpperCase();
 
   return (
     <>
@@ -76,17 +129,30 @@ export default function Profile() {
             <CardContent className="pt-6">
               <div className="flex flex-col md:flex-row items-start gap-6">
                 <div className="relative">
-                  <Avatar className="w-24 h-24">
-                    <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=96&h=96&fit=crop&crop=face" />
-                    <AvatarFallback>JR</AvatarFallback>
+                  <Avatar className="w-24 h-24 cursor-pointer hover:opacity-80 transition-opacity" onClick={handleAvatarClick}>
+                    <AvatarImage src={profile?.avatar_url} />
+                    <AvatarFallback>{userInitials}</AvatarFallback>
                   </Avatar>
                   <Button
                     size="icon"
                     variant="secondary"
                     className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full"
+                    onClick={handleAvatarClick}
+                    disabled={uploading}
                   >
-                    <Camera className="h-4 w-4" />
+                    {uploading ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary" />
+                    ) : (
+                      <Camera className="h-4 w-4" />
+                    )}
                   </Button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
                 </div>
                 
                 <div className="flex-1 space-y-4">
@@ -94,19 +160,21 @@ export default function Profile() {
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <Label htmlFor="name">Name</Label>
+                          <Label htmlFor="name">Full Name</Label>
                           <Input
                             id="name"
-                            value={profileData.name}
-                            onChange={(e) => setProfileData({...profileData, name: e.target.value})}
+                            value={editData.full_name}
+                            onChange={(e) => setEditData({...editData, full_name: e.target.value})}
+                            placeholder="Enter your full name"
                           />
                         </div>
                         <div>
-                          <Label htmlFor="title">Title</Label>
+                          <Label htmlFor="experience">Experience Level</Label>
                           <Input
-                            id="title"
-                            value={profileData.title}
-                            onChange={(e) => setProfileData({...profileData, title: e.target.value})}
+                            id="experience"
+                            value={editData.experience_level}
+                            onChange={(e) => setEditData({...editData, experience_level: e.target.value})}
+                            placeholder="e.g., 5+ years"
                           />
                         </div>
                       </div>
@@ -114,38 +182,74 @@ export default function Profile() {
                         <Label htmlFor="bio">Bio</Label>
                         <Textarea
                           id="bio"
-                          value={profileData.bio}
-                          onChange={(e) => setProfileData({...profileData, bio: e.target.value})}
+                          value={editData.bio}
+                          onChange={(e) => setEditData({...editData, bio: e.target.value})}
                           rows={3}
+                          placeholder="Tell others about yourself..."
                         />
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="location">Location</Label>
+                          <Input
+                            id="location"
+                            value={editData.location}
+                            onChange={(e) => setEditData({...editData, location: e.target.value})}
+                            placeholder="e.g., New York, NY"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="website">Website</Label>
+                          <Input
+                            id="website"
+                            value={editData.website}
+                            onChange={(e) => setEditData({...editData, website: e.target.value})}
+                            placeholder="https://yoursite.com"
+                          />
+                        </div>
                       </div>
                     </div>
                   ) : (
                     <div>
-                      <h1 className="text-2xl font-bold">{profileData.name}</h1>
-                      <p className="text-lg text-muted-foreground">{profileData.title}</p>
-                      <p className="text-sm mt-2">{profileData.bio}</p>
+                      <h1 className="text-2xl font-bold">{displayName}</h1>
+                      {profile?.bio && <p className="text-sm mt-2 text-muted-foreground">{profile.bio}</p>}
                       <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <MapPin className="h-4 w-4" />
-                          {profileData.location}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Briefcase className="h-4 w-4" />
-                          {profileData.experience}
-                        </div>
+                        {profile?.location && (
+                          <div className="flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            {profile.location}
+                          </div>
+                        )}
+                        {profile?.experience_level && (
+                          <div className="flex items-center gap-1">
+                            <Briefcase className="h-4 w-4" />
+                            {profile.experience_level}
+                          </div>
+                        )}
                       </div>
+                      {profile?.website && (
+                        <a 
+                          href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline mt-2 block"
+                        >
+                          {profile.website}
+                        </a>
+                      )}
                     </div>
                   )}
                   
                   <div className="flex gap-2">
                     {isEditing ? (
                       <>
-                        <Button onClick={handleSaveProfile}>Save Changes</Button>
+                        <Button onClick={handleSaveProfile} disabled={isLoading}>
+                          {isLoading ? 'Saving...' : 'Save Changes'}
+                        </Button>
                         <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
                       </>
                     ) : (
-                      <Button onClick={() => setIsEditing(true)}>
+                      <Button onClick={handleEditClick}>
                         <Edit2 className="h-4 w-4 mr-2" />
                         Edit Profile
                       </Button>
@@ -179,17 +283,29 @@ export default function Profile() {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {profileData.skills.map((skill) => (
-                  <Badge key={skill} variant="secondary">
-                    {skill}
+                {(profile?.skills || []).map((skill) => (
+                  <Badge 
+                    key={skill} 
+                    variant="secondary" 
+                    className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                    onClick={() => handleRemoveSkill(skill)}
+                    title="Click to remove"
+                  >
+                    {skill} ×
                   </Badge>
                 ))}
                 <Button variant="outline" size="sm" onClick={handleAddSkill}>
                   + Add Skill
                 </Button>
               </div>
+              {(profile?.skills || []).length === 0 && (
+                <p className="text-sm text-muted-foreground">No skills added yet. Click "Add Skill" to get started.</p>
+              )}
             </CardContent>
           </Card>
+
+          {/* Functionality Tester - Remove in production */}
+          <FunctionalityTester />
 
           {/* Recent Activity */}
           <Card className="kolab-card">
