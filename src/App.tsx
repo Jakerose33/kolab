@@ -10,6 +10,9 @@ import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { LoadingState } from "@/components/LoadingState";
 import { SecurityProvider } from "@/components/SecurityProvider";
 import { LazyPages } from "./lib/lazyLoading";
+import { AdvancedSEOSystem } from "@/components/AdvancedSEOSystem";
+import { AdvancedSitemapGenerator } from "@/components/AdvancedSitemapGenerator";
+import { AdvancedRobotsTxtManager } from "@/components/AdvancedRobotsTxtManager";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,8 +39,11 @@ function App() {
             <Sonner />
             <OfflineIndicator />
             <BrowserRouter>
-              <Suspense fallback={<LoadingState />}>
-                <Routes>
+              <AdvancedSEOSystem>
+                <AdvancedSitemapGenerator />
+                <AdvancedRobotsTxtManager />
+                <Suspense fallback={<LoadingState />}>
+                  <Routes>
                   <Route path="/" element={
                     <ErrorBoundary>
                       <LazyPages.Index />
@@ -114,8 +120,9 @@ function App() {
                     </ErrorBoundary>
                   } />
                   <Route path="*" element={<LazyPages.NotFound />} />
-                </Routes>
-              </Suspense>
+                  </Routes>
+                </Suspense>
+              </AdvancedSEOSystem>
             </BrowserRouter>
           </TooltipProvider>
         </SecurityProvider>
