@@ -124,11 +124,27 @@ export function useSecureAuth() {
 
       if (error) {
         setAuthState(prev => ({ ...prev, error: error.message }));
-        toast({
-          title: "Sign In Failed",
-          description: error.message,
-          variant: "destructive",
-        });
+        
+        // Provide more helpful error messages
+        if (error.message === 'Invalid login credentials') {
+          toast({
+            title: "Login Failed",
+            description: "The email or password you entered is incorrect. Please check your credentials and try again.",
+            variant: "destructive",
+          });
+        } else if (error.message.includes('Email not confirmed')) {
+          toast({
+            title: "Email Not Confirmed",
+            description: "Please check your email and click the confirmation link before signing in.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Sign In Failed",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
       } else {
         rateLimiters.auth.reset(clientId);
         toast({
