@@ -20,7 +20,11 @@ import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { EmptyState } from "@/components/EmptyState";
 import { LoadingState } from "@/components/LoadingState";
-import { WebsiteJsonLD, OrganizationJsonLD, CollectionPageJsonLD } from "@/components/SEOJsonLD";
+import { SEOOptimizer } from "@/components/SEOOptimizer";
+import { CriticalCSS } from "@/components/CriticalCSS";
+import { PerformanceMonitor } from "@/components/PerformanceMonitor";
+import { Analytics } from "@/components/Analytics";
+import { AccessibilityOptimizer } from "@/components/AccessibilityOptimizer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -234,23 +238,23 @@ export default function Index() {
 
   return (
     <>
-      {/* SEO structured data */}
-      <WebsiteJsonLD 
-        name="Kolab"
-        url={typeof window !== 'undefined' ? window.location.origin : ''}
-        description="Your backstage pass to the city's best-kept secrets. Discover underground culture, exclusive events, and hidden venues."
-      />
-      <OrganizationJsonLD 
-        name="Kolab"
-        url={typeof window !== 'undefined' ? window.location.origin : ''}
-        description="Underground culture platform connecting you to exclusive events and hidden venues"
-        sameAs={[]}
-      />
-      <CollectionPageJsonLD 
-        name="Tonight's Events"
-        description="Discover the best underground events happening tonight"
-        url={typeof window !== 'undefined' ? `${window.location.origin}/` : '/'}
-        events={eventListItems}
+      {/* Performance and SEO optimizations */}
+      <CriticalCSS />
+      <PerformanceMonitor />
+      <Analytics />
+      <AccessibilityOptimizer />
+      
+      {/* Comprehensive SEO optimization */}
+      <SEOOptimizer
+        page="home"
+        breadcrumbs={[
+          { name: 'Home', url: '/' }
+        ]}
+        collectionData={{
+          name: "Tonight's Events",
+          description: "Discover the best underground events happening tonight",
+          items: eventListItems
+        }}
       />
       
       <AppLayout 
@@ -258,17 +262,21 @@ export default function Index() {
         onOpenSearch={() => setShowSearchSheet(true)}
         onOpenAuth={() => setShowAuth(true)}
       >
-        {/* Hero Section */}
-        <Hero />
+        {/* Semantic HTML structure for SEO */}
+        <header role="banner">
+          <Hero />
+        </header>
         
-        {/* Editorial Grid */}
-        <EditorialGrid />
+        <section aria-label="Featured Content" className="featured-content">
+          <EditorialGrid />
+        </section>
         
-        {/* City Guide */}
-        <CityGuide />
+        <section aria-label="City Guide" className="city-guide">
+          <CityGuide />
+        </section>
         
-        <main className="container px-4 py-8">
-          <div className="space-y-8">
+        <main role="main" className="container px-4 py-8" id="main-content">
+          <section aria-label="Events and Activities" className="events-section">
             {/* Search and Filters - Mobile First */}
             {isMobile ? (
               <div className="space-y-4">
@@ -361,7 +369,8 @@ export default function Index() {
               </div>
             )}
 
-            {/* Events Display */}
+            {/* Events Display with semantic markup */}
+            <article className="events-listing" aria-label="Event listings">
             {filteredEvents.length > 0 ? (
               <div className={isMobile 
                 ? "space-y-4" 
@@ -406,67 +415,78 @@ export default function Index() {
                 }}
               />
             )}
+            </article>
 
             {/* Recommendations Carousel - Only on desktop */}
-            {!isMobile && <RecommendationsCarousel />}
+            {!isMobile && (
+              <aside aria-label="Recommended events">
+                <RecommendationsCarousel />
+              </aside>
+            )}
 
             {/* Real-time Activity Feed - Only on desktop */}
             {!isMobile && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <RealtimeActivityFeed />
-                <RealtimeNotificationsList />
-              </div>
+              <section aria-label="Activity feed" className="activity-section">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <RealtimeActivityFeed />
+                  <RealtimeNotificationsList />
+                </div>
+              </section>
             )}
 
             {/* Quick Stats - Mobile optimized */}
-            <div className={`grid ${isMobile ? 'grid-cols-2 gap-3' : 'grid-cols-2 md:grid-cols-4 gap-4'}`}>
-              <Card className="p-4 text-center">
-                <CardContent className="p-0">
-                  <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-primary`}>
-                    {events.length}
-                  </div>
-                  <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
-                    Active Events
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="p-4 text-center">
-                <CardContent className="p-0">
-                  <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-primary`}>
-                    1.2k
-                  </div>
-                  <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
-                    Members
-                  </div>
-                </CardContent>
-              </Card>
-              {!isMobile && (
-                <>
-                  <Card className="p-4 text-center">
-                    <CardContent className="p-0">
-                      <div className="text-2xl font-bold text-primary">
-                        {Object.keys(userRSVPs).length}
-                      </div>
-                      <div className="text-sm text-muted-foreground">Your RSVPs</div>
-                    </CardContent>
-                  </Card>
-                  <Card className="p-4 text-center">
-                    <CardContent className="p-0">
-                      <div className="text-2xl font-bold text-primary">23</div>
-                      <div className="text-sm text-muted-foreground">Venues</div>
-                    </CardContent>
-                  </Card>
-                </>
-              )}
-            </div>
-          </div>
+            <section aria-label="Platform statistics" className="stats-section">
+              <div className={`grid ${isMobile ? 'grid-cols-2 gap-3' : 'grid-cols-2 md:grid-cols-4 gap-4'}`}>
+                <Card className="p-4 text-center">
+                  <CardContent className="p-0">
+                    <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-primary`}>
+                      {events.length}
+                    </div>
+                    <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
+                      Active Events
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="p-4 text-center">
+                  <CardContent className="p-0">
+                    <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-primary`}>
+                      1.2k
+                    </div>
+                    <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
+                      Members
+                    </div>
+                  </CardContent>
+                </Card>
+                {!isMobile && (
+                  <>
+                    <Card className="p-4 text-center">
+                      <CardContent className="p-0">
+                        <div className="text-2xl font-bold text-primary">
+                          {Object.keys(userRSVPs).length}
+                        </div>
+                        <div className="text-sm text-muted-foreground">Your RSVPs</div>
+                      </CardContent>
+                    </Card>
+                    <Card className="p-4 text-center">
+                      <CardContent className="p-0">
+                        <div className="text-2xl font-bold text-primary">23</div>
+                        <div className="text-sm text-muted-foreground">Venues</div>
+                      </CardContent>
+                    </Card>
+                  </>
+                )}
+              </div>
+            </section>
+          </section>
         </main>
 
-        {/* Collabs Marquee */}
+        {/* Footer content */}
+        <footer role="contentinfo" className="footer-content">
         <CollabsMarquee />
 
         {/* Kolab Diaries Strip */}
         <DiariesStrip />
+        </footer>
       </AppLayout>
 
       
