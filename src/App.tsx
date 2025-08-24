@@ -9,6 +9,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { LoadingState } from "@/components/LoadingState";
 import { SecurityProvider } from "@/components/SecurityProvider";
+import { AuthProvider } from "@/features/auth/AuthProvider";
 import { LazyPages } from "./lib/lazyLoading";
 import { AdvancedSEOSystem } from "@/components/AdvancedSEOSystem";
 import { AdvancedSitemapGenerator } from "@/components/AdvancedSitemapGenerator";
@@ -34,7 +35,8 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <SecurityProvider>
-          <TooltipProvider>
+          <AuthProvider>
+            <TooltipProvider>
             <Toaster />
             <Sonner />
             <OfflineIndicator />
@@ -159,12 +161,23 @@ function App() {
                       <LazyPages.CookiePolicy />
                     </ErrorBoundary>
                   } />
+                  <Route path="/auth/debug" element={
+                    <ErrorBoundary>
+                      <LazyPages.AuthDebug />
+                    </ErrorBoundary>
+                  } />
+                  <Route path="/auth/callback" element={
+                    <ErrorBoundary>
+                      <LazyPages.AuthCallback />
+                    </ErrorBoundary>
+                  } />
                   <Route path="*" element={<LazyPages.NotFound />} />
                   </Routes>
                 </Suspense>
               </AdvancedSEOSystem>
             </BrowserRouter>
           </TooltipProvider>
+        </AuthProvider>
         </SecurityProvider>
       </QueryClientProvider>
     </ErrorBoundary>
