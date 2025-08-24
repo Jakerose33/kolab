@@ -26,6 +26,7 @@ import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import { Analytics } from "@/components/Analytics";
 import { AccessibilityOptimizer } from "@/components/AccessibilityOptimizer";
 import { Footer } from "@/components/Footer";
+import { FunctionalityTester } from "@/components/FunctionalityTester";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -480,6 +481,43 @@ export default function Index() {
             </section>
           </section>
         </main>
+
+        {/* System Testing Section */}
+        <section className="container px-4 py-8" aria-label="System Testing">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl font-bold mb-4">System Status & Testing</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <FunctionalityTester />
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-4">System Status</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span>Database Connection</span>
+                      <Badge variant={isOnline ? "default" : "destructive"}>
+                        {isOnline ? "Connected" : "Offline"}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>User Session</span>
+                      <Badge variant={user ? "default" : "secondary"}>
+                        {user ? "Authenticated" : "Guest"}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>Events Loaded</span>
+                      <Badge variant="default">{events.length}</Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>Active Categories</span>
+                      <Badge variant="default">{categories.length}</Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
 
         {/* Footer content */}
         <footer role="contentinfo" className="footer-content">
