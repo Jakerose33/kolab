@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { toast } from 'sonner';
 
@@ -64,8 +64,9 @@ export function useProfile() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile', session?.user?.id] });
+    onSuccess: (data) => {
+      queryClient.setQueryData(['profile', session?.user?.id], data);
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
       toast.success('Profile updated successfully');
     },
     onError: (error) => {

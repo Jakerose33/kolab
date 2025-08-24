@@ -1,5 +1,5 @@
 
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +14,7 @@ import { LazyPages } from "./lib/lazyLoading";
 import { AdvancedSEOSystem } from "@/components/AdvancedSEOSystem";
 import { AdvancedSitemapGenerator } from "@/components/AdvancedSitemapGenerator";
 import { AdvancedRobotsTxtManager } from "@/components/AdvancedRobotsTxtManager";
+import { optimizeImages } from "@/lib/performanceOptimizations";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,15 +23,36 @@ const queryClient = new QueryClient({
         if (error instanceof Error && error.message.includes('4')) {
           return false;
         }
-        return failureCount < 3;
+        return failureCount < 1;
       },
       staleTime: 5 * 60 * 1000,
       gcTime: 10 * 60 * 1000,
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      retry: 1,
     },
   },
 });
 
 function App() {
+  useEffect(() => {
+    // Optimize performance on mount
+    optimizeImages();
+    
+    // Optimize images when DOM changes
+    const observer = new MutationObserver(() => {
+      optimizeImages();
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+    
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <ErrorBoundary>
       <SecurityProvider>

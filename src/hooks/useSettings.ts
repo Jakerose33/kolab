@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { toast } from 'sonner';
 
@@ -90,8 +90,9 @@ export function useSettings() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notification-preferences', session?.user?.id] });
+    onSuccess: (data) => {
+      queryClient.setQueryData(['notification-preferences', session?.user?.id], data);
+      queryClient.invalidateQueries({ queryKey: ['notification-preferences'] });
       toast.success('Notification preferences updated');
     },
     onError: (error) => {
@@ -120,8 +121,9 @@ export function useSettings() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['privacy-settings', session?.user?.id] });
+    onSuccess: (data) => {
+      queryClient.setQueryData(['privacy-settings', session?.user?.id], data);
+      queryClient.invalidateQueries({ queryKey: ['privacy-settings'] });
       toast.success('Privacy settings updated');
     },
     onError: (error) => {
