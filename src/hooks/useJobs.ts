@@ -1,45 +1,39 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabaseClient';
+import { useAuth } from '@/features/auth/AuthProvider';
+import { toast } from 'sonner';
 
 export interface Job {
   id: string;
   title: string;
   company: string;
   location: string;
-  job_type: 'full-time' | 'part-time' | 'contract' | 'freelance';
-  salary_min?: number;
-  salary_max?: number;
-  currency: string;
-  is_remote: boolean;
+  job_type: string;
   description: string;
   requirements?: string[];
   benefits?: string[];
-  posted_by?: string;
+  salary_min?: number;
+  salary_max?: number;
+  currency?: string;
+  is_remote?: boolean;
+  is_active?: boolean;
   application_count: number;
   view_count: number;
-  is_active: boolean;
-  application_deadline?: string;
+  posted_by?: string;
   created_at: string;
   updated_at: string;
 }
 
 export interface JobFilters {
+  search?: string;
   jobType?: string;
   salaryRange?: [number, number];
   isRemote?: boolean;
-  search?: string;
 }
 
 export function useJobs(filters: JobFilters = {}) {
-  const { toast } = useToast();
-
-  const {
-    data: jobs = [],
-    isLoading,
-    error
-  } = useQuery({
+  const { data: jobs, isLoading, error } = useQuery({
     queryKey: ['jobs', filters],
     queryFn: async () => {
       let query = supabase
@@ -61,101 +55,57 @@ export function useJobs(filters: JobFilters = {}) {
       }
 
       if (filters.salaryRange) {
-        const [min, max] = filters.salaryRange;
-        query = query.gte('salary_min', min).lte('salary_max', max);
+        query = query.gte('salary_min', filters.salaryRange[0])
+                   .lte('salary_max', filters.salaryRange[1]);
       }
 
       const { data, error } = await query;
-
-      if (error) {
-        console.error('Error fetching jobs:', error);
-        throw error;
-      }
-
+      if (error) throw error;
       return data as Job[];
     },
   });
 
-  useEffect(() => {
-    if (error) {
-      toast({
-        title: "Error loading jobs",
-        description: "Failed to fetch job listings. Please try again.",
-        variant: "destructive",
-      });
-    }
-  }, [error, toast]);
-
-  return {
-    jobs,
-    isLoading,
-    error
-  };
+  return { jobs: jobs || [], isLoading, error };
 }
 
 export function useJobMutations() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const { session } = useAuth();
 
   const incrementViewCount = useMutation({
     mutationFn: async (jobId: string) => {
-      const { error } = await supabase.rpc('increment_job_view_count', {
-        job_uuid: jobId
-      });
-
+      const { error } = await supabase.rpc('increment_job_view_count', { job_uuid: jobId });
       if (error) throw error;
     },
-    onError: () => {
-      // Silently fail for view count increments
-      console.warn('Failed to increment job view count');
-    }
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+    },
   });
 
   const applyToJob = useMutation({
-    mutationFn: async ({ 
-      jobId, 
-      coverLetter, 
-      resumeUrl 
-    }: { 
-      jobId: string; 
-      coverLetter?: string; 
-      resumeUrl?: string; 
-    }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error('You must be logged in to apply for jobs');
-      }
+    mutationFn: async ({ jobId, coverLetter, resumeUrl }: { jobId: string; coverLetter?: string; resumeUrl?: string }) => {
+      if (!session?.user?.id) throw new Error('Not authenticated');
 
       const { error } = await supabase
         .from('job_applications')
         .insert({
           job_id: jobId,
-          applicant_id: user.id,
+          applicant_id: session.user.id,
           cover_letter: coverLetter,
           resume_url: resumeUrl,
+          status: 'pending'
         });
 
       if (error) throw error;
     },
     onSuccess: () => {
-      toast({
-        title: "Application submitted",
-        description: "Your job application has been sent successfully.",
-      });
+      toast.success('Application submitted successfully!');
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
     },
-    onError: (error: any) => {
-      toast({
-        title: "Application failed",
-        description: error.message || "Failed to submit application. Please try again.",
-        variant: "destructive",
-      });
-    }
+    onError: (error) => {
+      toast.error(`Failed to apply: ${error.message}`);
+    },
   });
 
-  return {
-    incrementViewCount,
-    applyToJob
-  };
+  return { incrementViewCount, applyToJob };
 }

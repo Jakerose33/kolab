@@ -1,134 +1,85 @@
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabaseClient';
+import { useAuth } from '@/features/auth/AuthProvider';
+import { toast } from 'sonner';
 
 export function useSavedJobs() {
-  const { toast } = useToast();
-  
-  const {
-    data: savedJobs = [],
-    isLoading
-  } = useQuery({
-    queryKey: ['saved-jobs'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) return [];
+  const { session } = useAuth();
 
+  const { data: savedJobs, isLoading } = useQuery({
+    queryKey: ['saved-jobs', session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return [];
+      
       const { data, error } = await supabase
         .from('saved_jobs')
         .select(`
           *,
-          jobs:job_id (
-            id,
-            title,
-            company,
-            location,
-            job_type,
-            salary_min,
-            salary_max,
-            currency,
-            is_remote,
-            description,
-            created_at
-          )
+          jobs:job_id (*)
         `)
-        .eq('user_id', user.id)
-        .order('saved_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching saved jobs:', error);
-        throw error;
-      }
-
-      return data || [];
+        .eq('user_id', session.user.id);
+      
+      if (error) throw error;
+      return data;
     },
+    enabled: !!session?.user?.id,
   });
 
-  return {
-    savedJobs,
-    isLoading
-  };
+  return { savedJobs: savedJobs || [], isLoading };
 }
 
 export function useSavedJobMutations() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const { session } = useAuth();
+  const { savedJobs } = useSavedJobs();
 
   const saveJob = useMutation({
     mutationFn: async (jobId: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error('You must be logged in to save jobs');
-      }
+      if (!session?.user?.id) throw new Error('Not authenticated');
 
       const { error } = await supabase
         .from('saved_jobs')
         .insert({
-          user_id: user.id,
-          job_id: jobId,
+          user_id: session.user.id,
+          job_id: jobId
         });
 
       if (error) throw error;
     },
     onSuccess: () => {
-      toast({
-        title: "Job saved",
-        description: "Job has been added to your saved jobs.",
-      });
+      toast.success('Job saved!');
       queryClient.invalidateQueries({ queryKey: ['saved-jobs'] });
     },
-    onError: (error: any) => {
-      toast({
-        title: "Failed to save job",
-        description: error.message || "Please try again.",
-        variant: "destructive",
-      });
-    }
+    onError: (error) => {
+      toast.error(`Failed to save job: ${error.message}`);
+    },
   });
 
   const unsaveJob = useMutation({
     mutationFn: async (jobId: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error('You must be logged in');
-      }
+      if (!session?.user?.id) throw new Error('Not authenticated');
 
       const { error } = await supabase
         .from('saved_jobs')
         .delete()
-        .eq('user_id', user.id)
+        .eq('user_id', session.user.id)
         .eq('job_id', jobId);
 
       if (error) throw error;
     },
     onSuccess: () => {
-      toast({
-        title: "Job removed",
-        description: "Job has been removed from your saved jobs.",
-      });
+      toast.success('Job removed from saved');
       queryClient.invalidateQueries({ queryKey: ['saved-jobs'] });
     },
-    onError: (error: any) => {
-      toast({
-        title: "Failed to remove job",
-        description: error.message || "Please try again.",
-        variant: "destructive",
-      });
-    }
+    onError: (error) => {
+      toast.error(`Failed to unsave job: ${error.message}`);
+    },
   });
 
-  const { savedJobs } = useSavedJobs();
-  
-  const isJobSaved = (jobId: string) => {
-    return savedJobs.some((saved: any) => saved.job_id === jobId);
+  const isJobSaved = (jobId: string): boolean => {
+    return savedJobs.some(savedJob => savedJob.job_id === jobId);
   };
 
-  return {
-    saveJob,
-    unsaveJob,
-    isJobSaved
-  };
+  return { saveJob, unsaveJob, isJobSaved };
 }

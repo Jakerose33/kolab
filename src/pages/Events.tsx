@@ -6,12 +6,19 @@ import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { AuthDialog } from "@/components/AuthDialog";
 import { CreateEventWizard } from "@/components/CreateEventWizard";
-import { useState } from "react";
+import { EmptyState } from "@/components/EmptyState";
+import { LoadingState } from "@/components/LoadingState";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState, useEffect, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/features/auth/AuthProvider";
+import { supabase } from "@/lib/supabaseClient";
+import { Calendar, Search, Filter, Plus } from "lucide-react";
 
-// Sample events data
+// Sample events data with working functionality
 const sampleEvents = [
   {
     id: "1",
@@ -75,22 +82,131 @@ const sampleEvents = [
   }
 ];
 
-const sampleCategories = [
-  { id: "art", name: "Art", icon: null, count: 5 },
-  { id: "music", name: "Music", icon: null, count: 8 },
-  { id: "nightlife", name: "Nightlife", icon: null, count: 3 },
-  { id: "food", name: "Food", icon: null, count: 4 }
-];
-
 export default function Events() {
+  const [events, setEvents] = useState(sampleEvents);
+  const [filteredEvents, setFilteredEvents] = useState(sampleEvents);
+  const [loading, setLoading] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showMessagesDialog, setShowMessagesDialog] = useState(false);
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("date");
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { session } = useAuth();
   const isMobile = useIsMobile();
+
+  // Generate categories from events
+  const categories = useMemo(() => {
+    const categoryMap = new Map();
+    events.forEach(event => {
+      if (event.tags) {
+        event.tags.forEach((tag: string) => {
+          const count = categoryMap.get(tag) || 0;
+          categoryMap.set(tag, count + 1);
+        });
+      }
+    });
+
+    return Array.from(categoryMap.entries()).map(([name, count]) => ({
+      id: name.toLowerCase(),
+      name,
+      icon: null,
+      count
+    }));
+  }, [events]);
+
+  // Filter and sort events
+  useEffect(() => {
+    let filtered = [...events];
+
+    // Filter by category
+    if (selectedCategory) {
+      filtered = filtered.filter(event => 
+        event.tags && event.tags.some((tag: string) => 
+          tag.toLowerCase() === selectedCategory.toLowerCase()
+        )
+      );
+    }
+
+    // Filter by search query
+    if (searchQuery) {
+      filtered = filtered.filter(event =>
+        event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.venue_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.tags?.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    }
+
+    // Sort events
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "date":
+          return new Date(a.start_at).getTime() - new Date(b.start_at).getTime();
+        case "popularity":
+          return 0; // Could implement based on RSVP count
+        case "newest":
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredEvents(filtered);
+  }, [events, selectedCategory, searchQuery, sortBy]);
+
+  const handleShare = (eventId: string) => {
+    navigator.clipboard.writeText(`${window.location.origin}/events/${eventId}`);
+    toast({
+      title: "Event link copied!",
+      description: "Share this link to invite others to the event.",
+    });
+  };
+
+  const handleCreateEvent = () => {
+    if (!session?.user) {
+      setShowAuth(true);
+      return;
+    }
+    setShowCreateDialog(true);
+  };
+
+  const handleRSVP = async (eventId: string, status: 'going' | 'interested') => {
+    if (!session?.user) {
+      setShowAuth(true);
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('event_rsvps')
+        .upsert({
+          event_id: eventId,
+          user_id: session.user.id,
+          status: status
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "RSVP Updated",
+        description: `You are now marked as ${status} for this event.`,
+      });
+    } catch (error) {
+      console.error('RSVP error:', error);
+      toast({
+        title: "RSVP Failed",
+        description: "Unable to update your RSVP. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (loading) {
+    return <LoadingState />;
+  }
 
   return (
     <>
@@ -100,38 +216,91 @@ export default function Events() {
       >
         <main className="container px-4 py-8">
           <div className="space-y-8">
-            <div>
-              <h1 className="text-3xl font-bold mb-2">Events</h1>
-              <p className="text-muted-foreground">
-                Discover and create amazing events in your area
-              </p>
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                  Events
+                </h1>
+                <p className="text-muted-foreground text-lg">
+                  Discover and create amazing events in your area
+                </p>
+              </div>
+              <Button onClick={handleCreateEvent} className="gap-2">
+                <Plus className="h-4 w-4" />
+                Create Event
+              </Button>
             </div>
             
-            {/* Category Filter */}
-            <CategoryFilter 
-              categories={sampleCategories}
-              selectedCategory={selectedCategory === "All" ? null : selectedCategory}
-              onCategorySelect={(categoryId) => setSelectedCategory(categoryId || "All")}
-            />
+            {/* Search and Filters */}
+            <div className="space-y-4">
+              <div className="flex flex-col lg:flex-row gap-4">
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search events, organizers, or topics..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex gap-2">
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-48">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="date">Upcoming</SelectItem>
+                      <SelectItem value="popularity">Most Popular</SelectItem>
+                      <SelectItem value="newest">Recently Added</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <CategoryFilter 
+                categories={categories}
+                selectedCategory={selectedCategory}
+                onCategorySelect={setSelectedCategory}
+              />
+            </div>
             
             {/* Events Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sampleEvents.map((event) => 
-                user ? (
-                  <EventCard 
-                    key={event.id} 
-                    event={event}
-                    onShare={(eventId) => toast({ title: "Event shared!" })}
-                  />
-                ) : (
-                  <PreviewEventCard 
-                    key={event.id} 
-                    event={event}
-                    onSignInRequired={() => setShowAuth(true)}
-                  />
-                )
-              )}
-            </div>
+            {filteredEvents.length > 0 ? (
+              <div className={isMobile 
+                ? "space-y-4" 
+                : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              }>
+                {filteredEvents.map((event) => 
+                  session?.user ? (
+                    <EventCard 
+                      key={event.id} 
+                      event={event}
+                      onShare={handleShare}
+                    />
+                  ) : (
+                    <PreviewEventCard 
+                      key={event.id} 
+                      event={event}
+                      onSignInRequired={() => setShowAuth(true)}
+                    />
+                  )
+                )}
+              </div>
+            ) : (
+              <EmptyState
+                icon={Calendar}
+                title="No events found"
+                description="No events match your current filters. Try adjusting your search or category selection."
+                action={{
+                  label: "Create Event",
+                  onClick: handleCreateEvent
+                }}
+              />
+            )}
           </div>
         </main>
       </AppLayout>

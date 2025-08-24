@@ -18,7 +18,7 @@ import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { AuthDialog } from "@/components/AuthDialog";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { useProfile } from "@/hooks/useProfile";
-import { FunctionalityTester } from "@/components/FunctionalityTester";
+import { ComprehensivePageTester } from "@/components/ComprehensivePageTester";
 
 export default function Profile() {
   const [showAuth, setShowAuth] = useState(false);
@@ -304,8 +304,8 @@ export default function Profile() {
             </CardContent>
           </Card>
 
-          {/* Functionality Tester - Remove in production */}
-          <FunctionalityTester />
+          {/* Comprehensive Testing System */}
+          <ComprehensivePageTester />
 
           {/* Recent Activity */}
           <Card className="kolab-card">
