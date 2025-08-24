@@ -221,6 +221,24 @@ function App() {
                           </ErrorBoundary>
                         }
                       />
+                      
+                      {/* ===== Venue Onboarding Routes ===== */}
+                      <Route
+                        path="/venues/onboarding/:step"
+                        element={
+                          <ErrorBoundary>
+                            <LazyPages.VenueOnboarding />
+                          </ErrorBoundary>
+                        }
+                      />
+                      <Route
+                        path="/venues/onboarding"
+                        element={
+                          <ErrorBoundary>
+                            <LazyPages.VenueOnboarding />
+                          </ErrorBoundary>
+                        }
+                      />
 
                       {/* ===== /Auth routes ===== */}
 
