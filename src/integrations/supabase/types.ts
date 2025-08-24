@@ -659,6 +659,98 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          amount: number
+          booking_fee: number | null
+          created_at: string
+          currency: string | null
+          id: string
+          payment_intent_id: string | null
+          status: string | null
+          stripe_customer_id: string | null
+          stripe_session_id: string | null
+          updated_at: string
+          user_id: string | null
+          venue_booking_id: string | null
+          venue_owner_amount: number | null
+        }
+        Insert: {
+          amount: number
+          booking_fee?: number | null
+          created_at?: string
+          currency?: string | null
+          id?: string
+          payment_intent_id?: string | null
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+          venue_booking_id?: string | null
+          venue_owner_amount?: number | null
+        }
+        Update: {
+          amount?: number
+          booking_fee?: number | null
+          created_at?: string
+          currency?: string | null
+          id?: string
+          payment_intent_id?: string | null
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+          venue_booking_id?: string | null
+          venue_owner_amount?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_venue_booking_id_fkey"
+            columns: ["venue_booking_id"]
+            isOneToOne: false
+            referencedRelation: "venue_bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_methods: {
+        Row: {
+          brand: string | null
+          created_at: string
+          id: string
+          is_default: boolean | null
+          last4: string | null
+          stripe_payment_method_id: string
+          type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          brand?: string | null
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          last4?: string | null
+          stripe_payment_method_id: string
+          type: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          brand?: string | null
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          last4?: string | null
+          stripe_payment_method_id?: string
+          type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       platform_analytics: {
         Row: {
           active_users: number
@@ -1129,9 +1221,12 @@ export type Database = {
           id: string
           message: string | null
           owner_notes: string | null
+          payment_status: string | null
+          requires_payment: boolean | null
           special_requests: string | null
           start_date: string
           status: string
+          stripe_session_id: string | null
           total_amount: number | null
           updated_at: string
           user_id: string
@@ -1145,9 +1240,12 @@ export type Database = {
           id?: string
           message?: string | null
           owner_notes?: string | null
+          payment_status?: string | null
+          requires_payment?: boolean | null
           special_requests?: string | null
           start_date: string
           status?: string
+          stripe_session_id?: string | null
           total_amount?: number | null
           updated_at?: string
           user_id: string
@@ -1161,9 +1259,12 @@ export type Database = {
           id?: string
           message?: string | null
           owner_notes?: string | null
+          payment_status?: string | null
+          requires_payment?: boolean | null
           special_requests?: string | null
           start_date?: string
           status?: string
+          stripe_session_id?: string | null
           total_amount?: number | null
           updated_at?: string
           user_id?: string
@@ -1172,6 +1273,63 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "venue_bookings_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venue_payouts: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string | null
+          id: string
+          order_id: string | null
+          owner_id: string
+          payout_date: string | null
+          status: string | null
+          stripe_transfer_id: string | null
+          updated_at: string
+          venue_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string | null
+          id?: string
+          order_id?: string | null
+          owner_id: string
+          payout_date?: string | null
+          status?: string | null
+          stripe_transfer_id?: string | null
+          updated_at?: string
+          venue_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string | null
+          id?: string
+          order_id?: string | null
+          owner_id?: string
+          payout_date?: string | null
+          status?: string | null
+          stripe_transfer_id?: string | null
+          updated_at?: string
+          venue_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_payouts_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_payouts_venue_id_fkey"
             columns: ["venue_id"]
             isOneToOne: false
             referencedRelation: "venues"
