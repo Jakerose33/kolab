@@ -1,7 +1,7 @@
 // src/features/auth/AuthProvider.tsx
 import { createContext, useContext, useEffect, useState } from 'react'
 import type { Session, AuthChangeEvent } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabaseClient'
+import { supabase } from '@/integrations/supabase/client'
 
 type Ctx = {
   session: Session | null
