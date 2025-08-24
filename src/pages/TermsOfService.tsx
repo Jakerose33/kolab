@@ -19,192 +19,98 @@ export default function TermsOfService() {
         <div className="prose prose-gray dark:prose-invert max-w-none">
           <h1 className="text-4xl font-bold mb-8">Terms of Service</h1>
           
-          <p className="text-lg text-muted-foreground mb-8">
-            <strong>Last updated:</strong> {new Date().toLocaleDateString('en-GB', { 
+          <p className="text-lg text-muted-foreground mb-4">
+            <strong>Effective Date:</strong> {new Date().toLocaleDateString('en-GB', { 
               year: 'numeric', 
               month: 'long', 
               day: 'numeric' 
             })}
           </p>
+          <p className="text-lg text-muted-foreground mb-8">
+            <strong>Jurisdiction:</strong> Victoria, Australia
+          </p>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
+            <h2 className="text-2xl font-semibold mb-4">1. Introduction</h2>
             <p>
-              By accessing and using Kolab ("the Platform"), you accept and agree to be bound by the terms 
-              and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
-            </p>
-            <p>
-              These Terms of Service ("Terms") govern your use of our underground culture platform operated 
-              by Kolab Ltd, a company registered in England and Wales.
+              Kolab ("we", "our", "us") provides an online platform that enables users to discover, book, 
+              and manage events and venues. By accessing or using our services ("Services"), you agree to these 
+              Terms of Service. If you do not agree, you must not use our Services.
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">2. Description of Service</h2>
-            <p>
-              Kolab is a platform that connects users with underground cultural events, unique venues, 
-              and creative communities. Our services include:
-            </p>
+            <h2 className="text-2xl font-semibold mb-4">2. Eligibility</h2>
             <ul className="list-disc pl-6">
-              <li>Event discovery and booking</li>
-              <li>Venue listings and reservations</li>
-              <li>Social networking for creatives</li>
-              <li>Career opportunities in culture sector</li>
-              <li>Community features and messaging</li>
+              <li>You must be at least 18 years old to use Kolab.</li>
+              <li>If booking on behalf of an organisation, you confirm you have authority to bind that organisation.</li>
             </ul>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">3. User Accounts and Registration</h2>
-            <p>
-              To access certain features, you must register for an account. You agree to:
-            </p>
+            <h2 className="text-2xl font-semibold mb-4">3. Role of Kolab</h2>
             <ul className="list-disc pl-6">
-              <li>Provide accurate, current, and complete information</li>
-              <li>Maintain and update your information</li>
-              <li>Keep your password secure and confidential</li>
-              <li>Notify us immediately of any unauthorized use</li>
-              <li>Be responsible for all activities under your account</li>
+              <li>Kolab is a technology platform only. We do not organise, operate, or control events or venues listed.</li>
+              <li>Venue owners and organisers are responsible for compliance with all safety, licensing, and legal requirements.</li>
             </ul>
-            <p>
-              You must be at least 18 years old to create an account. By registering, you confirm you meet this requirement.
-            </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">4. User Conduct and Prohibited Activities</h2>
+            <h2 className="text-2xl font-semibold mb-4">4. Accounts</h2>
+            <ul className="list-disc pl-6">
+              <li>You must provide accurate, current information when creating an account.</li>
+              <li>You are responsible for maintaining confidentiality of your login credentials.</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">5. Fees & Payments</h2>
+            <ul className="list-disc pl-6">
+              <li>Booking payments are processed securely through Stripe.</li>
+              <li>Kolab charges a commission (currently 10% per paid booking, subject to change with notice).</li>
+              <li>Stripe fees (currently 2.9% + A$0.30) apply per transaction.</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">6. Refunds & Cancellations</h2>
+            <ul className="list-disc pl-6">
+              <li>Refund eligibility is governed by our <a href="/refunds" className="text-primary hover:underline">Refund & Cancellation Policy</a>.</li>
+              <li>Kolab may process refunds on behalf of venues, but final responsibility rests with the venue/organiser.</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">7. Acceptable Use</h2>
             <p>You agree not to:</p>
             <ul className="list-disc pl-6">
-              <li>Use the platform for any unlawful purpose</li>
-              <li>Post inappropriate, offensive, or harmful content</li>
-              <li>Harass, abuse, or harm other users</li>
-              <li>Impersonate others or provide false information</li>
-              <li>Spam, solicit, or send unsolicited communications</li>
-              <li>Violate intellectual property rights</li>
-              <li>Attempt to hack, disrupt, or compromise platform security</li>
-              <li>Use automated systems to access the platform</li>
+              <li>Misuse the platform for unlawful, harmful, or fraudulent purposes.</li>
+              <li>Post misleading, defamatory, or infringing content.</li>
             </ul>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">5. Event Bookings and Payments</h2>
-            
-            <h3 className="text-xl font-medium mb-3">Booking Terms</h3>
-            <ul className="list-disc pl-6 mb-4">
-              <li>All bookings are subject to availability and organizer approval</li>
-              <li>Ticket prices are set by event organizers</li>
-              <li>We act as an intermediary and are not responsible for event quality</li>
-              <li>Cancellation and refund policies vary by event</li>
-            </ul>
-
-            <h3 className="text-xl font-medium mb-3">Payment Processing</h3>
+            <h2 className="text-2xl font-semibold mb-4">8. User-Generated Content</h2>
             <ul className="list-disc pl-6">
-              <li>Payments are processed by secure third-party providers</li>
-              <li>We do not store your payment information</li>
-              <li>Service fees may apply to transactions</li>
-              <li>Disputes should be raised within 30 days</li>
+              <li>You retain ownership of your content but grant Kolab a non-exclusive licence to use it for promotional purposes.</li>
             </ul>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">6. Content and Intellectual Property</h2>
-            
-            <h3 className="text-xl font-medium mb-3">Your Content</h3>
-            <p>
-              You retain ownership of content you post, but grant us a license to use, 
-              display, and distribute it on the platform. You warrant that your content 
-              does not infringe third-party rights.
-            </p>
-
-            <h3 className="text-xl font-medium mb-3">Our Content</h3>
-            <p>
-              All platform content, design, and functionality are owned by Kolab and 
-              protected by copyright, trademark, and other laws. You may not copy, 
-              modify, or distribute our content without permission.
-            </p>
+            <h2 className="text-2xl font-semibold mb-4">9. Limitation of Liability</h2>
+            <ul className="list-disc pl-6">
+              <li>To the maximum extent permitted by law, Kolab is not liable for indirect, incidental, or consequential damages.</li>
+              <li>Our total liability is limited to the amount of fees you paid to Kolab in the past 3 months.</li>
+            </ul>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">7. Privacy and Data Protection</h2>
-            <p>
-              Your privacy is important to us. Our collection and use of personal information 
-              is governed by our <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a>, 
-              which is incorporated into these Terms by reference.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">8. Disclaimers and Limitation of Liability</h2>
-            
-            <h3 className="text-xl font-medium mb-3">Service Disclaimer</h3>
-            <p>
-              The platform is provided "as is" without warranties of any kind. We do not 
-              guarantee continuous, error-free, or secure access to our services.
-            </p>
-
-            <h3 className="text-xl font-medium mb-3">Event Disclaimer</h3>
-            <p>
-              We are not responsible for the quality, safety, or legality of events listed 
-              on our platform. Users attend events at their own risk.
-            </p>
-
-            <h3 className="text-xl font-medium mb-3">Limitation of Liability</h3>
-            <p>
-              Our liability is limited to the maximum extent permitted by law. We are not 
-              liable for indirect, incidental, or consequential damages.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">9. Termination</h2>
-            <p>
-              We may terminate or suspend your account at our discretion for violations of these Terms. 
-              You may also delete your account at any time through your account settings.
-            </p>
-            <p>
-              Upon termination, your right to use the platform ceases immediately, but 
-              certain provisions of these Terms will survive termination.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">10. Governing Law and Disputes</h2>
-            <p>
-              These Terms are governed by the laws of England and Wales. Any disputes will 
-              be resolved in the courts of England and Wales.
-            </p>
-            <p>
-              We encourage resolving disputes through direct communication first. For formal 
-              complaints, contact us at legal@kolab.co.uk.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">11. Changes to Terms</h2>
-            <p>
-              We reserve the right to modify these Terms at any time. We will notify users of 
-              material changes via email or platform notification. Continued use after changes 
-              constitutes acceptance of the new Terms.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">12. Contact Information</h2>
-            <div className="bg-muted p-6 rounded-lg">
-              <p><strong>Company:</strong> Kolab Ltd</p>
-              <p><strong>Registration:</strong> England and Wales Company No. 12345678</p>
-              <p><strong>Address:</strong> London, United Kingdom</p>
-              <p><strong>Email:</strong> legal@kolab.co.uk</p>
-              <p><strong>Phone:</strong> +44 20 7123 4567</p>
-            </div>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">13. Severability</h2>
-            <p>
-              If any provision of these Terms is found to be unenforceable, the remaining 
-              provisions will remain in full force and effect.
-            </p>
+            <h2 className="text-2xl font-semibold mb-4">10. Dispute Resolution</h2>
+            <ul className="list-disc pl-6">
+              <li>Parties will attempt to resolve disputes amicably.</li>
+              <li><strong>Governing law:</strong> Victoria, Australia.</li>
+              <li><strong>Jurisdiction:</strong> Courts of Victoria.</li>
+            </ul>
           </section>
         </div>
       </div>
