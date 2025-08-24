@@ -1,6 +1,7 @@
+// src/pages/auth/AuthCallback.tsx
 import { useEffect, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '@/integrations/supabase/client'
-import { useNavigate } from 'react-router-dom'
 import { LoadingState } from '@/components/LoadingState'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -8,42 +9,58 @@ import { AlertCircle } from 'lucide-react'
 
 export default function AuthCallback() {
   const navigate = useNavigate()
+  const [search] = useSearchParams()
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const handleAuthCallback = async () => {
+    let isMounted = true
+
+    const run = async () => {
       try {
-        const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href)
-        
-        if (error) {
-          console.error('Auth callback error:', error)
-          setError(`${error.code || 'AUTH_ERROR'}: ${error.message}`)
-          return
+        // If Supabase put an error in the URL (e.g. expired/invalid link), show it.
+        const errDesc = search.get('error_description')
+        if (errDesc) {
+          throw new Error(errDesc)
         }
 
-        if (data.session) {
-          console.log('Auth callback successful, session created')
-          navigate('/', { replace: true })
-        } else {
-          setError('No session created after authentication')
+        // If there’s no "code" in the URL, there’s nothing to exchange.
+        const code = search.get('code')
+        if (!code) {
+          throw new Error('Missing authorisation code in the URL.')
         }
-      } catch (err: any) {
-        console.error('Unexpected auth callback error:', err)
-        setError(`Unexpected error: ${err.message}`)
+
+        // Complete the session from the magic-link / PKCE params in the URL
+        const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href)
+        if (error) {
+          throw error
+        }
+
+        if (!data?.session) {
+          throw new Error('No session was created after authentication.')
+        }
+
+        // Success — brief message, then home
+        if (!isMounted) return
+        navigate('/', { replace: true })
+      } catch (e: any) {
+        if (!isMounted) return
+        const code = e?.code ? `${e.code}: ` : ''
+        setError(`${code}${e?.message ?? 'Authentication failed.'}`)
       } finally {
-        setLoading(false)
+        if (isMounted) setLoading(false)
       }
     }
 
-    handleAuthCallback()
-  }, [navigate])
+    run()
+    return () => { isMounted = false }
+  }, [navigate, search])
 
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-8">
         <LoadingState />
-        <p className="mt-4 text-muted-foreground">Completing authentication...</p>
+        <p className="mt-4 text-muted-foreground">Completing authentication…</p>
       </div>
     )
   }
@@ -58,10 +75,7 @@ export default function AuthCallback() {
               Authentication failed: {error}
             </AlertDescription>
           </Alert>
-          <Button 
-            onClick={() => navigate('/auth')} 
-            className="w-full"
-          >
+          <Button onClick={() => navigate('/auth')} className="w-full">
             Return to Sign In
           </Button>
         </div>
@@ -69,9 +83,10 @@ export default function AuthCallback() {
     )
   }
 
+  // Success: render briefly before navigate (usually instantaneous)
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8">
-      <p className="text-muted-foreground">Redirecting...</p>
+      <p className="text-muted-foreground">Redirecting…</p>
     </div>
   )
 }
