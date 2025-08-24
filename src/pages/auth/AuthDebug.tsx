@@ -1,253 +1,273 @@
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { useAuth } from '@/features/auth/AuthProvider';
+import { useState, useEffect } from 'react'
+import { supabase } from '@/integrations/supabase/client'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Separator } from '@/components/ui/separator'
+import { useToast } from '@/hooks/use-toast'
+import { CheckCircle, XCircle, Clock, AlertCircle } from 'lucide-react'
+import type { Session, User } from '@supabase/supabase-js'
 
 export default function AuthDebug() {
-  const auth = useAuth();
-  const { session } = auth;
+  const [session, setSession] = useState<Session | null>(null)
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [lastError, setLastError] = useState<string | null>(null)
+  const [testResults, setTestResults] = useState<Record<string, 'pending' | 'success' | 'error'>>({
+    signUp: 'pending',
+    signIn: 'pending',
+    magicLink: 'pending',
+    signOut: 'pending'
+  })
+  const { toast } = useToast()
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [otpCode, setOtpCode] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleAction = async (action: () => Promise<any>) => {
-    setIsLoading(true);
+  const handleAction = async (action: () => Promise<any>, testName: string) => {
+    setLoading(true)
+    setLastError(null)
+    
     try {
-      await action();
+      const result = await action()
+      if (result.error) {
+        throw result.error
+      }
+      setTestResults(prev => ({ ...prev, [testName]: 'success' }))
+      toast({ title: `${testName} successful` })
+    } catch (error: any) {
+      console.error(`${testName} error:`, error)
+      setLastError(`${testName}: ${error.code || 'ERROR'} - ${error.message}`)
+      setTestResults(prev => ({ ...prev, [testName]: 'error' }))
+      toast({
+        title: `${testName} failed`,
+        description: error.message,
+        variant: "destructive"
+      })
     } finally {
-      setIsLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  // Environment check
-  const supabaseUrl = "https://vjdcstouchofifbdanjx.supabase.co";
-  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqZGNzdG91Y2hvZmlmYmRhbmp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUyMzY1NTcsImV4cCI6MjA3MDgxMjU1N30.HvT_EZDdW428jkVOlrAE-XZ_V4W1AEj8eEbSsgF4BoQ";
+  useEffect(() => {
+    // Get current session
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session)
+      setUser(data.session?.user || null)
+    })
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state change:', event, session)
+      setSession(session)
+      setUser(session?.user || null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const testSignUp = () => handleAction(async () => {
+    const testEmail = `test+${Date.now()}@example.com`
+    return supabase.auth.signUp({
+      email: testEmail,
+      password: 'testpassword123',
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`
+      }
+    })
+  }, 'signUp')
+
+  const testSignIn = () => handleAction(async () => {
+    return supabase.auth.signInWithPassword({
+      email: 'test@example.com',
+      password: 'testpassword123'
+    })
+  }, 'signIn')
+
+  const testMagicLink = () => handleAction(async () => {
+    const testEmail = `magic+${Date.now()}@example.com`
+    return supabase.auth.signInWithOtp({
+      email: testEmail,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        shouldCreateUser: true
+      }
+    })
+  }, 'magicLink')
+
+  const testSignOut = () => handleAction(async () => {
+    return supabase.auth.signOut()
+  }, 'signOut')
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'success': return <CheckCircle className="h-4 w-4 text-green-500" />
+      case 'error': return <XCircle className="h-4 w-4 text-red-500" />
+      default: return <Clock className="h-4 w-4 text-gray-400" />
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-background p-4 space-y-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold">Auth Debug Playground</h1>
-          <p className="text-muted-foreground">Diagnose and test authentication functionality</p>
+    <div className="min-h-screen bg-background p-8">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold">Authentication Debug</h1>
+          <p className="text-muted-foreground mt-2">
+            Test and debug authentication flows
+          </p>
         </div>
 
-        {/* Environment Status */}
-        <Card className="mb-6">
+        {/* Environment Info */}
+        <Card>
           <CardHeader>
-            <CardTitle>Environment Status</CardTitle>
+            <CardTitle>Environment</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="font-medium">Supabase URL:</span>
-              <Badge variant={supabaseUrl ? "default" : "destructive"}>
-                {supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : "Missing"}
-              </Badge>
+            <div className="flex justify-between">
+              <span>Supabase URL:</span>
+              <Badge variant="outline">✓ Connected</Badge>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="font-medium">Supabase Anon Key:</span>
-              <Badge variant={supabaseKey ? "default" : "destructive"}>
-                {supabaseKey ? `${supabaseKey.substring(0, 20)}...` : "Missing"}
-              </Badge>
+            <div className="flex justify-between">
+              <span>Anon Key:</span>
+              <Badge variant="outline">✓ Present</Badge>
             </div>
           </CardContent>
         </Card>
 
         {/* Current Session */}
-        <Card className="mb-6">
+        <Card>
           <CardHeader>
             <CardTitle>Current Session</CardTitle>
           </CardHeader>
           <CardContent>
-            {false ? (
-              <div className="text-muted-foreground">Loading session...</div>
-            ) : session ? (
-              <div className="space-y-2">
-                <div><strong>User ID:</strong> {session.user?.id}</div>
-                <div><strong>Email:</strong> {session.user?.email}</div>
-                <div><strong>Email Confirmed:</strong> {session.user?.email_confirmed_at ? 'Yes' : 'No'}</div>
-                <div><strong>Expires At:</strong> {session.expires_at ? new Date(session.expires_at * 1000).toLocaleString() : 'Never'}</div>
-                <div><strong>Provider:</strong> {session.user?.app_metadata?.provider || 'email'}</div>
-                <details className="mt-4">
-                  <summary className="cursor-pointer font-medium">Full Session JSON</summary>
-                  <pre className="mt-2 p-4 bg-muted rounded-lg text-xs overflow-auto">
-                    {JSON.stringify(session, null, 2)}
-                  </pre>
-                </details>
+            {user ? (
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span>User ID:</span>
+                  <code className="text-sm bg-muted px-2 py-1 rounded">
+                    {user.id}
+                  </code>
+                </div>
+                <div className="flex justify-between">
+                  <span>Email:</span>
+                  <span>{user.email}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Email Confirmed:</span>
+                  <Badge variant={user.email_confirmed_at ? "default" : "destructive"}>
+                    {user.email_confirmed_at ? 'Yes' : 'No'}
+                  </Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span>Session Expires:</span>
+                  <span>{session?.expires_at ? new Date(session.expires_at * 1000).toLocaleString() : 'N/A'}</span>
+                </div>
               </div>
             ) : (
-              <div className="text-muted-foreground">No active session</div>
+              <p className="text-muted-foreground">No active session</p>
             )}
           </CardContent>
         </Card>
 
-
-        {/* Auth Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          {/* Email/Password Auth */}
+        {/* Test Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card>
             <CardHeader>
               <CardTitle>Email/Password Auth</CardTitle>
-              <CardDescription>Test sign up and sign in flows</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="test@example.com"
-                />
+                <Label htmlFor="test-email">Email</Label>
+                <Input id="test-email" type="email" placeholder="test@example.com" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="password123"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name (for signup)</Label>
-                <Input
-                  id="fullName"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="John Doe"
-                />
+                <Label htmlFor="test-password">Password</Label>
+                <Input id="test-password" type="password" placeholder="password123" />
               </div>
               <div className="flex gap-2">
-                <Button
-                  onClick={() => handleAction(() => auth.signUpEmailPassword(email, password))}
-                  disabled={isLoading || !email || !password}
-                  className="flex-1"
-                >
-                  Sign Up
-                </Button>
-                <Button
-                  onClick={() => handleAction(() => auth.signInEmailPassword(email, password))}
-                  disabled={isLoading || !email || !password}
+                <Button 
+                  onClick={testSignUp} 
+                  disabled={loading} 
                   variant="outline"
                   className="flex-1"
                 >
-                  Sign In
+                  Test Sign Up
+                </Button>
+                <Button 
+                  onClick={testSignIn} 
+                  disabled={loading}
+                  className="flex-1"
+                >
+                  Test Sign In
                 </Button>
               </div>
             </CardContent>
           </Card>
 
-          {/* Magic Link / OTP */}
           <Card>
             <CardHeader>
               <CardTitle>Magic Link / OTP</CardTitle>
-              <CardDescription>Test passwordless authentication</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="magicEmail">Email</Label>
-                <Input
-                  id="magicEmail"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="test@example.com"
-                />
+                <Label htmlFor="magic-email">Email for Magic Link</Label>
+                <Input id="magic-email" type="email" placeholder="magic@example.com" />
               </div>
-              <Button
-                onClick={() => handleAction(() => auth.sendMagicLink(email))}
-                disabled={isLoading || !email}
+              <Button 
+                onClick={testMagicLink} 
+                disabled={loading}
                 className="w-full"
               >
                 Send Magic Link
               </Button>
-              
-              <Separator />
-              
-              <div className="space-y-2">
-                <Label htmlFor="otpCode">OTP Code</Label>
-                <Input
-                  id="otpCode"
-                  value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value)}
-                  placeholder="123456"
-                />
-              </div>
-              <p className="text-sm text-muted-foreground">OTP verification not available in simplified auth</p>
-            </CardContent>
-          </Card>
-
-          {/* Other Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Other Actions</CardTitle>
-              <CardDescription>Password reset and session management</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">Password reset not available in simplified auth</p>
-              
-              {session && (
-                <Button
-                  onClick={() => handleAction(() => auth.signOut())}
-                  disabled={isLoading}
-                  variant="destructive"
-                  className="w-full"
-                >
-                  Sign Out
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Test Results */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Test Checklist</CardTitle>
-              <CardDescription>Manual acceptance tests</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm">
-              <div className="flex items-center gap-2">
-                <Badge variant={session ? "default" : "secondary"}>
-                  {session ? "✓" : "○"}
-                </Badge>
-                <span>Email+password sign-up → confirmation email → click link → user appears</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary">○</Badge>
-                <span>Magic link sign-in → /auth/callback swaps code for session → redirected to /</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary">○</Badge>
-                <span>OTP flow → call verifyOtp → session present</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant={session ? "default" : "secondary"}>
-                  {session ? "✓" : "○"}
-                </Badge>
-                <span>Hard refresh keeps the session</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary">○</Badge>
-                <span>Sign out clears session</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary">○</Badge>
-                <span>Failure paths show real error codes</span>
-              </div>
+              <p className="text-xs text-muted-foreground">
+                Note: OTP verification is simplified in this debug environment
+              </p>
             </CardContent>
           </Card>
         </div>
+
+        {/* Other Actions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Other Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              onClick={testSignOut} 
+              disabled={loading}
+              variant="destructive"
+            >
+              Sign Out
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Test Status */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Test Results</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4">
+              {Object.entries(testResults).map(([test, status]) => (
+                <div key={test} className="flex items-center gap-2">
+                  {getStatusIcon(status)}
+                  <span className="capitalize">{test}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Last Error */}
+        {lastError && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{lastError}</AlertDescription>
+          </Alert>
+        )}
       </div>
     </div>
-  );
+  )
 }

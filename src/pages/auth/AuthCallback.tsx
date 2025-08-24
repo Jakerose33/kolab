@@ -1,25 +1,77 @@
-// src/pages/auth/AuthCallback.tsx
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabaseClient'
+import { supabase } from '@/integrations/supabase/client'
 import { useNavigate } from 'react-router-dom'
+import { LoadingState } from '@/components/LoadingState'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { AlertCircle } from 'lucide-react'
 
 export default function AuthCallback() {
-  const nav = useNavigate()
-  const [err, setErr] = useState<string | null>(null)
+  const navigate = useNavigate()
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const run = async () => {
-      // Handles PKCE / magic link codes in URL
-      const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href)
-      if (error) { setErr(`${error.code ?? ''} ${error.message}`); return }
-      nav('/', { replace: true })
+    const handleAuthCallback = async () => {
+      try {
+        const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href)
+        
+        if (error) {
+          console.error('Auth callback error:', error)
+          setError(`${error.code || 'AUTH_ERROR'}: ${error.message}`)
+          return
+        }
+
+        if (data.session) {
+          console.log('Auth callback successful, session created')
+          navigate('/', { replace: true })
+        } else {
+          setError('No session created after authentication')
+        }
+      } catch (err: any) {
+        console.error('Unexpected auth callback error:', err)
+        setError(`Unexpected error: ${err.message}`)
+      } finally {
+        setLoading(false)
+      }
     }
-    run()
-  }, [nav])
+
+    handleAuthCallback()
+  }, [navigate])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-8">
+        <LoadingState />
+        <p className="mt-4 text-muted-foreground">Completing authentication...</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-8">
+        <div className="max-w-md w-full space-y-4">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Authentication failed: {error}
+            </AlertDescription>
+          </Alert>
+          <Button 
+            onClick={() => navigate('/auth')} 
+            className="w-full"
+          >
+            Return to Sign In
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <main className="min-h-screen grid place-items-center p-8">
-      {err ? <p className="text-red-400">{err}</p> : <p>Signing you in…</p>}
-    </main>
+    <div className="min-h-screen flex flex-col items-center justify-center p-8">
+      <p className="text-muted-foreground">Redirecting...</p>
+    </div>
   )
 }

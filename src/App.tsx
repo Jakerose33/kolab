@@ -193,6 +193,16 @@ function App() {
                       <LazyPages.AuthCallback />
                     </ErrorBoundary>
                   } />
+                  <Route path="/auth/forgot-password" element={
+                    <ErrorBoundary>
+                      <LazyPages.ForgotPassword />
+                    </ErrorBoundary>
+                  } />
+                  <Route path="/auth/reset-password" element={
+                    <ErrorBoundary>
+                      <LazyPages.ResetPassword />
+                    </ErrorBoundary>
+                  } />
                   <Route path="*" element={<LazyPages.NotFound />} />
                   </Routes>
                 </Suspense>
