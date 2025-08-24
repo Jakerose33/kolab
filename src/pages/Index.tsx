@@ -25,6 +25,7 @@ import { CriticalCSS } from "@/components/CriticalCSS";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import { Analytics } from "@/components/Analytics";
 import { AccessibilityOptimizer } from "@/components/AccessibilityOptimizer";
+import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -487,6 +488,7 @@ export default function Index() {
         {/* Kolab Diaries Strip */}
         <DiariesStrip />
         </footer>
+        <Footer />
       </AppLayout>
 
       

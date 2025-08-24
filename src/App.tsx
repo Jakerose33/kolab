@@ -119,6 +119,26 @@ function App() {
                       <LazyPages.Search />
                     </ErrorBoundary>
                   } />
+                  <Route path="/venue-partners" element={
+                    <ErrorBoundary>
+                      <LazyPages.VenuePartners />
+                    </ErrorBoundary>
+                  } />
+                  <Route path="/privacy" element={
+                    <ErrorBoundary>
+                      <LazyPages.PrivacyPolicy />
+                    </ErrorBoundary>
+                  } />
+                  <Route path="/terms" element={
+                    <ErrorBoundary>
+                      <LazyPages.TermsOfService />
+                    </ErrorBoundary>
+                  } />
+                  <Route path="/about" element={
+                    <ErrorBoundary>
+                      <LazyPages.AboutUs />
+                    </ErrorBoundary>
+                  } />
                   <Route path="*" element={<LazyPages.NotFound />} />
                   </Routes>
                 </Suspense>

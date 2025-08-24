@@ -18,6 +18,10 @@ export const LazyPages = {
   Analytics: lazy(() => import('@/pages/Analytics')),
   Search: lazy(() => import('@/pages/Search')),
   NotFound: lazy(() => import('@/pages/NotFound')),
+  VenuePartners: lazy(() => import('@/pages/VenuePartners')),
+  PrivacyPolicy: lazy(() => import('@/pages/PrivacyPolicy')),
+  TermsOfService: lazy(() => import('@/pages/TermsOfService')),
+  AboutUs: lazy(() => import('@/pages/AboutUs')),
 };
 
 // Lazy load components - only map view for now since others don't have default exports
@@ -35,6 +39,10 @@ export const preloadRoutes = {
   auth: () => import('@/pages/Auth'),
   analytics: () => import('@/pages/Analytics'),
   search: () => import('@/pages/Search'),
+  venuePartners: () => import('@/pages/VenuePartners'),
+  privacy: () => import('@/pages/PrivacyPolicy'),
+  terms: () => import('@/pages/TermsOfService'),
+  about: () => import('@/pages/AboutUs'),
 };
 
 // Intersection Observer for lazy loading images and components
