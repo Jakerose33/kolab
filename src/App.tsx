@@ -299,6 +299,14 @@ function App() {
                         }
                       />
                       <Route
+                        path="/refunds"
+                        element={
+                          <ErrorBoundary>
+                            <LazyPages.RefundsPolicy />
+                          </ErrorBoundary>
+                        }
+                      />
+                      <Route
                         path="/contact"
                         element={
                           <ErrorBoundary>

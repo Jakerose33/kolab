@@ -26,6 +26,7 @@ export const LazyPages = {
   Help: lazy(() => import('@/pages/Help')),
   Safety: lazy(() => import('@/pages/Safety')),
   CookiePolicy: lazy(() => import('@/pages/CookiePolicy')),
+  RefundsPolicy: lazy(() => import('@/pages/RefundsPolicy')),
   AuthDebug: lazy(() => import('@/pages/auth/AuthDebug')),
   AuthCallback: lazy(() => import('@/pages/auth/AuthCallback')),
   ForgotPassword: lazy(() => import('@/pages/auth/ForgotPassword')),
