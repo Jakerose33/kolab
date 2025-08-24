@@ -212,6 +212,17 @@ function App() {
                         }
                       />
                       {/* ===== /Auth routes ===== */}
+                      
+                      <Route
+                        path="/venue-dashboard"
+                        element={
+                          <ErrorBoundary>
+                            <LazyPages.VenueOwnerDashboard />
+                          </ErrorBoundary>
+                        }
+                      />
+
+                      {/* ===== /Auth routes ===== */}
 
                       <Route
                         path="/admin"

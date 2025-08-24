@@ -43,6 +43,10 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { getUserBookings, getUserRSVPs } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/features/auth/AuthProvider";
+import { useSearchParams } from "react-router-dom";
+import { format } from "date-fns";
 
 // Enhanced booking data with more realistic details
 const mockBookings = [
@@ -169,6 +173,46 @@ export default function MyBookings() {
   const [typeFilter, setTypeFilter] = useState("all");
   const [sortBy, setSortBy] = useState("date");
   const { toast } = useToast();
+  const { session } = useAuth();
+  const [searchParams] = useSearchParams();
+
+  // Check for payment verification on page load
+  useEffect(() => {
+    const sessionId = searchParams.get('session_id');
+    if (sessionId && session?.user) {
+      verifyPayment(sessionId);
+    }
+  }, [searchParams, session]);
+
+  const verifyPayment = async (sessionId: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-payment', {
+        body: { session_id: sessionId }
+      });
+
+      if (error) throw error;
+
+      if (data.payment_status === 'paid') {
+        toast({
+          title: "Payment Successful! ✅",
+          description: "Your venue booking has been confirmed. You'll receive an email confirmation shortly.",
+        });
+      } else {
+        toast({
+          title: "Payment Verification",
+          description: `Payment status: ${data.payment_status}`,
+          variant: data.payment_status === 'failed' ? 'destructive' : 'default'
+        });
+      }
+    } catch (error: any) {
+      console.error('Payment verification error:', error);
+      toast({
+        title: "Payment Verification Failed",
+        description: "Unable to verify payment status. Please contact support if you believe this is an error.",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Load real bookings from Supabase
   useEffect(() => {
