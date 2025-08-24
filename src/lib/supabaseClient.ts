@@ -1,13 +1,20 @@
-// src/lib/supabaseClient.ts
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = "https://vjdcstouchofifbdanjx.supabase.co"
-const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqZGNzdG91Y2hvZmlmYmRhbmp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUyMzY1NTcsImV4cCI6MjA3MDgxMjU1N30.HvT_EZDdW428jkVOlrAE-XZ_V4W1AEj8eEbSsgF4BoQ"
+// Read from Vite env (set in hosting + your local .env)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+
+// Fail fast if the env isn’t present
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error(
+    'Missing Supabase env: set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY'
+  )
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    persistSession: true,          // keep after refresh
-    autoRefreshToken: true,        // refresh before expiry
-    detectSessionInUrl: true,      // handles OAuth/magic link redirect
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true, // lets /auth/callback complete sessions
   },
 })
