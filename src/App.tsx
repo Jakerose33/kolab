@@ -33,13 +33,13 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <SecurityProvider>
+      <SecurityProvider>
+        <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <OfflineIndicator />
+              <Toaster />
+              <Sonner />
+              <OfflineIndicator />
             <BrowserRouter>
               <AdvancedSEOSystem>
                 <AdvancedSitemapGenerator />
@@ -178,8 +178,8 @@ function App() {
             </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>
-        </SecurityProvider>
-      </QueryClientProvider>
+        </QueryClientProvider>
+      </SecurityProvider>
     </ErrorBoundary>
   );
 }

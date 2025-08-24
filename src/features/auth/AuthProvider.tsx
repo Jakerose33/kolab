@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 interface AuthContextType {
   user: User | null;
@@ -24,7 +24,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastError, setLastError] = useState<AuthError | null>(null);
-  const { toast } = useToast();
 
   const clearError = useCallback(() => {
     setLastError(null);
@@ -46,7 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         variant: "destructive",
       });
     }
-  }, [toast]);
+  }, []);
 
   const signUp = useCallback(async (email: string, password: string, fullName?: string) => {
     const redirectUrl = `${window.location.origin}/auth/callback`;
@@ -70,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     return { error };
-  }, [handleAuthError, toast]);
+  }, [handleAuthError]);
 
   const signIn = useCallback(async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -88,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     return { error };
-  }, [handleAuthError, toast]);
+  }, [handleAuthError]);
 
   const signOut = useCallback(async () => {
     const { error } = await supabase.auth.signOut();
@@ -102,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     return { error };
-  }, [handleAuthError, toast]);
+  }, [handleAuthError]);
 
   const sendMagicLink = useCallback(async (email: string) => {
     const redirectUrl = `${window.location.origin}/auth/callback`;
@@ -124,7 +123,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     return { error };
-  }, [handleAuthError, toast]);
+  }, [handleAuthError]);
 
   const verifyOtp = useCallback(async (email: string, token: string, type: 'signup' | 'magiclink') => {
     const { error } = await supabase.auth.verifyOtp({
@@ -143,7 +142,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     return { error };
-  }, [handleAuthError, toast]);
+  }, [handleAuthError]);
 
   const resetPassword = useCallback(async (email: string) => {
     const redirectUrl = `${window.location.origin}/auth/callback`;
@@ -162,7 +161,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     return { error };
-  }, [handleAuthError, toast]);
+  }, [handleAuthError]);
 
   useEffect(() => {
     let mounted = true;
