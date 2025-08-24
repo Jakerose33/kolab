@@ -55,6 +55,8 @@ export function useProfile() {
           user_id: session.user.id,
           ...updates,
           updated_at: new Date().toISOString(),
+        }, {
+          onConflict: 'user_id'
         })
         .select()
         .single();
