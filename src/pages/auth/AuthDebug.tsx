@@ -5,22 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { useAuthContext } from '@/features/auth/AuthProvider';
+import { useAuth } from '@/features/auth/AuthProvider';
 
 export default function AuthDebug() {
-  const {
-    user,
-    session,
-    loading,
-    lastError,
-    signUp,
-    signIn,
-    signOut,
-    sendMagicLink,
-    verifyOtp,
-    resetPassword,
-    clearError,
-  } = useAuthContext();
+  const auth = useAuth();
+  const { session } = auth;
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -76,15 +65,15 @@ export default function AuthDebug() {
             <CardTitle>Current Session</CardTitle>
           </CardHeader>
           <CardContent>
-            {loading ? (
+            {false ? (
               <div className="text-muted-foreground">Loading session...</div>
             ) : session ? (
               <div className="space-y-2">
-                <div><strong>User ID:</strong> {user?.id}</div>
-                <div><strong>Email:</strong> {user?.email}</div>
-                <div><strong>Email Confirmed:</strong> {user?.email_confirmed_at ? 'Yes' : 'No'}</div>
+                <div><strong>User ID:</strong> {session.user?.id}</div>
+                <div><strong>Email:</strong> {session.user?.email}</div>
+                <div><strong>Email Confirmed:</strong> {session.user?.email_confirmed_at ? 'Yes' : 'No'}</div>
                 <div><strong>Expires At:</strong> {session.expires_at ? new Date(session.expires_at * 1000).toLocaleString() : 'Never'}</div>
-                <div><strong>Provider:</strong> {user?.app_metadata?.provider || 'email'}</div>
+                <div><strong>Provider:</strong> {session.user?.app_metadata?.provider || 'email'}</div>
                 <details className="mt-4">
                   <summary className="cursor-pointer font-medium">Full Session JSON</summary>
                   <pre className="mt-2 p-4 bg-muted rounded-lg text-xs overflow-auto">
@@ -98,29 +87,6 @@ export default function AuthDebug() {
           </CardContent>
         </Card>
 
-        {/* Last Error */}
-        {lastError && (
-          <Card className="mb-6 border-destructive">
-            <CardHeader>
-              <CardTitle className="text-destructive">Last Auth Error</CardTitle>
-              <Button onClick={clearError} variant="outline" size="sm">
-                Clear Error
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div><strong>Message:</strong> {lastError.message}</div>
-                <div><strong>Status:</strong> {lastError.status || 'N/A'}</div>
-                <details>
-                  <summary className="cursor-pointer font-medium">Full Error</summary>
-                  <pre className="mt-2 p-4 bg-muted rounded-lg text-xs overflow-auto">
-                    {JSON.stringify(lastError, null, 2)}
-                  </pre>
-                </details>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Auth Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -163,14 +129,14 @@ export default function AuthDebug() {
               </div>
               <div className="flex gap-2">
                 <Button
-                  onClick={() => handleAction(() => signUp(email, password, fullName))}
+                  onClick={() => handleAction(() => auth.signUpEmailPassword(email, password))}
                   disabled={isLoading || !email || !password}
                   className="flex-1"
                 >
                   Sign Up
                 </Button>
                 <Button
-                  onClick={() => handleAction(() => signIn(email, password))}
+                  onClick={() => handleAction(() => auth.signInEmailPassword(email, password))}
                   disabled={isLoading || !email || !password}
                   variant="outline"
                   className="flex-1"
@@ -199,7 +165,7 @@ export default function AuthDebug() {
                 />
               </div>
               <Button
-                onClick={() => handleAction(() => sendMagicLink(email))}
+                onClick={() => handleAction(() => auth.sendMagicLink(email))}
                 disabled={isLoading || !email}
                 className="w-full"
               >
@@ -217,24 +183,7 @@ export default function AuthDebug() {
                   placeholder="123456"
                 />
               </div>
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => handleAction(() => verifyOtp(email, otpCode, 'signup'))}
-                  disabled={isLoading || !email || !otpCode}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  Verify Signup OTP
-                </Button>
-                <Button
-                  onClick={() => handleAction(() => verifyOtp(email, otpCode, 'magiclink'))}
-                  disabled={isLoading || !email || !otpCode}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  Verify Magic Link OTP
-                </Button>
-              </div>
+              <p className="text-sm text-muted-foreground">OTP verification not available in simplified auth</p>
             </CardContent>
           </Card>
 
@@ -245,18 +194,11 @@ export default function AuthDebug() {
               <CardDescription>Password reset and session management</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button
-                onClick={() => handleAction(() => resetPassword(email))}
-                disabled={isLoading || !email}
-                variant="outline"
-                className="w-full"
-              >
-                Send Password Reset
-              </Button>
+              <p className="text-sm text-muted-foreground">Password reset not available in simplified auth</p>
               
               {session && (
                 <Button
-                  onClick={() => handleAction(() => signOut())}
+                  onClick={() => handleAction(() => auth.signOut())}
                   disabled={isLoading}
                   variant="destructive"
                   className="w-full"
@@ -299,9 +241,7 @@ export default function AuthDebug() {
                 <span>Sign out clears session</span>
               </div>
               <div className="flex items-center gap-2">
-                <Badge variant={lastError ? "default" : "secondary"}>
-                  {lastError ? "✓" : "○"}
-                </Badge>
+                <Badge variant="secondary">○</Badge>
                 <span>Failure paths show real error codes</span>
               </div>
             </CardContent>
