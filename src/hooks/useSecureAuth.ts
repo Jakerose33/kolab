@@ -28,7 +28,8 @@ export function useSecureAuth() {
 
   // Secure sign up with validation and rate limiting
   const signUp = useCallback(async (email: string, password: string, fullName?: string) => {
-    const clientId = window.navigator.userAgent;
+    // Use email as rate limit key instead of user agent for better per-user limiting
+    const clientId = email || 'anonymous';
     
     // Rate limiting check
     if (!rateLimiters.auth.isAllowed(clientId)) {
@@ -100,7 +101,8 @@ export function useSecureAuth() {
 
   // Secure sign in with validation and rate limiting
   const signIn = useCallback(async (email: string, password: string) => {
-    const clientId = window.navigator.userAgent;
+    // Use email as rate limit key instead of user agent for better per-user limiting
+    const clientId = email || 'anonymous';
     
     // Rate limiting check
     if (!rateLimiters.auth.isAllowed(clientId)) {

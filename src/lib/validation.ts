@@ -61,9 +61,8 @@ export const UserValidation = {
     .transform(sanitizeInput.email),
     
   password: z.string()
-    .min(8, "Password must be at least 8 characters")
-    .max(128, "Password too long")
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain uppercase, lowercase, and number"),
+    .min(6, "Password must be at least 6 characters")
+    .max(128, "Password too long"),
     
   name: z.string()
     .min(1, "Name required")
@@ -185,7 +184,7 @@ export class RateLimiter {
 
 // Global rate limiters
 export const rateLimiters = {
-  auth: new RateLimiter(5, 15 * 60 * 1000), // 5 attempts per 15 minutes
+  auth: new RateLimiter(15, 5 * 60 * 1000), // 15 attempts per 5 minutes (more reasonable)
   events: new RateLimiter(10, 60 * 1000), // 10 events per minute
   messages: new RateLimiter(30, 60 * 1000), // 30 messages per minute
   bookings: new RateLimiter(5, 60 * 1000), // 5 bookings per minute
