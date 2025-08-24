@@ -17,9 +17,11 @@ import { useToast } from "@/hooks/use-toast";
 import { useSecureForm } from "@/hooks/useSecureForm";
 import { VenueValidation, MessageValidation } from "@/lib/validation";
 import { bookVenue } from "@/lib/supabase";
-import { CalendarIcon, MapPin, Users, MessageSquare } from "lucide-react";
+import { CalendarIcon, MapPin, Users, MessageSquare, DollarSign, Clock, CreditCard } from "lucide-react";
 import { format } from "date-fns";
 import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface VenueBookingDialogProps {
   isOpen: boolean;
@@ -57,11 +59,26 @@ export function VenueBookingDialog({ isOpen, onClose, venue }: VenueBookingDialo
 
   if (!venue) return null;
 
+  const calculateTotal = () => {
+    const startDate = new Date(formData.start_date);
+    const endDate = new Date(formData.end_date);
+    const hours = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60));
+    const venueAmount = hours * (venue.hourly_rate || 0);
+    const platformFee = venueAmount * 0.1; // 10% platform fee
+    return {
+      hours: Math.max(1, hours),
+      venueAmount,
+      platformFee,
+      totalAmount: venueAmount + platformFee
+    };
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
+      // First create the booking
       const bookingData = {
         venue_id: venue.id,
         start_date: formData.start_date.toISOString(),
@@ -72,14 +89,25 @@ export function VenueBookingDialog({ isOpen, onClose, venue }: VenueBookingDialo
         message: formData.message
       };
 
-      const { data, error } = await bookVenue(bookingData);
+      const { data: booking, error } = await bookVenue(bookingData);
       
       if (error) throw error;
 
-      toast({
-        title: "Booking request sent!",
-        description: "The venue owner will review your request and get back to you soon.",
+      // Then create payment session
+      const { data: paymentData, error: paymentError } = await supabase.functions.invoke('create-venue-payment', {
+        body: { venue_booking_id: booking.id }
       });
+
+      if (paymentError) throw paymentError;
+
+      // Redirect to Stripe Checkout
+      if (paymentData?.url) {
+        window.open(paymentData.url, '_blank');
+        toast({
+          title: "Redirecting to Payment",
+          description: "Complete your payment to confirm the booking.",
+        });
+      }
 
       onClose();
       setFormData({
@@ -92,7 +120,7 @@ export function VenueBookingDialog({ isOpen, onClose, venue }: VenueBookingDialo
       });
     } catch (error: any) {
       toast({
-        title: "Error sending booking request",
+        title: "Error creating booking",
         description: error.message || "Please try again",
         variant: "destructive",
       });
@@ -251,6 +279,32 @@ export function VenueBookingDialog({ isOpen, onClose, venue }: VenueBookingDialo
               rows={2}
             />
           </div>
+
+          {/* Payment Summary */}
+          {venue.hourly_rate && formData.guest_count && (
+            <Card>
+              <CardContent className="p-4">
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  <CreditCard className="h-4 w-4" />
+                  Payment Summary
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>Duration: {calculateTotal().hours} hours</span>
+                    <span>${calculateTotal().venueAmount.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Platform fee (10%)</span>
+                    <span>${calculateTotal().platformFee.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between font-semibold border-t pt-2">
+                    <span>Total</span>
+                    <span>${calculateTotal().totalAmount.toFixed(2)}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 pt-4">

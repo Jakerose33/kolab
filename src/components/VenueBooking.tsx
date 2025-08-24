@@ -1,127 +1,144 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Star, Users, Wifi, Car, Coffee, Zap } from "lucide-react";
+import { MapPin, Star, Users, Wifi, Car, Coffee, Zap, DollarSign, Clock, Loader2, Building } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { bookVenue } from "@/lib/supabase";
 import VenueMap from "@/components/VenueMap";
+import { VenueBookingDialog } from "./VenueBookingDialog";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/features/auth/AuthProvider";
+import { LoadingState } from "./LoadingState";
+import { EmptyState } from "./EmptyState";
 
-// Mock venue data
-const mockVenues = [
-  {
-    id: "1",
-    name: "Urban Studio Loft",
-    description: "Modern industrial space perfect for creative events and workshops",
-    location: "Downtown District, Creative Quarter",
-    price: 150,
-    capacity: 50,
-    rating: 4.8,
-    images: ["https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop"],
-    amenities: ["WiFi", "Sound System", "Parking", "Catering Kitchen"],
-    type: "Studio",
-    availability: "Available",
-  },
-  {
-    id: "2",
-    name: "Rooftop Garden Venue",
-    description: "Stunning rooftop space with city views and garden atmosphere",
-    location: "Midtown Heights, Sky District",
-    price: 300,
-    capacity: 100,
-    rating: 4.9,
-    images: ["https://images.unsplash.com/photo-1464207687429-7505649dae38?w=800&h=600&fit=crop"],
-    amenities: ["WiFi", "Bar", "Outdoor Seating", "City Views"],
-    type: "Rooftop",
-    availability: "Available",
-  },
-  {
-    id: "3",
-    name: "Tech Conference Hall",
-    description: "Professional conference space with state-of-the-art technology",
-    location: "Business District, Innovation Hub",
-    price: 500,
-    capacity: 200,
-    rating: 4.7,
-    images: ["https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&h=600&fit=crop"],
-    amenities: ["WiFi", "AV Equipment", "Parking", "Coffee Station"],
-    type: "Conference",
-    availability: "Available",
-  },
-];
+interface Venue {
+  id: string;
+  name: string;
+  description: string;
+  address: string;
+  hourly_rate: number;
+  capacity: number;
+  images: string[];
+  amenities: string[];
+  tags: string[];
+  latitude?: number;
+  longitude?: number;
+  owner_name?: string;
+  owner_handle?: string;
+  status: string;
+}
 
 const amenityIcons = {
   "WiFi": Wifi,
   "Sound System": Zap,
   "Parking": Car,
-  "Catering Kitchen": Coffee,
+  "Kitchen": Coffee,
   "Bar": Coffee,
-  "Outdoor Seating": Users,
+  "Outdoor Space": Users,
   "City Views": MapPin,
   "AV Equipment": Zap,
   "Coffee Station": Coffee,
+  "Air Conditioning": Zap,
+  "Security": Users,
+  "Accessible": Users,
 };
 
 export function VenueBooking() {
-  const [venues, setVenues] = useState(mockVenues);
+  const [venues, setVenues] = useState<Venue[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
-  const [sortBy, setSortBy] = useState("rating");
+  const [sortBy, setSortBy] = useState("hourly_rate");
+  const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
+  const [showBookingDialog, setShowBookingDialog] = useState(false);
   const { toast } = useToast();
+  const { session } = useAuth();
+
+  // Load venues from Supabase
+  useEffect(() => {
+    loadVenues();
+  }, []);
+
+  const loadVenues = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('venues')
+        .select('*')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      setVenues(data || []);
+    } catch (error: any) {
+      console.error('Error loading venues:', error);
+      toast({
+        title: "Error Loading Venues",
+        description: "Failed to load venues. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredVenues = venues.filter(venue => {
     const matchesSearch = !searchQuery || 
       venue.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      venue.location.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = filterType === "all" || venue.type.toLowerCase() === filterType;
+      venue.address.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesType = filterType === "all" || 
+      (venue.tags && venue.tags.some(tag => tag.toLowerCase().includes(filterType.toLowerCase())));
     
     return matchesSearch && matchesType;
   });
 
   const sortedVenues = [...filteredVenues].sort((a, b) => {
     switch (sortBy) {
-      case "price-low":
-        return a.price - b.price;
-      case "price-high":
-        return b.price - a.price;
+      case "hourly_rate-low":
+        return (a.hourly_rate || 0) - (b.hourly_rate || 0);
+      case "hourly_rate-high":
+        return (b.hourly_rate || 0) - (a.hourly_rate || 0);
       case "capacity":
-        return b.capacity - a.capacity;
-      case "rating":
+        return (b.capacity || 0) - (a.capacity || 0);
+      case "name":
+        return a.name.localeCompare(b.name);
+      case "hourly_rate":
       default:
-        return b.rating - a.rating;
+        return (a.hourly_rate || 0) - (b.hourly_rate || 0);
     }
   });
 
-  const handleBookVenue = async (venueId: string, venueName: string) => {
-    try {
-      const bookingData = {
-        venue_id: venueId,
-        start_date: new Date().toISOString(),
-        end_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
-        guest_count: 10,
-        event_type: "Event",
-        message: `Booking request for ${venueName}`
-      };
-      
-      const { data, error } = await bookVenue(bookingData);
-      
-      if (error) throw error;
-      
+  const handleBookVenue = (venue: Venue) => {
+    if (!session?.user) {
       toast({
-        title: "Booking Request Sent",
-        description: `Your booking request for ${venueName} has been submitted successfully.`,
-      });
-    } catch (error: any) {
-      toast({
-        title: "Booking Failed",
-        description: error.message || "Failed to submit booking request",
+        title: "Authentication Required",
+        description: "Please sign in to book a venue.",
         variant: "destructive",
       });
+      return;
     }
+    
+    setSelectedVenue(venue);
+    setShowBookingDialog(true);
   };
+
+  const handleBookingSuccess = () => {
+    setShowBookingDialog(false);
+    setSelectedVenue(null);
+    toast({
+      title: "Booking Request Sent",
+      description: "Your booking request has been submitted successfully. You'll receive an email confirmation shortly.",
+    });
+  };
+
+  if (loading) {
+    return <LoadingState />;
+  }
 
   return (
     <div className="space-y-8">
@@ -162,10 +179,10 @@ export function VenueBooking() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="rating">Highest Rated</SelectItem>
-              <SelectItem value="price-low">Price: Low to High</SelectItem>
-              <SelectItem value="price-high">Price: High to Low</SelectItem>
+              <SelectItem value="hourly_rate">Price: Low to High</SelectItem>
+              <SelectItem value="hourly_rate-high">Price: High to Low</SelectItem>
               <SelectItem value="capacity">Largest Capacity</SelectItem>
+              <SelectItem value="name">Name A-Z</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -183,98 +200,130 @@ export function VenueBooking() {
             id: venue.id,
             name: venue.name,
             description: venue.description,
-            location: venue.location,
-            coordinates: [144.9631 + (Math.random() - 0.5) * 0.1, -37.8136 + (Math.random() - 0.5) * 0.1], // Random Melbourne coordinates
-            price: venue.price,
-            capacity: venue.capacity,
-            rating: venue.rating,
-            type: venue.type,
-            amenities: venue.amenities
+            location: venue.address,
+            coordinates: [
+              venue.longitude || (144.9631 + (Math.random() - 0.5) * 0.1), 
+              venue.latitude || (-37.8136 + (Math.random() - 0.5) * 0.1)
+            ],
+            price: venue.hourly_rate || 0,
+            capacity: venue.capacity || 0,
+            rating: 4.5, // Default rating
+            type: venue.tags?.[0] || 'Venue',
+            amenities: venue.amenities || []
           }))} />
         </TabsContent>
 
-        <TabsContent value="list">{/* Venues Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sortedVenues.map((venue) => (
-          <Card key={venue.id} className="kolab-card overflow-hidden group">
-            <div className="relative">
-              <img
-                src={venue.images[0]}
-                alt={venue.name}
-                className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-              <Badge className="absolute top-4 right-4 bg-background/80 text-foreground border">
-                {venue.availability}
-              </Badge>
-            </div>
-            
-            <CardHeader className="space-y-3">
-              <div className="flex justify-between items-start">
-                <CardTitle className="text-xl">{venue.name}</CardTitle>
-                <div className="flex items-center gap-1">
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span className="text-sm font-medium">{venue.rating}</span>
-                </div>
-              </div>
-              
-              <CardDescription className="text-sm">
-                {venue.description}
-              </CardDescription>
-              
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                {venue.location}
-              </div>
-            </CardHeader>
-
-            <CardContent className="space-y-4">
-              {/* Amenities */}
-              <div className="flex flex-wrap gap-2">
-                {venue.amenities.slice(0, 4).map((amenity) => {
-                  const Icon = amenityIcons[amenity as keyof typeof amenityIcons] || Wifi;
-                  return (
-                    <div key={amenity} className="flex items-center gap-1 text-xs">
-                      <Icon className="h-3 w-3" />
-                      <span>{amenity}</span>
+        <TabsContent value="list">
+          {sortedVenues.length === 0 ? (
+            <EmptyState
+              icon={Building}
+              title="No venues found"
+              description="Try adjusting your search or filters to find more venues."
+              action={{
+                label: "Clear Filters",
+                onClick: () => {
+                  setSearchQuery("");
+                  setFilterType("all");
+                }
+              }}
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sortedVenues.map((venue) => (
+                <Card key={venue.id} className="kolab-card overflow-hidden group">
+                  <div className="relative">
+                    <img
+                      src={venue.images && venue.images.length > 0 
+                        ? venue.images[0] 
+                        : "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop"
+                      }
+                      alt={venue.name}
+                      className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <Badge className="absolute top-4 right-4 bg-background/80 text-foreground border">
+                      Available
+                    </Badge>
+                  </div>
+                  
+                  <CardHeader className="space-y-3">
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-xl">{venue.name}</CardTitle>
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium">4.5</span>
+                      </div>
                     </div>
-                  );
-                })}
-              </div>
+                    
+                    <CardDescription className="text-sm">
+                      {venue.description}
+                    </CardDescription>
+                    
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <MapPin className="h-4 w-4" />
+                      {venue.address}
+                    </div>
+                  </CardHeader>
 
-              {/* Capacity and Price */}
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-1 text-sm">
-                  <Users className="h-4 w-4" />
-                  <span>Up to {venue.capacity} people</span>
-                </div>
-                <div className="text-right">
-                  <div className="text-lg font-bold">${venue.price}</div>
-                  <div className="text-xs text-muted-foreground">per day</div>
-                </div>
-              </div>
+                  <CardContent className="space-y-4">
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-2">
+                      {venue.tags && venue.tags.slice(0, 3).map((tag) => (
+                        <Badge key={tag} variant="secondary" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
 
-              <Button 
-                className="w-full bg-gradient-primary hover:opacity-90"
-                onClick={() => handleBookVenue(venue.id, venue.name)}
-              >
-                🎟️ Book Now
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-        </div>
+                    {/* Amenities */}
+                    <div className="flex flex-wrap gap-2">
+                      {venue.amenities && venue.amenities.slice(0, 4).map((amenity) => {
+                        const Icon = amenityIcons[amenity as keyof typeof amenityIcons] || Wifi;
+                        return (
+                          <div key={amenity} className="flex items-center gap-1 text-xs">
+                            <Icon className="h-3 w-3" />
+                            <span>{amenity}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Capacity and Price */}
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-1 text-sm">
+                        <Users className="h-4 w-4" />
+                        <span>Up to {venue.capacity || 0} people</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold">${venue.hourly_rate || 0}</div>
+                        <div className="text-xs text-muted-foreground">per hour</div>
+                      </div>
+                    </div>
+
+                    <Button 
+                      className="w-full bg-gradient-primary hover:opacity-90"
+                      onClick={() => handleBookVenue(venue)}
+                    >
+                      🎟️ Book Now
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
 
-      {/* No Results */}
-      {sortedVenues.length === 0 && (
-        <div className="text-center py-12">
-          <div className="text-4xl mb-4">🏢</div>
-          <h3 className="text-xl font-semibold mb-2">No venues found</h3>
-          <p className="text-muted-foreground">
-            Try adjusting your search or filters to find more venues.
-          </p>
-        </div>
+      {/* Booking Dialog */}
+      {selectedVenue && (
+        <VenueBookingDialog
+          isOpen={showBookingDialog}
+          onClose={() => {
+            setShowBookingDialog(false);
+            setSelectedVenue(null);
+            handleBookingSuccess();
+          }}
+          venue={selectedVenue}
+        />
       )}
     </div>
   );
