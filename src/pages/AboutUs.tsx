@@ -1,5 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SEOOptimizer } from '@/components/SEOOptimizer';
 import { 
@@ -262,18 +264,16 @@ export default function AboutUs() {
                 there's a place for you in the Kolab community.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a 
-                  href="/venue-partners" 
-                  className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-                >
-                  Partner with Us
-                </a>
-                <a 
-                  href="/contact" 
-                  className="inline-flex items-center justify-center px-6 py-3 border border-border rounded-lg hover:bg-muted transition-colors"
-                >
-                  Get in Touch
-                </a>
+                <Button size="lg" asChild>
+                  <Link to="/venue-partners">
+                    Partner with Us
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <Link to="/contact">
+                    Get in Touch
+                  </Link>
+                </Button>
               </div>
             </div>
           </div>

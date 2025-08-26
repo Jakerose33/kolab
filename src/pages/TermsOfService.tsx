@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { SEOOptimizer } from '@/components/SEOOptimizer';
 
 export default function TermsOfService() {
@@ -75,7 +76,7 @@ export default function TermsOfService() {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">6. Refunds & Cancellations</h2>
             <ul className="list-disc pl-6">
-              <li>Refund eligibility is governed by our <a href="/refunds" className="text-primary hover:underline">Refund & Cancellation Policy</a>.</li>
+              <li>Refund eligibility is governed by our <Link to="/refunds" className="text-primary hover:underline">Refund & Cancellation Policy</Link>.</li>
               <li>Kolab may process refunds on behalf of venues, but final responsibility rests with the venue/organiser.</li>
             </ul>
           </section>

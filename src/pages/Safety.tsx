@@ -1,6 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { SEOOptimizer } from '@/components/SEOOptimizer';
 import { 
   Shield, 
@@ -251,18 +253,16 @@ export default function Safety() {
                 Our safety team is always available to discuss concerns or answer questions about our guidelines.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a 
-                  href="/contact"
-                  className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-                >
-                  Contact Safety Team
-                </a>
-                <a 
-                  href="mailto:safety@kolab.co.uk"
-                  className="inline-flex items-center justify-center px-6 py-3 border border-border rounded-lg hover:bg-muted transition-colors"
-                >
-                  Email: safety@kolab.co.uk
-                </a>
+                <Button size="lg" asChild>
+                  <Link to="/contact">
+                    Contact Safety Team
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <a href="mailto:safety@kolab.co.uk">
+                    Email Safety Team
+                  </a>
+                </Button>
               </div>
             </CardContent>
           </Card>
