@@ -10,10 +10,22 @@ export interface ViewTransitionOptions {
 }
 
 /**
- * Check if View Transitions API is supported
+ * Check if View Transitions API is supported and working
  */
 export function supportsViewTransitions(): boolean {
-  return typeof document !== 'undefined' && 'startViewTransition' in document;
+  if (typeof document === 'undefined') return false;
+  
+  // Check if API exists
+  if (!('startViewTransition' in document)) return false;
+  
+  // Additional check for mobile browsers that might have partial support
+  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  if (isMobile) {
+    // For now, disable view transitions on mobile to prevent errors
+    return false;
+  }
+  
+  return true;
 }
 
 /**
@@ -37,12 +49,15 @@ export async function performViewTransition(
       document.documentElement.style.setProperty('view-transition-name', name);
     }
 
-    const transition = document.startViewTransition(async () => {
+    // Wrap the startViewTransition call in additional error handling
+    const transition = (document as any).startViewTransition?.(async () => {
       await callback();
     });
 
-    // Wait for transition to complete
-    await transition.finished;
+    // Only wait for transition if it was created successfully
+    if (transition && transition.finished) {
+      await transition.finished;
+    }
 
     // Clean up transition name
     if (name && document.documentElement) {
@@ -50,7 +65,13 @@ export async function performViewTransition(
     }
   } catch (error) {
     console.warn('View transition failed, falling back to immediate update:', error);
-    await callback();
+    // Ensure callback still runs even if transition fails
+    try {
+      await callback();
+    } catch (callbackError) {
+      console.error('Callback execution failed:', callbackError);
+      throw callbackError;
+    }
   }
 }
 
