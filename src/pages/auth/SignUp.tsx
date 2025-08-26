@@ -42,6 +42,25 @@ export default function SignUp() {
     }
   }
 
+  const onMagicLink = async () => {
+    setLoading(true); setError(null)
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback`, shouldCreateUser: true },
+      })
+      if (error) throw error
+      setSent(true)
+      toast({ title: 'Magic link sent', description: `Check your inbox: ${email}` })
+    } catch (err: any) {
+      const msg = `${err?.code ? `${err.code}: ` : ''}${err?.message ?? 'Unable to send magic link'}`
+      setError(msg)
+      toast({ title: 'Error', description: msg, variant: 'destructive' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <Card className="w-full max-w-md">
@@ -72,8 +91,12 @@ export default function SignUp() {
                 </Alert>
               )}
 
-              <Button type="submit" className="w-full" disabled={loading || !email}>
+              <Button type="submit" className="w-full" disabled={loading || !email || password.length < 8 || password !== confirm}>
                 {loading ? 'Creating…' : 'Create account'}
+              </Button>
+
+              <Button type="button" variant="outline" className="w-full" onClick={onMagicLink} disabled={loading || !email}>
+                Email me a magic link instead
               </Button>
 
               <div className="text-sm text-center">

@@ -38,7 +38,7 @@ export default function SignIn() {
     try {
       const { error } = await supabase.auth.signInWithOtp({
         email,
-        options: { emailRedirectTo: `${window.location.origin}/auth/callback`, shouldCreateUser: true },
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback`, shouldCreateUser: false },
       })
       if (error) throw error
       toast({ title: 'Magic link sent', description: `Check your inbox: ${email}` })
@@ -84,7 +84,7 @@ export default function SignIn() {
             </Button>
 
             <div className="flex items-center justify-between text-sm">
-              <Link to="/auth/forgot" className="underline">Forgot password?</Link>
+              <Link to="/auth/forgot-password" className="underline">Forgot password?</Link>
               <Link to="/auth/signup" className="underline">Create account</Link>
             </div>
           </form>

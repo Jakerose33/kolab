@@ -91,6 +91,7 @@ function App() {
                       <Route path="/auth/callback" element={<LazyPages.AuthCallback />} />
                       <Route path="/auth/forgot-password" element={<LazyPages.ForgotPassword />} />
                       <Route path="/auth/reset-password" element={<LazyPages.ResetPassword />} />
+                      <Route path="/auth/signin" element={<SignIn />} />
                       {/* ===== /Auth routes ===== */}
                       
                       <Route path="/venue-dashboard" element={<LazyPages.VenueOwnerDashboard />} />

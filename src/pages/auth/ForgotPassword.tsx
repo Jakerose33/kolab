@@ -108,7 +108,7 @@ export default function ForgotPassword() {
               </Button>
             </div>
 
-            <Button asChild className="w-full">
+            <Button variant="ghost" asChild className="w-full">
               <Link to="/auth">Back to sign in</Link>
             </Button>
           </CardContent>
