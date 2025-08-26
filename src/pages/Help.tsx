@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { SEOOptimizer } from '@/components/SEOOptimizer';
 import { 
   Search, 
@@ -223,18 +225,16 @@ export default function Help() {
                 Our support team is here to help you succeed. Get in touch and we'll respond within 24 hours.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a 
-                  href="/contact"
-                  className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-                >
-                  Contact Support
-                </a>
-                <a 
-                  href="mailto:venues@kolab.co.uk"
-                  className="inline-flex items-center justify-center px-6 py-3 border border-border rounded-lg hover:bg-muted transition-colors"
-                >
-                  Email Venue Team
-                </a>
+                <Link to="/contact">
+                  <Button size="lg" className="w-full sm:w-auto">
+                    Contact Support
+                  </Button>
+                </Link>
+                <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
+                  <a href="mailto:venues@kolab.co.uk">
+                    Email Venue Team
+                  </a>
+                </Button>
               </div>
             </CardContent>
           </Card>
