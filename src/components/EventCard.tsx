@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { rsvpToEvent } from "@/lib/supabase";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/features/auth/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
@@ -64,11 +64,11 @@ export function EventCard({
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isRSVPLoading, setIsRSVPLoading] = useState(false);
-  const { user } = useAuth();
+  const { session } = useAuth();
   const { toast } = useToast();
 
   const handleRSVP = async (status: 'going' | 'interested') => {
-    if (!user) {
+    if (!session?.user) {
       toast({
         title: "Sign in required",
         description: "Please sign in to RSVP to events.",
@@ -258,7 +258,7 @@ export function EventCard({
           </div>
           <span className="text-xs text-muted-foreground">@{organizerHandle}</span>
         </div>
-        {onMessage && user && user.id !== event.organizer_id && (
+        {onMessage && session?.user && session.user.id !== event.organizer_id && (
           <Button
             size="sm"
             variant="outline"
