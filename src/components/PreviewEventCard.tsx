@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { Link } from "react-router-dom";
 
 interface Event {
   id: string;
@@ -68,12 +69,13 @@ export function PreviewEventCard({
   const organizerHandle = event.profiles?.handle || "organizer";
 
   return (
-    <Card className={cn(
-      "group overflow-hidden transition-all duration-300 hover:shadow-glow hover:-translate-y-1 relative",
-      className
-    )}>
-      {/* Preview overlay */}
-      <div className="absolute inset-0 bg-background/60 backdrop-blur-[1px] z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+    <Link to={`/events/${event.id}`} className="block">
+      <Card className={cn(
+        "group overflow-hidden transition-all duration-300 hover:shadow-glow hover:-translate-y-1 relative",
+        className
+      )}>
+        {/* Preview overlay */}
+        <div className="absolute inset-0 bg-background/60 backdrop-blur-[1px] z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <div className="text-center p-6">
           <Lock className="h-8 w-8 text-primary mx-auto mb-3" />
           <h3 className="font-semibold text-lg mb-2">Sign in to view details</h3>
@@ -212,5 +214,6 @@ export function PreviewEventCard({
         </Button>
       </CardContent>
     </Card>
+    </Link>
   );
 }

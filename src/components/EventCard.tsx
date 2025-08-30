@@ -21,6 +21,7 @@ import { rsvpToEvent } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { Link } from "react-router-dom";
 
 interface Event {
   id: string;
@@ -133,12 +134,13 @@ export function EventCard({
   const organizerHandle = event.profiles?.handle || "organizer";
 
   return (
-    <Card className={cn(
-      "group overflow-hidden transition-all duration-300 hover:shadow-glow hover:-translate-y-1",
-      className
-    )}>
-      {/* Event Image */}
-      <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5">
+    <Link to={`/events/${event.id}`} className="block">
+      <Card className={cn(
+        "group overflow-hidden transition-all duration-300 hover:shadow-glow hover:-translate-y-1",
+        className
+      )}>
+        {/* Event Image */}
+        <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5">
         {event.image_url ? (
           <img 
             src={event.image_url.startsWith('/') ? event.image_url : `/${event.image_url}`} 
@@ -328,5 +330,6 @@ export function EventCard({
         )}
       </CardContent>
     </Card>
+    </Link>
   );
 }
