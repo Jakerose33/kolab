@@ -1,16 +1,11 @@
-// src/lib/entities.ts
+// Minimal helpers to normalize event shapes coming from mock/Supabase/etc.
 export type EventLike = Record<string, any>;
 
 export function normalizeEvent(e: EventLike) {
   const id =
-    e?.id ??
-    e?.eventId ??
-    e?.uuid ??
-    e?.slug ??
-    null;
-
+    e?.id ?? e?.eventId ?? e?.uuid ?? e?.slug ?? null; // tolerate many shapes
   return {
-    id, // may be string or number
+    id,
     title: e?.title ?? e?.name ?? 'Untitled Event',
     image: e?.heroImage ?? e?.image ?? e?.images?.[0] ?? null,
   };
@@ -18,9 +13,9 @@ export function normalizeEvent(e: EventLike) {
 
 export function getEventLink(e: EventLike): string | null {
   const { id } = normalizeEvent(e);
-  const val = String(id ?? '');
-  if (!val || val === 'undefined' || val === 'null') return null;
-  return `/events/${val}`;
+  const s = String(id ?? '');
+  if (!s || s === 'undefined' || s === 'null') return null;
+  return `/events/${s}`;
 }
 
 export type VenueLike = Record<string, any>;
