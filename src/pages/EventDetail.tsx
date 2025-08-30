@@ -9,6 +9,7 @@ import EventRSVPBar from "@/features/events/EventRSVPBar"
 import { LoadingState } from "@/components/LoadingState"
 import { EventJsonLD, BreadcrumbJsonLD } from "@/components/SEOJsonLD"
 import { editorialData } from "@/data/editorial"
+import BookingCTA from "@/components/booking/BookingCTA"
 
 // Extended event data for detail view
 const extendedEventData = {
@@ -180,6 +181,11 @@ export default function EventDetail() {
                 capacity={event.capacity}
                 going={event.going}
               />
+
+              {/* Booking CTA */}
+              <div className="mt-4">
+                <BookingCTA className="w-full md:w-auto" />
+              </div>
 
               {/* Event gallery */}
               <EventGallery
