@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client'
 type Ctx = {
   session: Session | null
   signUpEmailPassword: (email: string, password: string) => Promise<void>
-  signInEmailPassword: (email: string, password: string) => Promise<void>
+  signInEmailPassword: (email: string, password: string) => Promise<any>
   sendMagicLink: (email: string, redirectTo?: string) => Promise<void>
   signOut: () => Promise<void>
 }
@@ -32,8 +32,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signInEmailPassword = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) throw error
+    return data
   }
 
   const sendMagicLink = async (email: string, redirectTo = `${location.origin}/auth/callback`) => {
