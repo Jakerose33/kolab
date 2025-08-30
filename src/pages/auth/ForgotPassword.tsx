@@ -41,7 +41,7 @@ export default function ForgotPassword() {
       setSent(true)
       setResendIn(60)
       toast({
-        title: 'Reset email sent',
+        title: 'Reset link sent',
         description: `We've sent a reset link to ${email}.`,
       })
     } catch (err: any) {
@@ -83,7 +83,7 @@ export default function ForgotPassword() {
               We've sent a reset link to <span className="font-medium">{email}</span>.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4" data-testid="reset-success">
             <p className="text-sm text-muted-foreground text-center">
               Didn't receive the email? Check Spam/Promotions, or resend below.
             </p>
