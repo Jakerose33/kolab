@@ -7,6 +7,7 @@ import { OptimizedImage } from "@/components/OptimizedImage"
 import { Flame, Eye, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getEvents } from "@/lib/supabase"
+import { getEventLink } from "@/lib/entities"
 
 interface Event {
   id: string;
@@ -30,9 +31,9 @@ const EventCard = ({ event }: { event: Event }) => {
   const eventDate = new Date(event.start_at);
   const isToday = eventDate.toDateString() === new Date().toDateString();
   
-  return (
-    <Link to={`/events/${event.id}`}>
-      <Card className="kolab-card group cursor-pointer overflow-hidden border-0 hover:scale-[1.02]">
+  const link = getEventLink(event);
+  const content = (
+    <Card className="kolab-card group cursor-pointer overflow-hidden border-0 hover:scale-[1.02]">
         <div className="aspect-[4/5] relative overflow-hidden">
           <OptimizedImage
             src={event.image_url?.startsWith('/') ? event.image_url : `/${event.image_url}`}
@@ -71,8 +72,13 @@ const EventCard = ({ event }: { event: Event }) => {
           </div>
         </div>
       </Card>
-    </Link>
-  )
+  );
+
+  return link 
+    ? <Link to={link} className="block">{content}</Link>
+    : <div className="block opacity-60 pointer-events-none" aria-disabled="true">
+        {content}
+      </div>;
 }
 
 

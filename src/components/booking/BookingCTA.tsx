@@ -25,8 +25,8 @@ export default function BookingCTA({ className, eventId }: Props) {
       return
     }
 
-    // Navigate to event-specific booking flow
-    if (currentEventId) {
+    // Navigate to event-specific booking flow if valid ID exists
+    if (currentEventId && currentEventId !== 'undefined' && currentEventId !== 'null') {
       nav(`/events/${currentEventId}/book`)
     } else {
       // Fallback to general bookings page

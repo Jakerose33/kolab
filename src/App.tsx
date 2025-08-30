@@ -73,8 +73,8 @@ function App() {
                     <Routes>
                       <Route path="/" element={<ErrorBoundary where="Index"><LazyPages.Index /></ErrorBoundary>} />
                       <Route path="/events" element={<ErrorBoundary where="Events"><LazyPages.Events /></ErrorBoundary>} />
-                      <Route path="/events/:id" element={<ErrorBoundary where="EventDetail"><LazyPages.EventDetail /></ErrorBoundary>} />
-                      <Route path="/events/:id/book" element={<ErrorBoundary where="EventBooking"><LazyPages.EventBooking /></ErrorBoundary>} />
+                      <Route path="/events/:idOrSlug" element={<ErrorBoundary where="EventDetail"><LazyPages.EventDetail /></ErrorBoundary>} />
+                      <Route path="/events/:idOrSlug/book" element={<ErrorBoundary where="EventBooking"><LazyPages.EventBooking /></ErrorBoundary>} />
                       <Route path="/journal" element={<ErrorBoundary where="JournalArchive"><LazyPages.JournalArchive /></ErrorBoundary>} />
                       <Route path="/venues" element={<ErrorBoundary where="Venues"><LazyPages.Venues /></ErrorBoundary>} />
                       <Route path="/venues/:id" element={<ErrorBoundary where="VenueDetail"><LazyPages.VenueDetail /></ErrorBoundary>} />

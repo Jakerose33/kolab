@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, MapPin, Users, Clock } from "lucide-react"
 import EventHeader from "@/features/events/EventHeader"
@@ -76,19 +76,24 @@ const getEventProp = (event: any, mockProp: string, dbProp?: string) => {
 }
 
 export default function EventDetail() {
-  const { value: id } = useRequiredParam('id')
+  const { idOrSlug } = useParams<{ idOrSlug: string }>()
   const navigate = useNavigate()
   const [userRSVP, setUserRSVP] = useState<'going' | 'interested' | null>(null)
 
+  // Validate param early
+  if (!idOrSlug || idOrSlug === 'undefined' || idOrSlug === 'null') {
+    return <NotFound title="Event not found" subtitle="Invalid event identifier." />
+  }
+
   const eventQuery = useQuery({
-    queryKey: ['event', id],
-    enabled: !!id,
+    queryKey: ['event', idOrSlug],
+    enabled: !!idOrSlug,
     queryFn: async () => {
-      // Try to get from Supabase first, fallback to mock data
+      // Try to get from Supabase first with id or slug
       const { data, error } = await supabase
         .from('events')
         .select('*')
-        .eq('id', id)
+        .or(`id.eq.${idOrSlug},slug.eq.${idOrSlug}`)
         .maybeSingle()
       
       if (error && error.code !== 'PGRST116') {
@@ -100,7 +105,7 @@ export default function EventDetail() {
       }
       
       // Fallback to mock data
-      const eventData = extendedEventData[id as keyof typeof extendedEventData]
+      const eventData = extendedEventData[idOrSlug as keyof typeof extendedEventData]
       return eventData || null
     },
   })
@@ -109,9 +114,7 @@ export default function EventDetail() {
     setUserRSVP(status)
   }
 
-  if (!id) {
-    return <NotFound title="Event not found" subtitle="Missing event ID." />
-  }
+  // Early validation handled above
 
   if (eventQuery.isLoading) {
     return <PageSkeleton />
