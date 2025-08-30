@@ -3,7 +3,7 @@ import { Badge } from './ui/badge'
 import { Button } from './ui/button'
 import { Card, CardContent, CardHeader } from './ui/card'
 import { Separator } from './ui/separator'
-import { EventCard } from './EventCard'
+import EventCard from './events/EventCard'
 import { EmptyState } from './EmptyState'
 import { LoadingState } from './LoadingState'
 import { cn } from '@/lib/utils'
@@ -218,8 +218,6 @@ export function SearchResultsDisplay({
             <EventCard
               key={event.id}
               event={event}
-              onShare={onShare}
-              userRSVP={userRSVPs[event.id] as 'going' | 'interested' | undefined}
             />
           ))}
         </div>

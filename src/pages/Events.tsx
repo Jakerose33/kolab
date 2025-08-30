@@ -1,5 +1,5 @@
 import { AppLayout } from "@/components/AppLayout";
-import { EventCard } from "@/components/EventCard";
+import EventCard from "@/components/events/EventCard";
 import { PreviewEventCard } from "@/components/PreviewEventCard";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { MessagesDialog } from "@/components/MessagesDialog";
@@ -312,7 +312,6 @@ export default function Events() {
                     <EventCard 
                       key={event.id} 
                       event={event}
-                      onShare={handleShare}
                     />
                   ) : (
                     <PreviewEventCard 

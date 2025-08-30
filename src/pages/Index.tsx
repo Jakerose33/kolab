@@ -5,7 +5,7 @@ import EditorialGrid from "@/features/editorial/EditorialGrid";
 import CityGuide from "@/features/city/CityGuide";
 import DiariesStrip from "@/features/diaries/DiariesStrip";
 import CollabsMarquee from "@/features/collabs/CollabsMarquee";
-import { EventCard } from "@/components/EventCard";
+import EventCard from "@/components/events/EventCard";
 import { MobileEventCard } from "@/components/MobileEventCard";
 import { PreviewEventCard } from "@/components/PreviewEventCard";
 import { CategoryFilter } from "@/components/CategoryFilter";
@@ -390,8 +390,6 @@ export default function Index() {
                       <EventCard
                         key={event.id}
                         event={event}
-                        onShare={() => handleShare(event.id)}
-                        userRSVP={userRSVPs[event.id] as 'going' | 'interested' | undefined}
                       />
                     );
                   } else {

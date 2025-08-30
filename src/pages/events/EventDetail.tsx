@@ -84,12 +84,12 @@ export default function EventDetail() {
     <div className="max-w-5xl mx-auto p-6">
       <Button variant="ghost" className="mb-4" onClick={() => navigate(-1)}>← Back</Button>
 
-      <h1 className="text-2xl font-bold">{event.title ?? 'Untitled Event'}</h1>
-      {event.image_url ? (
+      <h1 className="text-2xl font-bold">{(event as any).title ?? (event as any).name ?? 'Untitled Event'}</h1>
+      {(event as any).heroImage || (event as any).image || (event as any).image_url ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={event.image_url}
-          alt={event.title ?? 'Event image'}
+          src={(event as any).heroImage ?? (event as any).image ?? (event as any).image_url}
+          alt={(event as any).title ?? (event as any).name ?? 'Event image'}
           className="mt-4 w-full max-h-[420px] object-cover rounded-lg"
         />
       ) : null}
