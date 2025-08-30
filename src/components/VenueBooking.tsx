@@ -301,6 +301,7 @@ export function VenueBooking() {
 
                     <Button 
                       className="w-full bg-gradient-primary hover:opacity-90"
+                      data-testid="booking-request"
                       onClick={() => handleBookVenue(venue)}
                     >
                       🎟️ Book Now

@@ -165,6 +165,7 @@ export default function EventRSVPBar({
               href={ticketUrl || bookingUrl}
               target="_blank"
               rel="noopener noreferrer"
+              data-testid="booking-request"
               className="flex items-center gap-2"
             >
               <ExternalLink className="w-5 h-5" />

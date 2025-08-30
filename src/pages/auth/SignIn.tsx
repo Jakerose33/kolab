@@ -69,6 +69,7 @@ export default function SignIn() {
               <Input
                 id="email"
                 type="email"
+                data-testid="signin-email"
                 value={email}
                 onChange={(e)=>setEmail(e.target.value)}
                 required
@@ -80,6 +81,7 @@ export default function SignIn() {
               <Input
                 id="password"
                 type="password"
+                data-testid="signin-password"
                 value={password}
                 onChange={(e)=>setPassword(e.target.value)}
                 required
@@ -93,7 +95,7 @@ export default function SignIn() {
               </Alert>
             )}
 
-            <Button type="submit" className="w-full" disabled={loading || !email || !password}>
+            <Button type="submit" className="w-full" data-testid="signin-submit" disabled={loading || !email || !password}>
               {loading ? 'Signing in…' : 'Sign in'}
             </Button>
 

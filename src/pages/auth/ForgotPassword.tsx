@@ -42,7 +42,7 @@ export default function ForgotPassword() {
       setResendIn(60)
       toast({
         title: 'Reset email sent',
-        description: `We’ve sent a password reset link to ${email}.`,
+        description: `We've sent a reset link to ${email}.`,
       })
     } catch (err: any) {
       const msg = `${err?.code ? `${err.code}: ` : ''}${err?.message ?? 'Unable to send reset email'}`
@@ -80,12 +80,12 @@ export default function ForgotPassword() {
             </div>
             <CardTitle>Check your email</CardTitle>
             <CardDescription>
-              We’ve sent a password reset link to <span className="font-medium">{email}</span>.
+              We've sent a reset link to <span className="font-medium">{email}</span>.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground text-center">
-              Didn’t receive the email? Check Spam/Promotions, or resend below.
+              Didn't receive the email? Check Spam/Promotions, or resend below.
             </p>
 
             {error && (
@@ -123,7 +123,7 @@ export default function ForgotPassword() {
         <CardHeader>
           <CardTitle>Reset your password</CardTitle>
           <CardDescription>
-            Enter your email address and we’ll send you a link to set a new password.
+            Enter your email address and we'll send you a link to set a new password.
           </CardDescription>
         </CardHeader>
         <CardContent>
