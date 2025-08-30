@@ -44,7 +44,7 @@ export default function ForgotPassword() {
       setResendIn(60)
       toast({
         title: 'Reset link sent',
-        description: `We've sent a reset link to ${email}.`,
+        description: `We've sent a password reset link to ${email}.`,
       })
     } catch (err: any) {
       console.error('Reset email error:', err)
