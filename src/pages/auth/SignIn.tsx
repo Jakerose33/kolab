@@ -1,3 +1,4 @@
+// src/pages/auth/SignIn.tsx
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '@/integrations/supabase/client'
@@ -18,12 +19,14 @@ export default function SignIn() {
 
   const onPasswordSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (loading) return
     setLoading(true); setError(null)
+
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
       toast({ title: 'Welcome back' })
-      nav('/', { replace: true })
+      nav('/', { replace: true }) // tests expect landing on "/"
     } catch (err: any) {
       const msg = `${err?.code ? `${err.code}: ` : ''}${err?.message ?? 'Unable to sign in'}`
       setError(msg)
@@ -34,6 +37,7 @@ export default function SignIn() {
   }
 
   const onMagicLink = async () => {
+    if (loading) return
     setLoading(true); setError(null)
     try {
       const { error } = await supabase.auth.signInWithOtp({
@@ -62,20 +66,34 @@ export default function SignIn() {
           <form onSubmit={onPasswordSignIn} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={e=>setEmail(e.target.value)} required autoComplete="email" />
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e)=>setEmail(e.target.value)}
+                required
+                autoComplete="email"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" value={password} onChange={e=>setPassword(e.target.value)} required autoComplete="current-password" />
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e)=>setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
             </div>
 
             {error && (
-              <Alert variant="destructive">
+              <Alert variant="destructive" aria-live="polite">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
 
-            <Button type="submit" className="w-full" disabled={loading || !email}>
+            <Button type="submit" className="w-full" disabled={loading || !email || !password}>
               {loading ? 'Signing in…' : 'Sign in'}
             </Button>
 
@@ -84,6 +102,7 @@ export default function SignIn() {
             </Button>
 
             <div className="flex items-center justify-between text-sm">
+              {/* FIX: route matches tests */}
               <Link to="/auth/forgot-password" className="underline">Forgot password?</Link>
               <Link to="/auth/signup" className="underline">Create account</Link>
             </div>
