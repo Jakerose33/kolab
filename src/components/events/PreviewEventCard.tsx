@@ -3,7 +3,7 @@ import { normalizeEvent } from '@/lib/linking';
 
 type Props = { event: any; className?: string; 'data-testid'?: string };
 
-export default function EventCard({ event, className, ...rest }: Props) {
+export default function PreviewEventCard({ event, className, ...rest }: Props) {
   const n = normalizeEvent(event);
   
   return (
@@ -19,6 +19,9 @@ export default function EventCard({ event, className, ...rest }: Props) {
         </div>
         <div className="p-3">
           <h3 className="text-base font-semibold line-clamp-1">{n.title}</h3>
+          <div className="mt-2 text-sm text-muted-foreground">
+            Sign in to view details
+          </div>
         </div>
       </Card>
     </article>

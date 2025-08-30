@@ -4,9 +4,11 @@ import { Button } from './ui/button'
 import { Card, CardContent, CardHeader } from './ui/card'
 import { Separator } from './ui/separator'
 import EventCard from './events/EventCard'
+import { getEventLink, normalizeEvent } from '@/lib/linking'
 import { EmptyState } from './EmptyState'
 import { LoadingState } from './LoadingState'
 import { cn } from '@/lib/utils'
+import { Link } from 'react-router-dom'
 
 interface SearchResultsDisplayProps {
   events: any[]
@@ -214,12 +216,22 @@ export function SearchResultsDisplay({
       {/* Search Results */}
       {events.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {events.map((event) => (
-            <EventCard
-              key={event.id}
-              event={event}
-            />
-          ))}
+          {events.map((event) => {
+            const link = getEventLink(event);
+            if (!link) return null;
+
+            const n = normalizeEvent(event);
+            return (
+              <Link
+                key={String(n.id)}
+                to={link}
+                aria-label={`Open ${n.title}`}
+                className="block focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <EventCard event={event} />
+              </Link>
+            );
+          })}
         </div>
       ) : (
         <EmptyState

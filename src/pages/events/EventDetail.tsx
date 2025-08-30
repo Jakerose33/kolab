@@ -6,6 +6,43 @@ import BookingCTA from '@/components/booking/BookingCTA';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
+// Mock event data for fallback
+const extendedEventData = {
+  '1': {
+    id: '1',
+    title: 'Underground Art Gallery Opening',
+    description: 'Exclusive underground art exhibition featuring emerging local artists',
+    image_url: '/images/events/street-art-opening.jpg',
+    start_at: new Date(Date.now() + 86400000).toISOString(),
+    venue_name: 'Hidden Gallery',
+    venue_address: 'Downtown',
+    capacity: 50,
+    tags: ['Art', 'Gallery'],
+  },
+  '2': {
+    id: '2',
+    title: 'Midnight Jazz Session',
+    description: 'Intimate jazz performance in a secret speakeasy location',
+    image_url: '/images/events/midnight-jazz.jpg',
+    start_at: new Date(Date.now() + 172800000).toISOString(),
+    venue_name: 'The Vault',
+    venue_address: 'City Center',
+    capacity: 40,
+    tags: ['Music', 'Jazz'],
+  },
+  '3': {
+    id: '3',
+    title: 'Warehouse Rave',
+    description: 'Electronic music event in an abandoned warehouse with top DJs',
+    image_url: '/images/events/warehouse-rave.jpg',
+    start_at: new Date(Date.now() + 604800000).toISOString(),
+    venue_name: 'Warehouse District',
+    venue_address: 'Industrial Area',
+    capacity: 200,
+    tags: ['Music', 'Electronic', 'Rave'],
+  }
+};
+
 export default function EventDetail() {
   const params = useParams();
   const navigate = useNavigate();
@@ -32,6 +69,7 @@ export default function EventDetail() {
 
   const query = useQuery({
     queryKey: ['event', key],
+    enabled: !!key,
     queryFn: async () => {
       // match by id OR slug; .maybeSingle() avoids throwing when not found
       const { data, error } = await supabase
@@ -44,7 +82,7 @@ export default function EventDetail() {
         // PGRST116 = no rows found -> treat as not-found, not crash
         throw error;
       }
-      return data ?? null;
+      return data ?? extendedEventData?.[key as keyof typeof extendedEventData] ?? null;
     },
   });
 
@@ -95,7 +133,7 @@ export default function EventDetail() {
       ) : null}
 
       <div className="mt-6">
-        <BookingCTA className="w-full sm:w-auto" />
+        <BookingCTA data-testid="booking-request" className="w-full sm:w-auto" />
       </div>
 
       {event.description ? (

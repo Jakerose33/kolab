@@ -6,8 +6,8 @@ import CityGuide from "@/features/city/CityGuide";
 import DiariesStrip from "@/features/diaries/DiariesStrip";
 import CollabsMarquee from "@/features/collabs/CollabsMarquee";
 import EventCard from "@/components/events/EventCard";
+import PreviewEventCard from "@/components/events/PreviewEventCard";
 import { MobileEventCard } from "@/components/MobileEventCard";
-import { PreviewEventCard } from "@/components/PreviewEventCard";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { CreateEventWizard } from "@/components/CreateEventWizard";
 import { MessagesDialog } from "@/components/MessagesDialog";
@@ -54,6 +54,8 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { getEventLink, normalizeEvent } from "@/lib/linking";
+import { Link } from "react-router-dom";
 import { useRealtime } from "@/hooks/useRealtime";
 import { useOfflineQueue } from "@/hooks/useOfflineQueue";
 import { usePerformanceOptimizations } from "@/hooks/usePerformanceOptimizations";
@@ -378,6 +380,11 @@ export default function Index() {
                 : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               }>
                 {filteredEvents.map((event) => {
+                  const link = getEventLink(event);
+                  if (!link) return null;
+
+                  const n = normalizeEvent(event);
+                  
                   if (session?.user) {
                     return isMobile ? (
                       <MobileEventCard
@@ -387,18 +394,24 @@ export default function Index() {
                         userRSVP={userRSVPs[event.id] as 'going' | 'interested' | undefined}
                       />
                     ) : (
-                      <EventCard
-                        key={event.id}
-                        event={event}
-                      />
+                      <Link
+                        key={String(n.id)}
+                        to={link}
+                        aria-label={`Open ${n.title}`}
+                        className="block focus:outline-none focus:ring-2 focus:ring-ring"
+                      >
+                        <EventCard event={event} />
+                      </Link>
                     );
                   } else {
                     return (
-                      <PreviewEventCard
-                        key={event.id}
-                        event={event}
-                        onSignInRequired={() => setShowAuth(true)}
-                      />
+                      <div
+                        key={String(n.id)}
+                        className="cursor-pointer"
+                        onClick={() => setShowAuth(true)}
+                      >
+                        <PreviewEventCard event={event} />
+                      </div>
                     );
                   }
                 })}

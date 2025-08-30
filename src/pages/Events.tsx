@@ -1,6 +1,6 @@
 import { AppLayout } from "@/components/AppLayout";
 import EventCard from "@/components/events/EventCard";
-import { PreviewEventCard } from "@/components/PreviewEventCard";
+import PreviewEventCard from "@/components/events/PreviewEventCard";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
@@ -17,6 +17,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar, Search, Filter, Plus } from "lucide-react";
+import { getEventLink, normalizeEvent } from "@/lib/linking";
+import { Link } from "react-router-dom";
 
 // Sample events data with working functionality
 const sampleEvents = [
@@ -307,20 +309,31 @@ export default function Events() {
                 ? "space-y-4" 
                 : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               }>
-                {filteredEvents.map((event) => 
-                  session?.user ? (
-                    <EventCard 
-                      key={event.id} 
-                      event={event}
-                    />
+                {filteredEvents.map((event) => {
+                  const link = getEventLink(event);
+                  if (!link) return null;
+
+                  const n = normalizeEvent(event);
+                  
+                  return session?.user ? (
+                    <Link
+                      key={String(n.id)}
+                      to={link}
+                      aria-label={`Open ${n.title}`}
+                      className="block focus:outline-none focus:ring-2 focus:ring-ring"
+                    >
+                      <EventCard event={event} />
+                    </Link>
                   ) : (
-                    <PreviewEventCard 
-                      key={event.id} 
-                      event={event}
-                      onSignInRequired={() => setShowAuth(true)}
-                    />
-                  )
-                )}
+                    <div
+                      key={String(n.id)}
+                      className="cursor-pointer"
+                      onClick={() => setShowAuth(true)}
+                    >
+                      <PreviewEventCard event={event} />
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <EmptyState
