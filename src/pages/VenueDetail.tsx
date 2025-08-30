@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, MapPin, Users, Star, Clock } from "lucide-react";
@@ -8,6 +8,8 @@ import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { AuthDialog } from "@/components/AuthDialog";
 import BookingCTA from "@/components/booking/BookingCTA";
 import { useRequiredParam, PageSkeleton, NotFound, InlineError } from "@/lib/safe";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 // Mock venue data
 const mockVenues = {
@@ -37,42 +39,42 @@ const mockVenues = {
   }
 };
 
+// Helper function to safely access venue properties
+const getVenueProp = (venue: any, mockProp: string, dbProp?: string) => {
+  return venue?.[mockProp] || venue?.[dbProp || mockProp] || null
+}
+
 export default function VenueDetail() {
   const { value: id } = useRequiredParam('id');
   const navigate = useNavigate();
-  const [venue, setVenue] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [showAuth, setShowAuth] = useState(false);
   const [showMessagesDialog, setShowMessagesDialog] = useState(false);
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
 
-  useEffect(() => {
-    if (!id) {
-      setError('Missing venue ID');
-      setLoading(false);
-      return;
-    }
-
-    // Simulate API call with error handling
-    const timeoutId = setTimeout(() => {
-      try {
-        const venueData = mockVenues[id as keyof typeof mockVenues];
-        if (venueData) {
-          setVenue(venueData);
-        } else {
-          setError('Venue not found');
-        }
-      } catch (err) {
-        setError('Failed to load venue');
-        console.error('Venue loading error:', err);
-      } finally {
-        setLoading(false);
+  const venueQuery = useQuery({
+    queryKey: ['venue', id],
+    enabled: !!id,
+    queryFn: async () => {
+      // Try to get from Supabase first, fallback to mock data
+      const { data, error } = await supabase
+        .from('venues')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle()
+      
+      if (error && error.code !== 'PGRST116') {
+        throw error
       }
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
-  }, [id]);
+      
+      if (data) {
+        return data
+      }
+      
+      // Fallback to mock data
+      const venueData = mockVenues[id as keyof typeof mockVenues];
+      return venueData || null
+    },
+  });
 
   if (!id) {
     return (
@@ -84,7 +86,7 @@ export default function VenueDetail() {
     );
   }
 
-  if (loading) {
+  if (venueQuery.isLoading) {
     return (
       <AppLayout onOpenNotifications={() => setShowNotificationsDialog(true)} onOpenAuth={() => setShowAuth(true)}>
         <main className="container px-4 py-8">
@@ -94,21 +96,23 @@ export default function VenueDetail() {
     );
   }
 
-  if (error) {
+  if (venueQuery.isError) {
+    console.error('[VenueDetail] query error:', venueQuery.error)
     return (
       <AppLayout onOpenNotifications={() => setShowNotificationsDialog(true)} onOpenAuth={() => setShowAuth(true)}>
         <main className="container px-4 py-8">
-          <InlineError message={`We couldn't load this venue: ${error}`} />
+          <InlineError message="We couldn't load this venue." />
         </main>
       </AppLayout>
     );
   }
 
+  const venue = venueQuery.data
   if (!venue) {
     return (
       <AppLayout onOpenNotifications={() => setShowNotificationsDialog(true)} onOpenAuth={() => setShowAuth(true)}>
         <main className="container px-4 py-8">
-          <NotFound title="Venue not found" subtitle="The venue you're looking for doesn't exist." />
+          <NotFound title="Venue not found" />
         </main>
       </AppLayout>
     );
@@ -146,10 +150,12 @@ export default function VenueDetail() {
                   <Users className="h-4 w-4" />
                   Capacity: {venue.capacity}
                 </div>
-                <div className="flex items-center gap-1">
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  {venue.rating}
-                </div>
+                {getVenueProp(venue, 'rating') && (
+                  <div className="flex items-center gap-1">
+                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    {getVenueProp(venue, 'rating')}
+                  </div>
+                )}
               </div>
               <p className="text-lg text-muted-foreground">{venue.description}</p>
             </div>
@@ -161,7 +167,7 @@ export default function VenueDetail() {
 
             {/* Venue Images */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {venue.images?.map((image: string, index: number) => (
+              {(getVenueProp(venue, 'images') || ['/placeholder.svg']).map((image: string, index: number) => (
                 <div key={index} className="aspect-video bg-muted rounded-lg overflow-hidden">
                   <img 
                     src={image} 
@@ -180,7 +186,7 @@ export default function VenueDetail() {
               <div>
                 <h2 className="text-xl font-semibold mb-4">Amenities</h2>
                 <div className="space-y-2">
-                  {venue.amenities?.map((amenity: string, index: number) => (
+                  {(getVenueProp(venue, 'amenities') || []).map((amenity: string, index: number) => (
                     <div key={index} className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-primary rounded-full" />
                       <span>{amenity}</span>
@@ -192,18 +198,22 @@ export default function VenueDetail() {
               <div>
                 <h2 className="text-xl font-semibold mb-4">Details</h2>
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                    <span>{venue.hours}</span>
-                  </div>
+                  {getVenueProp(venue, 'hours', 'opening_hours') && (
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <span>{getVenueProp(venue, 'hours', 'opening_hours')}</span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-2">
                     <Users className="h-4 w-4 text-muted-foreground" />
                     <span>Max Capacity: {venue.capacity} people</span>
                   </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Contact:</p>
-                    <p>{venue.contact}</p>
-                  </div>
+                  {getVenueProp(venue, 'contact', 'contact_email') && (
+                    <div>
+                      <p className="text-sm text-muted-foreground">Contact:</p>
+                      <p>{getVenueProp(venue, 'contact', 'contact_email')}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

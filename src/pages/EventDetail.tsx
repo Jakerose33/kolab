@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, MapPin, Calendar, Users, Clock } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { ArrowLeft, MapPin, Users, Clock } from "lucide-react"
 import EventHeader from "@/features/events/EventHeader"
 import EventGallery from "@/features/events/EventGallery"
 import EventRSVPBar from "@/features/events/EventRSVPBar"
@@ -10,6 +9,8 @@ import { EventJsonLD, BreadcrumbJsonLD } from "@/components/SEOJsonLD"
 import { editorialData } from "@/data/editorial"
 import BookingCTA from "@/components/booking/BookingCTA"
 import { useRequiredParam, PageSkeleton, NotFound, InlineError } from "@/lib/safe"
+import { useQuery } from "@tanstack/react-query"
+import { supabase } from "@/integrations/supabase/client"
 
 // Extended event data for detail view
 const extendedEventData = {
@@ -69,40 +70,40 @@ No phones policy in effect - this is about losing yourself in the music and conn
   }
 }
 
+// Helper function to safely access event properties
+const getEventProp = (event: any, mockProp: string, dbProp?: string) => {
+  return event?.[mockProp] || event?.[dbProp || mockProp] || null
+}
+
 export default function EventDetail() {
   const { value: id } = useRequiredParam('id')
   const navigate = useNavigate()
-  const [event, setEvent] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [userRSVP, setUserRSVP] = useState<'going' | 'interested' | null>(null)
 
-  useEffect(() => {
-    if (!id) {
-      setError('Missing event ID')
-      setLoading(false)
-      return
-    }
-
-    // Simulate API call with error handling
-    const timeoutId = setTimeout(() => {
-      try {
-        const eventData = extendedEventData[id as keyof typeof extendedEventData]
-        if (eventData) {
-          setEvent(eventData)
-        } else {
-          setError('Event not found')
-        }
-      } catch (err) {
-        setError('Failed to load event')
-        console.error('Event loading error:', err)
-      } finally {
-        setLoading(false)
+  const eventQuery = useQuery({
+    queryKey: ['event', id],
+    enabled: !!id,
+    queryFn: async () => {
+      // Try to get from Supabase first, fallback to mock data
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle()
+      
+      if (error && error.code !== 'PGRST116') {
+        throw error
       }
-    }, 500)
-
-    return () => clearTimeout(timeoutId)
-  }, [id])
+      
+      if (data) {
+        return data
+      }
+      
+      // Fallback to mock data
+      const eventData = extendedEventData[id as keyof typeof extendedEventData]
+      return eventData || null
+    },
+  })
 
   const handleRSVPChange = (status: 'going' | 'interested' | null) => {
     setUserRSVP(status)
@@ -112,16 +113,18 @@ export default function EventDetail() {
     return <NotFound title="Event not found" subtitle="Missing event ID." />
   }
 
-  if (loading) {
+  if (eventQuery.isLoading) {
     return <PageSkeleton />
   }
 
-  if (error) {
-    return <InlineError message={`We couldn't load this event: ${error}`} />
+  if (eventQuery.isError) {
+    console.error('[EventDetail] query error:', eventQuery.error)
+    return <InlineError message="We couldn't load this event." />
   }
 
+  const event = eventQuery.data
   if (!event) {
-    return <NotFound title="Event not found" subtitle="The event you're looking for doesn't exist." />
+    return <NotFound title="Event not found" />
   }
 
   // Format dates for JSON-LD
@@ -146,15 +149,15 @@ export default function EventDetail() {
           description: event.description,
           startDate: eventStartDate.toISOString(),
           endDate: eventEndDate.toISOString(),
-          venue: event.venue,
-          venueAddress: event.venueAddress,
-          image: event.image,
-          ticketUrl: event.ticketUrl,
-          organizer: event.organizer,
-          capacity: event.capacity,
-          tags: event.tags,
-          going: event.going,
-          interested: event.interested
+          venue: getEventProp(event, 'venue', 'venue_name') || 'TBD',
+          venueAddress: getEventProp(event, 'venueAddress', 'venue_address') || 'TBD',
+          image: getEventProp(event, 'image', 'image_url') || '/placeholder.svg',
+          ticketUrl: getEventProp(event, 'ticketUrl') || '#',
+          organizer: getEventProp(event, 'organizer') || 'Event Organizer',
+          capacity: event.capacity || 0,
+          tags: event.tags || [],
+          going: getEventProp(event, 'going') || 0,
+          interested: getEventProp(event, 'interested') || 0
         }}
       />
       <BreadcrumbJsonLD items={breadcrumbItems} />
@@ -183,12 +186,12 @@ export default function EventDetail() {
               {/* Event header */}
               <EventHeader
                 title={event.title}
-                date={event.date || 'Tonight'}
-                time={event.time || '11PM'}
-                neighbourhood={event.neighbourhood || 'London'}
-                venue={event.venue}
-                capacity={event.capacity}
-                going={event.going}
+                date={getEventProp(event, 'date') || 'Tonight'}
+                time={getEventProp(event, 'time') || '11PM'}
+                neighbourhood={getEventProp(event, 'neighbourhood') || 'London'}
+                venue={getEventProp(event, 'venue', 'venue_name') || 'TBD'}
+                capacity={event.capacity || 0}
+                going={getEventProp(event, 'going') || 0}
               />
 
               {/* Booking CTA */}
@@ -198,7 +201,7 @@ export default function EventDetail() {
 
               {/* Event gallery */}
               <EventGallery
-                images={event.images || [event.image]}
+                images={getEventProp(event, 'images') || [getEventProp(event, 'image', 'image_url') || '/placeholder.svg']}
                 title={event.title}
               />
 
@@ -214,11 +217,11 @@ export default function EventDetail() {
                   </div>
 
                   {/* Lineup */}
-                  {event.lineup && (
+                  {getEventProp(event, 'lineup') && (
                     <div>
                       <h2 className="text-2xl font-bold mb-4">Lineup</h2>
                       <div className="space-y-2">
-                        {event.lineup.map((item: string, index: number) => (
+                        {getEventProp(event, 'lineup').map((item: string, index: number) => (
                           <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
                             <Clock className="w-4 h-4 text-muted-foreground" />
                             <span className="font-medium">{item}</span>
@@ -235,8 +238,8 @@ export default function EventDetail() {
                       <div className="flex items-center gap-3">
                         <MapPin className="w-5 h-5 text-muted-foreground" />
                         <div>
-                          <p className="font-semibold">{event.venue}</p>
-                          <p className="text-sm text-muted-foreground">{event.venueAddress}</p>
+                          <p className="font-semibold">{getEventProp(event, 'venue', 'venue_name') || 'TBD'}</p>
+                          <p className="text-sm text-muted-foreground">{getEventProp(event, 'venueAddress', 'venue_address') || 'Address TBD'}</p>
                         </div>
                       </div>
                       {event.capacity && (
@@ -249,10 +252,10 @@ export default function EventDetail() {
                   </div>
 
                   {/* Organizer */}
-                  {event.organizer && (
+                  {(getEventProp(event, 'organizer') || getEventProp(event, 'organizer_id')) && (
                     <div>
                       <h2 className="text-2xl font-bold mb-4">Organizer</h2>
-                      <p className="text-muted-foreground">{event.organizer}</p>
+                      <p className="text-muted-foreground">{getEventProp(event, 'organizer') || 'Event Organizer'}</p>
                     </div>
                   )}
                 </div>
@@ -268,10 +271,10 @@ export default function EventDetail() {
         <div className="lg:w-80 lg:shrink-0">
           <EventRSVPBar
             eventId={event.id}
-            going={event.going || 0}
-            interested={event.interested || 0}
+            going={getEventProp(event, 'going') || 0}
+            interested={getEventProp(event, 'interested') || 0}
             userRSVP={userRSVP}
-            ticketUrl={event.ticketUrl}
+            ticketUrl={getEventProp(event, 'ticketUrl') || '#'}
             onRSVPChange={handleRSVPChange}
           />
         </div>

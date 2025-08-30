@@ -23,14 +23,19 @@ export function PageSkeleton() {
       <div className="h-8 bg-muted rounded w-1/3"></div>
       <div className="h-4 bg-muted rounded w-1/2"></div>
       <div className="h-4 bg-muted rounded w-3/4"></div>
+      <div className="h-4 bg-muted rounded w-2/3"></div>
+      <div className="h-32 bg-muted rounded"></div>
     </div>
   );
 }
 
 export function InlineError({ message }: { message: string }) {
   return (
-    <div className="p-4 border rounded text-sm text-rose-600 bg-rose-50">
-      {message}
+    <div className="p-4 border rounded text-sm text-destructive bg-destructive/10 border-destructive/20">
+      <div className="flex items-center gap-2">
+        <div className="w-4 h-4 rounded-full bg-destructive flex-shrink-0" />
+        {message}
+      </div>
     </div>
   );
 }
