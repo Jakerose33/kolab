@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/features/auth/AuthProvider";
 import { AuthDialog } from "@/components/AuthDialog";
 
 interface KolabHeaderProps {

@@ -12,7 +12,7 @@ import { DatePickerWithRange } from '@/components/ui/date-range-picker'
 import { LoadingState } from '@/components/LoadingState'
 import { EmptyState } from '@/components/EmptyState'
 import { useAnalytics } from '@/hooks/useAnalytics'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '@/features/auth/AuthProvider'
 import { useToast } from '@/hooks/use-toast'
 import { DateRange } from 'react-day-picker'
 

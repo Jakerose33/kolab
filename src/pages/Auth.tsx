@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/features/auth/AuthProvider";
 import { Eye, EyeOff, AlertCircle } from "lucide-react";
 import { z } from "zod";
 
@@ -87,15 +87,13 @@ export default function Auth() {
       }
 
       if (type === 'signup') {
-        const { error } = await signUp(data.email, data.password, data.name);
-        if (error) throw error;
+        await signUp(data.email, data.password);
         toast({
           title: "Account created",
           description: "Please check your email to verify your account"
         });
       } else {
-        const { error } = await signIn(data.email, data.password);
-        if (error) throw error;
+        await signIn(data.email, data.password);
       }
     } catch (error: any) {
       console.error(`${type} error:`, error);

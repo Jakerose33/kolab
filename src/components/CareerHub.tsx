@@ -16,7 +16,7 @@ import { useViewTransition } from "@/hooks/useViewTransition";
 import { useJobs, useJobMutations, type JobFilters } from "@/hooks/useJobs";
 import { useSavedJobs, useSavedJobMutations } from "@/hooks/useSavedJobs";
 import { useMentors, useMentorMutations } from "@/hooks/useMentors";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/features/auth/AuthProvider";
 import { LoadingState } from "@/components/LoadingState";
 import { 
   Search, 

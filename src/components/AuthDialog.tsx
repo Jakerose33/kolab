@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/features/auth/AuthProvider";
 import { useSecureForm } from "@/hooks/useSecureForm";
 import { UserValidation } from "@/lib/validation";
 import { Mail, Lock, User, Loader2 } from "lucide-react";
@@ -43,20 +43,22 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
   });
 
   const handleSignIn = async (data: z.infer<typeof SignInSchema>) => {
-    const { error } = await signIn(data.email, data.password);
-    
-    if (!error) {
+    try {
+      await signIn(data.email, data.password);
       onOpenChange(false);
       signInForm.reset();
+    } catch (error) {
+      console.error('Sign in error:', error);
     }
   };
 
   const handleSignUp = async (data: z.infer<typeof SignUpSchema>) => {
-    const { error } = await signUp(data.email, data.password, data.fullName);
-    
-    if (!error) {
+    try {
+      await signUp(data.email, data.password);
       onOpenChange(false);
       signUpForm.reset();
+    } catch (error) {
+      console.error('Sign up error:', error);
     }
   };
 

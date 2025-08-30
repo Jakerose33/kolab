@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useAdvancedSearch } from '@/hooks/useAdvancedSearch'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '@/features/auth/AuthProvider'
 import { useToast } from '@/hooks/use-toast'
 import { DateRange } from 'react-day-picker'
 

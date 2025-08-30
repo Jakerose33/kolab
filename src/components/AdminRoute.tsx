@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/features/auth/AuthProvider';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import { LoadingState } from './LoadingState';
 

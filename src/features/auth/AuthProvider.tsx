@@ -5,6 +5,12 @@ import { supabase } from '@/integrations/supabase/client'
 
 type Ctx = {
   session: Session | null
+  user: any
+  loading: boolean
+  isAuthenticated: boolean
+  profile: any
+  signUp: (email: string, password: string) => Promise<void>
+  signIn: (email: string, password: string) => Promise<any>
   signUpEmailPassword: (email: string, password: string) => Promise<void>
   signInEmailPassword: (email: string, password: string) => Promise<any>
   sendMagicLink: (email: string, redirectTo?: string) => Promise<void>
@@ -16,10 +22,17 @@ export const useAuth = () => useContext(AuthCtx)!
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session))
-    const { data: sub } = supabase.auth.onAuthStateChange((_e: AuthChangeEvent, s) => setSession(s))
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session)
+      setLoading(false)
+    })
+    const { data: sub } = supabase.auth.onAuthStateChange((_e: AuthChangeEvent, s) => {
+      setSession(s)
+      setLoading(false)
+    })
     return () => sub.subscription.unsubscribe()
   }, [])
 
@@ -50,7 +63,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) throw error
   }
 
-  return <AuthCtx.Provider value={{ session, signUpEmailPassword, signInEmailPassword, sendMagicLink, signOut }}>
+  // Computed values for backward compatibility
+  const user = session?.user || null
+  const isAuthenticated = !!session
+  const profile = null // For backward compatibility, components should fetch profiles separately
+
+  return <AuthCtx.Provider value={{ 
+    session, 
+    user,
+    loading,
+    isAuthenticated,
+    profile,
+    signUp: signUpEmailPassword,
+    signIn: signInEmailPassword,
+    signUpEmailPassword, 
+    signInEmailPassword, 
+    sendMagicLink, 
+    signOut 
+  }}>
     {children}
   </AuthCtx.Provider>
 }
