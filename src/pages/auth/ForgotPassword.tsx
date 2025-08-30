@@ -37,7 +37,9 @@ export default function ForgotPassword() {
     setLoading(true)
     setError(null)
     try {
+      console.log('Attempting to send reset email to:', email)
       await sendReset(email)
+      console.log('Reset email sent successfully, setting sent=true')
       setSent(true)
       setResendIn(60)
       toast({
@@ -45,6 +47,7 @@ export default function ForgotPassword() {
         description: `We've sent a reset link to ${email}.`,
       })
     } catch (err: any) {
+      console.error('Reset email error:', err)
       const msg = `${err?.code ? `${err.code}: ` : ''}${err?.message ?? 'Unable to send reset email'}`
       setError(msg)
       toast({ title: 'Error', description: msg, variant: 'destructive' })
@@ -71,6 +74,7 @@ export default function ForgotPassword() {
   }
 
   if (sent) {
+    console.log('Rendering success panel with sent=true')
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
         <Card className="w-full max-w-md">
