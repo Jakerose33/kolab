@@ -75,6 +75,7 @@ function App() {
                       <Route path="/" element={<LazyPages.Index />} />
                       <Route path="/events" element={<LazyPages.Events />} />
                       <Route path="/events/:id" element={<LazyPages.EventDetail />} />
+                      <Route path="/events/:id/book" element={<LazyPages.EventBooking />} />
                       <Route path="/journal" element={<LazyPages.JournalArchive />} />
                       <Route path="/venues" element={<LazyPages.Venues />} />
                       <Route path="/social" element={<LazyPages.Social />} />

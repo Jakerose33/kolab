@@ -184,7 +184,7 @@ export default function EventDetail() {
 
               {/* Booking CTA */}
               <div className="mt-4">
-                <BookingCTA className="w-full md:w-auto" />
+                <BookingCTA eventId={event.id} className="w-full md:w-auto" />
               </div>
 
               {/* Event gallery */}

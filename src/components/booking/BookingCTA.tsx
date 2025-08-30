@@ -1,12 +1,19 @@
 import { Button } from '@/components/ui/button'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import { supabase } from '@/integrations/supabase/client'
 
-type Props = { className?: string }
+type Props = { 
+  className?: string;
+  eventId?: string;
+}
 
-export default function BookingCTA({ className }: Props) {
+export default function BookingCTA({ className, eventId }: Props) {
   const nav = useNavigate()
   const location = useLocation()
+  const params = useParams()
+  
+  // Get eventId from props or URL params
+  const currentEventId = eventId || params.id
 
   const onClick = async () => {
     const { data } = await supabase.auth.getSession()
@@ -18,8 +25,13 @@ export default function BookingCTA({ className }: Props) {
       return
     }
 
-    // TODO: wire to real booking flow when ready
-    nav('/bookings')
+    // Navigate to event-specific booking flow
+    if (currentEventId) {
+      nav(`/events/${currentEventId}/book`)
+    } else {
+      // Fallback to general bookings page
+      nav('/bookings')
+    }
   }
 
   return (

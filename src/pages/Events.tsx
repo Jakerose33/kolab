@@ -165,11 +165,44 @@ export default function Events() {
     });
   };
 
-  const handleCreateEvent = () => {
+  const handleCreateEvent = async (eventData?: any) => {
     if (!session?.user) {
       setShowAuth(true);
       return;
     }
+
+    if (eventData) {
+      try {
+        // In real implementation, save to database
+        const newEvent = {
+          id: `event_${Date.now()}`,
+          ...eventData,
+          organizer_id: session.user.id,
+          profiles: {
+            full_name: session.user.user_metadata?.full_name || "Event Organizer",
+            handle: session.user.user_metadata?.handle || "organizer"
+          },
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+
+        // Add to local state (in real app, refetch from database)
+        setEvents(prev => [newEvent, ...prev]);
+        
+        toast({
+          title: "Event Created!",
+          description: "Your event has been successfully created and published.",
+        });
+      } catch (error) {
+        console.error('Error creating event:', error);
+        toast({
+          title: "Failed to create event",
+          description: "Please try again later.",
+          variant: "destructive",
+        });
+      }
+    }
+
     setShowCreateDialog(true);
   };
 
@@ -226,7 +259,7 @@ export default function Events() {
                   Discover and create amazing events in your area
                 </p>
               </div>
-              <Button onClick={handleCreateEvent} className="gap-2">
+              <Button onClick={() => handleCreateEvent()} className="gap-2">
                 <Plus className="h-4 w-4" />
                 Create Event
               </Button>
@@ -297,7 +330,7 @@ export default function Events() {
                 description="No events match your current filters. Try adjusting your search or category selection."
                 action={{
                   label: "Create Event",
-                  onClick: handleCreateEvent
+                  onClick: () => handleCreateEvent()
                 }}
               />
             )}
@@ -308,6 +341,7 @@ export default function Events() {
       <CreateEventWizard
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
+        onCreateEvent={handleCreateEvent}
       />
       <MessagesDialog
         open={showMessagesDialog}

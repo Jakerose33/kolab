@@ -5,6 +5,7 @@ export const LazyPages = {
   Index: lazy(() => import('@/pages/Index')),
   Events: lazy(() => import('@/pages/Events')),
   EventDetail: lazy(() => import('@/pages/EventDetail')),
+  EventBooking: lazy(() => import('@/pages/EventBooking')),
   JournalArchive: lazy(() => import('@/pages/JournalArchive')),
   Venues: lazy(() => import('@/pages/Venues')),
   Social: lazy(() => import('@/pages/Social')),
@@ -44,6 +45,7 @@ export const LazyComponents = {
 // Preload function for critical routes
 export const preloadRoutes = {
   eventDetail: () => import('@/pages/EventDetail'),
+  eventBooking: () => import('@/pages/EventBooking'),
   journalArchive: () => import('@/pages/JournalArchive'),
   venues: () => import('@/pages/Venues'),
   social: () => import('@/pages/Social'),
