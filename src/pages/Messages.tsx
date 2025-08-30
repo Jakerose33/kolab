@@ -23,6 +23,7 @@ import {
   PlusCircle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { PageSkeleton, InlineError } from "@/lib/safe";
 
 // Mock conversation data
 const mockConversations = [
@@ -91,6 +92,8 @@ export default function Messages() {
   const [selectedConversation, setSelectedConversation] = useState(mockConversations[1]);
   const [searchQuery, setSearchQuery] = useState("");
   const [newMessage, setNewMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleCreateEvent = (eventData: any) => {
     toast({
@@ -99,9 +102,9 @@ export default function Messages() {
     });
   };
 
-  const filteredConversations = mockConversations.filter(conv =>
-    conv.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredConversations = mockConversations?.filter(conv =>
+    conv?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
 
   const sendMessage = () => {
     if (!newMessage.trim()) return;
@@ -128,14 +131,18 @@ export default function Messages() {
           }
         >
           <main className="container px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Messages</h1>
-          <p className="text-muted-foreground">
-            Connect with your collaborators and event participants
-          </p>
-        </div>
+            {loading && <PageSkeleton />}
+            {error && <InlineError message={error} />}
+            {!loading && !error && (
+              <>
+                <div className="mb-8">
+                  <h1 className="text-3xl font-bold mb-2">Messages</h1>
+                  <p className="text-muted-foreground">
+                    Connect with your collaborators and event participants
+                  </p>
+                </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
           {/* Conversations List */}
           <Card className="lg:col-span-1">
             <CardHeader className="pb-3">
@@ -300,7 +307,9 @@ export default function Messages() {
               </div>
             )}
           </Card>
-          </div>
+                </div>
+              </>
+            )}
           </main>
         </ProtectedRoute>
       </AppLayout>

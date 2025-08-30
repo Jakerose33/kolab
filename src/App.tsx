@@ -72,49 +72,50 @@ function App() {
                   <AdvancedRobotsTxtManager />
                   <Suspense fallback={<LoadingState />}>
                     <Routes>
-                      <Route path="/" element={<LazyPages.Index />} />
-                      <Route path="/events" element={<LazyPages.Events />} />
-                      <Route path="/events/:id" element={<LazyPages.EventDetail />} />
-                      <Route path="/events/:id/book" element={<LazyPages.EventBooking />} />
-                      <Route path="/journal" element={<LazyPages.JournalArchive />} />
-                      <Route path="/venues" element={<LazyPages.Venues />} />
-                      <Route path="/social" element={<LazyPages.Social />} />
-                      <Route path="/careers" element={<LazyPages.Careers />} />
-                      <Route path="/profile" element={<LazyPages.Profile />} />
-                      <Route path="/settings" element={<LazyPages.Settings />} />
-                      <Route path="/bookings" element={<LazyPages.MyBookings />} />
-                      <Route path="/messages" element={<LazyPages.Messages />} />
+                      <Route path="/" element={<ErrorBoundary where="Index"><LazyPages.Index /></ErrorBoundary>} />
+                      <Route path="/events" element={<ErrorBoundary where="Events"><LazyPages.Events /></ErrorBoundary>} />
+                      <Route path="/events/:id" element={<ErrorBoundary where="EventDetail"><LazyPages.EventDetail /></ErrorBoundary>} />
+                      <Route path="/events/:id/book" element={<ErrorBoundary where="EventBooking"><LazyPages.EventBooking /></ErrorBoundary>} />
+                      <Route path="/journal" element={<ErrorBoundary where="JournalArchive"><LazyPages.JournalArchive /></ErrorBoundary>} />
+                      <Route path="/venues" element={<ErrorBoundary where="Venues"><LazyPages.Venues /></ErrorBoundary>} />
+                      <Route path="/venues/:id" element={<ErrorBoundary where="VenueDetail"><LazyPages.VenueDetail /></ErrorBoundary>} />
+                      <Route path="/social" element={<ErrorBoundary where="Social"><LazyPages.Social /></ErrorBoundary>} />
+                      <Route path="/careers" element={<ErrorBoundary where="Careers"><LazyPages.Careers /></ErrorBoundary>} />
+                      <Route path="/profile" element={<ErrorBoundary where="Profile"><LazyPages.Profile /></ErrorBoundary>} />
+                      <Route path="/settings" element={<ErrorBoundary where="Settings"><LazyPages.Settings /></ErrorBoundary>} />
+                      <Route path="/bookings" element={<ErrorBoundary where="MyBookings"><LazyPages.MyBookings /></ErrorBoundary>} />
+                      <Route path="/messages" element={<ErrorBoundary where="Messages"><LazyPages.Messages /></ErrorBoundary>} />
 
                       {/* ===== Auth routes ===== */}
-                      <Route path="/auth" element={<SignIn />} />
-                      <Route path="/auth/signup" element={<SignUp />} />
-                      <Route path="/auth/debug" element={<LazyPages.AuthDebug />} />
-                      <Route path="/auth/callback" element={<LazyPages.AuthCallback />} />
-                      <Route path="/auth/forgot-password" element={<LazyPages.ForgotPassword />} />
-                      <Route path="/auth/reset-password" element={<LazyPages.ResetPassword />} />
-                      <Route path="/auth/signin" element={<SignIn />} />
+                      <Route path="/auth" element={<ErrorBoundary where="SignIn"><SignIn /></ErrorBoundary>} />
+                      <Route path="/auth/signup" element={<ErrorBoundary where="SignUp"><SignUp /></ErrorBoundary>} />
+                      <Route path="/auth/debug" element={<ErrorBoundary where="AuthDebug"><LazyPages.AuthDebug /></ErrorBoundary>} />
+                      <Route path="/auth/callback" element={<ErrorBoundary where="AuthCallback"><LazyPages.AuthCallback /></ErrorBoundary>} />
+                      <Route path="/auth/forgot-password" element={<ErrorBoundary where="ForgotPassword"><LazyPages.ForgotPassword /></ErrorBoundary>} />
+                      <Route path="/auth/reset-password" element={<ErrorBoundary where="ResetPassword"><LazyPages.ResetPassword /></ErrorBoundary>} />
+                      <Route path="/auth/signin" element={<ErrorBoundary where="SignIn"><SignIn /></ErrorBoundary>} />
                       {/* ===== /Auth routes ===== */}
                       
-                      <Route path="/venue-dashboard" element={<LazyPages.VenueOwnerDashboard />} />
+                      <Route path="/venue-dashboard" element={<ErrorBoundary where="VenueOwnerDashboard"><LazyPages.VenueOwnerDashboard /></ErrorBoundary>} />
                       
                       {/* ===== Venue Onboarding Routes ===== */}
-                      <Route path="/venues/onboarding/:step" element={<LazyPages.VenueOnboarding />} />
-                      <Route path="/venues/onboarding" element={<LazyPages.VenueOnboarding />} />
+                      <Route path="/venues/onboarding/:step" element={<ErrorBoundary where="VenueOnboarding"><LazyPages.VenueOnboarding /></ErrorBoundary>} />
+                      <Route path="/venues/onboarding" element={<ErrorBoundary where="VenueOnboarding"><LazyPages.VenueOnboarding /></ErrorBoundary>} />
 
-                      <Route path="/admin" element={<LazyPages.Admin />} />
-                      <Route path="/analytics" element={<LazyPages.Analytics />} />
-                      <Route path="/search" element={<LazyPages.Search />} />
-                      <Route path="/venue-partners" element={<LazyPages.VenuePartners />} />
-                      <Route path="/privacy" element={<LazyPages.PrivacyPolicy />} />
-                      <Route path="/terms" element={<LazyPages.TermsOfService />} />
-                      <Route path="/about" element={<LazyPages.AboutUs />} />
-                      <Route path="/refunds" element={<LazyPages.RefundsPolicy />} />
-                      <Route path="/contact" element={<LazyPages.Contact />} />
-                      <Route path="/help" element={<LazyPages.Help />} />
-                      <Route path="/safety" element={<LazyPages.Safety />} />
-                      <Route path="/cookies" element={<LazyPages.CookiePolicy />} />
+                      <Route path="/admin" element={<ErrorBoundary where="Admin"><LazyPages.Admin /></ErrorBoundary>} />
+                      <Route path="/analytics" element={<ErrorBoundary where="Analytics"><LazyPages.Analytics /></ErrorBoundary>} />
+                      <Route path="/search" element={<ErrorBoundary where="Search"><LazyPages.Search /></ErrorBoundary>} />
+                      <Route path="/venue-partners" element={<ErrorBoundary where="VenuePartners"><LazyPages.VenuePartners /></ErrorBoundary>} />
+                      <Route path="/privacy" element={<ErrorBoundary where="PrivacyPolicy"><LazyPages.PrivacyPolicy /></ErrorBoundary>} />
+                      <Route path="/terms" element={<ErrorBoundary where="TermsOfService"><LazyPages.TermsOfService /></ErrorBoundary>} />
+                      <Route path="/about" element={<ErrorBoundary where="AboutUs"><LazyPages.AboutUs /></ErrorBoundary>} />
+                      <Route path="/refunds" element={<ErrorBoundary where="RefundsPolicy"><LazyPages.RefundsPolicy /></ErrorBoundary>} />
+                      <Route path="/contact" element={<ErrorBoundary where="Contact"><LazyPages.Contact /></ErrorBoundary>} />
+                      <Route path="/help" element={<ErrorBoundary where="Help"><LazyPages.Help /></ErrorBoundary>} />
+                      <Route path="/safety" element={<ErrorBoundary where="Safety"><LazyPages.Safety /></ErrorBoundary>} />
+                      <Route path="/cookies" element={<ErrorBoundary where="CookiePolicy"><LazyPages.CookiePolicy /></ErrorBoundary>} />
 
-                      <Route path="*" element={<LazyPages.NotFound />} />
+                      <Route path="*" element={<ErrorBoundary where="NotFound"><LazyPages.NotFound /></ErrorBoundary>} />
                     </Routes>
                   </Suspense>
                 </AdvancedSEOSystem>

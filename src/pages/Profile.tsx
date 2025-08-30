@@ -18,6 +18,7 @@ import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { AuthDialog } from "@/components/AuthDialog";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { useProfile } from "@/hooks/useProfile";
+import { PageSkeleton, InlineError } from "@/lib/safe";
 
 export default function Profile() {
   const [showAuth, setShowAuth] = useState(false);
@@ -110,6 +111,30 @@ export default function Profile() {
     { label: "Connections", value: "156", icon: User },
     { label: "Rating", value: "4.9", icon: Star },
   ];
+
+  if (isLoading) {
+    return (
+      <AppLayout onOpenNotifications={() => setShowNotificationsDialog(true)} onOpenAuth={() => setShowAuth(true)}>
+        <ProtectedRoute>
+          <main className="container px-4 py-8 max-w-4xl">
+            <PageSkeleton />
+          </main>
+        </ProtectedRoute>
+      </AppLayout>
+    );
+  }
+
+  if (!profile && !isLoading) {
+    return (
+      <AppLayout onOpenNotifications={() => setShowNotificationsDialog(true)} onOpenAuth={() => setShowAuth(true)}>
+        <ProtectedRoute>
+          <main className="container px-4 py-8 max-w-4xl">
+            <InlineError message="Unable to load profile information." />
+          </main>
+        </ProtectedRoute>
+      </AppLayout>
+    );
+  }
 
   const displayName = profile?.full_name || profile?.handle || 'Anonymous User';
   const userInitials = displayName.split(' ').map(n => n[0]).join('').toUpperCase();

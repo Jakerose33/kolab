@@ -34,6 +34,7 @@ export const LazyPages = {
   ResetPassword: lazy(() => import('@/pages/auth/ResetPassword')),
   VenueOwnerDashboard: lazy(() => import('@/pages/VenueOwnerDashboard')),
   VenueOnboarding: lazy(() => import('@/pages/venues/VenueOnboarding')),
+  VenueDetail: lazy(() => import('@/pages/VenueDetail')),
 };
 
 // Lazy load components - only map view for now since others don't have default exports

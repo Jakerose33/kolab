@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils"
 import EventHeader from "@/features/events/EventHeader"
 import EventGallery from "@/features/events/EventGallery"
 import EventRSVPBar from "@/features/events/EventRSVPBar"
-import { LoadingState } from "@/components/LoadingState"
 import { EventJsonLD, BreadcrumbJsonLD } from "@/components/SEOJsonLD"
 import { editorialData } from "@/data/editorial"
 import BookingCTA from "@/components/booking/BookingCTA"
+import { useRequiredParam, PageSkeleton, NotFound, InlineError } from "@/lib/safe"
 
 // Extended event data for detail view
 const extendedEventData = {
@@ -70,49 +70,58 @@ No phones policy in effect - this is about losing yourself in the music and conn
 }
 
 export default function EventDetail() {
-  const { id } = useParams<{ id: string }>()
+  const { value: id } = useRequiredParam('id')
   const navigate = useNavigate()
   const [event, setEvent] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [userRSVP, setUserRSVP] = useState<'going' | 'interested' | null>(null)
 
   useEffect(() => {
     if (!id) {
-      navigate('/')
+      setError('Missing event ID')
+      setLoading(false)
       return
     }
 
-    // Simulate API call
-    setTimeout(() => {
-      const eventData = extendedEventData[id as keyof typeof extendedEventData]
-      if (eventData) {
-        setEvent(eventData)
+    // Simulate API call with error handling
+    const timeoutId = setTimeout(() => {
+      try {
+        const eventData = extendedEventData[id as keyof typeof extendedEventData]
+        if (eventData) {
+          setEvent(eventData)
+        } else {
+          setError('Event not found')
+        }
+      } catch (err) {
+        setError('Failed to load event')
+        console.error('Event loading error:', err)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }, 500)
-  }, [id, navigate])
+
+    return () => clearTimeout(timeoutId)
+  }, [id])
 
   const handleRSVPChange = (status: 'going' | 'interested' | null) => {
     setUserRSVP(status)
   }
 
+  if (!id) {
+    return <NotFound title="Event not found" subtitle="Missing event ID." />
+  }
+
   if (loading) {
-    return <LoadingState />
+    return <PageSkeleton />
+  }
+
+  if (error) {
+    return <InlineError message={`We couldn't load this event: ${error}`} />
   }
 
   if (!event) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <h1 className="text-2xl font-bold">Event Not Found</h1>
-          <p className="text-muted-foreground">The event you're looking for doesn't exist.</p>
-          <Button onClick={() => navigate('/')}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Events
-          </Button>
-        </div>
-      </div>
-    )
+    return <NotFound title="Event not found" subtitle="The event you're looking for doesn't exist." />
   }
 
   // Format dates for JSON-LD
@@ -184,7 +193,7 @@ export default function EventDetail() {
 
               {/* Booking CTA */}
               <div className="mt-4">
-                <BookingCTA eventId={event.id} className="w-full md:w-auto" />
+                <BookingCTA className="w-full md:w-auto" />
               </div>
 
               {/* Event gallery */}
