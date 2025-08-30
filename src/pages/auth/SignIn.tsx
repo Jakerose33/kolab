@@ -1,17 +1,18 @@
 // src/pages/auth/SignIn.tsx
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { supabase } from '@/integrations/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useToast } from '@/hooks/use-toast'
+import { useAuth } from '@/features/auth/AuthProvider'
 
 export default function SignIn() {
   const nav = useNavigate()
   const { toast } = useToast()
+  const { signInEmailPassword, sendMagicLink } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -23,8 +24,7 @@ export default function SignIn() {
     setLoading(true); setError(null)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) throw error
+      await signInEmailPassword(email, password)
       toast({ title: 'Welcome back' })
       nav('/', { replace: true }) // tests expect landing on "/"
     } catch (err: any) {
@@ -40,11 +40,7 @@ export default function SignIn() {
     if (loading) return
     setLoading(true); setError(null)
     try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: { emailRedirectTo: `${window.location.origin}/auth/callback`, shouldCreateUser: false },
-      })
-      if (error) throw error
+      await sendMagicLink(email, `${window.location.origin}/auth/callback`)
       toast({ title: 'Magic link sent', description: `Check your inbox: ${email}` })
     } catch (err: any) {
       const msg = `${err?.code ? `${err.code}: ` : ''}${err?.message ?? 'Unable to send magic link'}`
