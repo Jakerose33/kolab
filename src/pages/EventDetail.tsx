@@ -80,20 +80,24 @@ export default function EventDetail() {
   const navigate = useNavigate()
   const [userRSVP, setUserRSVP] = useState<'going' | 'interested' | null>(null)
 
+  // Get event key from any param source
+  const { id, idOrSlug: paramSlug, eventId } = useParams()
+  const key = id ?? paramSlug ?? eventId ?? idOrSlug ?? null
+  
   // Validate param early
-  if (!idOrSlug || idOrSlug === 'undefined' || idOrSlug === 'null') {
+  if (!key || key === 'undefined' || key === 'null') {
     return <NotFound title="Event not found" subtitle="Invalid event identifier." />
   }
 
   const eventQuery = useQuery({
-    queryKey: ['event', idOrSlug],
-    enabled: !!idOrSlug,
+    queryKey: ['event', key],
+    enabled: !!key,
     queryFn: async () => {
       // Try to get from Supabase first with id or slug
       const { data, error } = await supabase
         .from('events')
         .select('*')
-        .or(`id.eq.${idOrSlug},slug.eq.${idOrSlug}`)
+        .or(`id.eq.${key},slug.eq.${key}`)
         .maybeSingle()
       
       if (error && error.code !== 'PGRST116') {
@@ -105,7 +109,7 @@ export default function EventDetail() {
       }
       
       // Fallback to mock data
-      const eventData = extendedEventData[idOrSlug as keyof typeof extendedEventData]
+      const eventData = extendedEventData[key as keyof typeof extendedEventData]
       return eventData || null
     },
   })

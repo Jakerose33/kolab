@@ -1,86 +1,102 @@
 // src/features/auth/AuthProvider.tsx
-import { createContext, useContext, useEffect, useState } from 'react'
-import type { Session, AuthChangeEvent } from '@supabase/supabase-js'
-import { supabase } from '@/integrations/supabase/client'
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import type { Session, AuthChangeEvent } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
+
+type AuthResult = { error: null } | { error: any };
 
 type Ctx = {
-  session: Session | null
-  user: any
-  loading: boolean
-  isAuthenticated: boolean
-  profile: any
-  signUp: (email: string, password: string) => Promise<void>
-  signIn: (email: string, password: string) => Promise<any>
-  signUpEmailPassword: (email: string, password: string) => Promise<void>
-  signInEmailPassword: (email: string, password: string) => Promise<any>
-  sendMagicLink: (email: string, redirectTo?: string) => Promise<void>
-  signOut: () => Promise<void>
-}
+  session: Session | null;
+  user: any;
+  loading: boolean;
+  isAuthenticated: boolean;
+  // preferred names
+  signInEmailPassword: (email: string, password: string) => Promise<AuthResult>;
+  signUpEmailPassword: (email: string, password: string) => Promise<AuthResult>;
+  sendMagicLink: (email: string, redirectTo?: string) => Promise<AuthResult>;
+  signOut: () => Promise<AuthResult>;
+  // backward-compatible aliases expected by older components
+  signIn: (email: string, password: string) => Promise<AuthResult>;
+  signUp: (email: string, password: string) => Promise<AuthResult>;
+  profile: any; // legacy shape; keep null
+};
 
-const AuthCtx = createContext<Ctx | null>(null)
-export const useAuth = () => useContext(AuthCtx)!
+const AuthContext = createContext<Ctx | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
     supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session)
-      setLoading(false)
-    })
-    const { data: sub } = supabase.auth.onAuthStateChange((_e: AuthChangeEvent, s) => {
-      setSession(s)
-      setLoading(false)
-    })
-    return () => sub.subscription.unsubscribe()
-  }, [])
+      if (!mounted) return;
+      setSession(data.session ?? null);
+      setLoading(false);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange(
+      (_e: AuthChangeEvent, s) => {
+        setSession(s ?? null);
+        setLoading(false);
+      }
+    );
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
 
-  const signUpEmailPassword = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
-      email, password,
-      options: { emailRedirectTo: `${location.origin}/auth/callback` },
-    })
-    if (error) throw error
-  }
+  // Wrap Supabase calls to always return { error } instead of throwing.
+  const wrap = async <T,>(fn: () => Promise<{ data: T; error: any }>): Promise<AuthResult> => {
+    try {
+      const { error } = await fn();
+      if (error) return { error };
+      return { error: null };
+    } catch (e: any) {
+      return { error: e };
+    }
+  };
 
-  const signInEmailPassword = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) throw error
-    return data
-  }
+  const signInEmailPassword = (email: string, password: string) =>
+    wrap(() => supabase.auth.signInWithPassword({ email, password }));
 
-  const sendMagicLink = async (email: string, redirectTo = `${location.origin}/auth/callback`) => {
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: redirectTo, shouldCreateUser: true },
-    })
-    if (error) throw error
-  }
+  const signUpEmailPassword = (email: string, password: string) =>
+    wrap(() => supabase.auth.signUp({ email, password }));
 
-  const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
-  }
+  const sendMagicLink = (email: string, redirectTo?: string) =>
+    wrap(() =>
+      supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo:
+            redirectTo ?? `${window.location.origin}/auth/callback`,
+          shouldCreateUser: false,
+        },
+      })
+    );
 
-  // Computed values for backward compatibility
-  const user = session?.user || null
-  const isAuthenticated = !!session
-  const profile = null // For backward compatibility, components should fetch profiles separately
+  const signOut = () => wrap(() => supabase.auth.signOut().then(() => ({ data: null, error: null })));
 
-  return <AuthCtx.Provider value={{ 
-    session, 
-    user,
+  const value: Ctx = {
+    session,
+    user: session?.user ?? null,
     loading,
-    isAuthenticated,
-    profile,
-    signUp: signUpEmailPassword,
+    isAuthenticated: !!session,
+    signInEmailPassword,
+    signUpEmailPassword,
+    sendMagicLink,
+    signOut,
+    // aliases for legacy callers
     signIn: signInEmailPassword,
-    signUpEmailPassword, 
-    signInEmailPassword, 
-    sendMagicLink, 
-    signOut 
-  }}>
-    {children}
-  </AuthCtx.Provider>
+    signUp: signUpEmailPassword,
+    profile: null,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
 }
