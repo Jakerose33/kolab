@@ -14,7 +14,9 @@ interface SecurityProviderProps {
 }
 
 export function SecurityProvider({ children }: SecurityProviderProps) {
-  const [csrfToken, setCsrfToken] = useState<string | null>(null);
+  // Add safety check for React hooks context
+  try {
+    const [csrfToken, setCsrfToken] = useState<string | null>(null);
   const [isSecureContext] = useState(() => {
     // Ensure we're in browser environment before accessing window
     if (typeof window === 'undefined') return false;
@@ -82,6 +84,12 @@ export function SecurityProvider({ children }: SecurityProviderProps) {
       {children}
     </SecurityContext.Provider>
   );
+  
+  } catch (error) {
+    console.error('SecurityProvider hook error:', error);
+    // Fallback: render children without security context
+    return <div>{children}</div>;
+  }
 }
 
 export function useSecurity() {

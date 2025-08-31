@@ -164,26 +164,31 @@ function App() {
   }, []);
 
   return (
-    <SecurityProvider>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <OfflineIndicator />
-            <BrowserRouter>
-              <AdvancedSEOSystem>
-                <AdvancedSitemapGenerator />
-                <AdvancedRobotsTxtManager />
-                <Suspense fallback={<LoadingState />}>
-                  <RoutesWithErrorReset />
-                </Suspense>
-              </AdvancedSEOSystem>
-            </BrowserRouter>
-          </TooltipProvider>
-        </AuthProvider>
-      </QueryClientProvider>
-    </SecurityProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <OfflineIndicator />
+        <BrowserRouter>
+          <ErrorBoundary
+            FallbackComponent={AppErrorFallback}
+            onError={(error) => console.error('Top-level error:', error)}
+          >
+            <SecurityProvider>
+              <AuthProvider>
+                <AdvancedSEOSystem>
+                  <AdvancedSitemapGenerator />
+                  <AdvancedRobotsTxtManager />
+                  <Suspense fallback={<LoadingState />}>
+                    <RoutesWithErrorReset />
+                  </Suspense>
+                </AdvancedSEOSystem>
+              </AuthProvider>
+            </SecurityProvider>
+          </ErrorBoundary>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 }
 
