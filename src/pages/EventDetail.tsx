@@ -80,24 +80,23 @@ export default function EventDetail() {
   const navigate = useNavigate()
   const [userRSVP, setUserRSVP] = useState<'going' | 'interested' | null>(null)
 
-  // Get event key from any param source
-  const { id, idOrSlug: paramSlug, eventId } = useParams()
-  const key = id ?? paramSlug ?? eventId ?? idOrSlug ?? null
+  // Use the route param as the event ID
+  const eventId = idOrSlug
   
   // Validate param early
-  if (!key || key === 'undefined' || key === 'null') {
+  if (!eventId || eventId === 'undefined' || eventId === 'null') {
     return <NotFound title="Event not found" subtitle="Invalid event identifier." />
   }
 
   const eventQuery = useQuery({
-    queryKey: ['event', key],
-    enabled: !!key,
+    queryKey: ['event', eventId],
+    enabled: !!eventId,
     queryFn: async () => {
       // Try to get from Supabase first with id only (no slug column)
       const { data, error } = await supabase
         .from('events')
         .select('*')
-        .eq('id', key)
+        .eq('id', eventId)
         .maybeSingle()
       
       if (error && error.code !== 'PGRST116') {
@@ -109,7 +108,7 @@ export default function EventDetail() {
       }
       
       // Fallback to mock data
-      const eventData = extendedEventData[key as keyof typeof extendedEventData]
+      const eventData = extendedEventData[eventId as keyof typeof extendedEventData]
       return eventData || null
     },
   })
@@ -203,7 +202,7 @@ export default function EventDetail() {
 
               {/* Booking CTA */}
               <div className="mt-4">
-                <BookingCTA className="w-full md:w-auto" />
+                <BookingCTA eventId={eventId} className="w-full md:w-auto" />
               </div>
 
               {/* Event gallery */}
