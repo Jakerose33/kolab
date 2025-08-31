@@ -14,7 +14,7 @@ interface SEOHeadProps {
 export const SEOHead = ({
   title,
   description,
-  image = '/images/og-default.jpg',
+  image = '/images/og-kolab.jpg',
   url = window.location.href,
   type = 'website',
   author,

@@ -14,6 +14,7 @@ import { AdvancedSEOSystem } from "@/components/AdvancedSEOSystem";
 import { AdvancedSitemapGenerator } from "@/components/AdvancedSitemapGenerator";
 import { AdvancedRobotsTxtManager } from "@/components/AdvancedRobotsTxtManager";
 import { optimizeImages } from "@/lib/performanceOptimizations";
+import { addViewTransitionStyles } from "@/lib/viewTransitions";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -147,6 +148,9 @@ function App() {
   useEffect(() => {
     // Optimise performance on mount
     optimizeImages();
+    
+    // Add view transition styles for smooth page transitions
+    addViewTransitionStyles();
 
     // Optimise images when DOM changes
     const observer = new MutationObserver(() => {
@@ -179,7 +183,7 @@ function App() {
                 <AdvancedSEOSystem>
                   <AdvancedSitemapGenerator />
                   <AdvancedRobotsTxtManager />
-                  <Suspense fallback={<LoadingState />}>
+                  <Suspense fallback={<div />}>
                     <RoutesWithErrorReset />
                   </Suspense>
                 </AdvancedSEOSystem>
