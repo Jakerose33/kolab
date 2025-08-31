@@ -164,18 +164,18 @@ function App() {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <OfflineIndicator />
+    <ErrorBoundary
+      FallbackComponent={AppErrorFallback}
+      onError={(error) => console.error('App-level error:', error)}
+    >
+      <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <ErrorBoundary
-            FallbackComponent={AppErrorFallback}
-            onError={(error) => console.error('Top-level error:', error)}
-          >
+          <TooltipProvider>
             <SecurityProvider>
               <AuthProvider>
+                <Toaster />
+                <Sonner />
+                <OfflineIndicator />
                 <AdvancedSEOSystem>
                   <AdvancedSitemapGenerator />
                   <AdvancedRobotsTxtManager />
@@ -185,10 +185,10 @@ function App() {
                 </AdvancedSEOSystem>
               </AuthProvider>
             </SecurityProvider>
-          </ErrorBoundary>
+          </TooltipProvider>
         </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
