@@ -1,7 +1,8 @@
 import { AppLayout } from "@/components/AppLayout";
 import EventCard from "@/components/events/EventCard";
 import PreviewEventCard from "@/components/events/PreviewEventCard";
-import { CategoryFilter } from "@/components/CategoryFilter";
+import EventMap from "@/components/EventMap";
+import AdvancedEventFilters, { EventFilters } from "@/components/AdvancedEventFilters";
 import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { AuthDialog } from "@/components/AuthDialog";
@@ -9,29 +10,31 @@ import { CreateEventWizard } from "@/components/CreateEventWizard";
 import { EmptyState } from "@/components/EmptyState";
 import { LoadingState } from "@/components/LoadingState";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState, useEffect, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar, Search, Filter, Plus } from "lucide-react";
+import { Calendar, Search, Filter, Plus, Map, Grid3X3 } from "lucide-react";
 import { getEventLink, normalizeEvent } from "@/lib/linking";
-import { Link } from "react-router-dom";
+import { format } from "date-fns";
 
-// Sample events data with working functionality
+// Enhanced sample events data with coordinates and pricing
 const sampleEvents = [
   {
     id: "1",
     title: "Underground Art Gallery Opening",
     description: "Exclusive underground art exhibition featuring emerging local artists",
-    start_at: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+    start_at: new Date(Date.now() + 86400000).toISOString(),
     end_at: null,
     venue_name: "Hidden Gallery",
-    venue_address: "Downtown",
+    venue_address: "Collins Street, Melbourne CBD",
+    latitude: -37.8136,
+    longitude: 144.9631,
     capacity: 50,
-    tags: ["Art", "Gallery"],
+    price: 25,
+    tags: ["art", "gallery"],
     image_url: "/images/events/street-art-opening.jpg",
     status: "published",
     organizer_id: "organizer1",
@@ -46,12 +49,15 @@ const sampleEvents = [
     id: "2", 
     title: "Midnight Jazz Session",
     description: "Intimate jazz performance in a secret speakeasy location",
-    start_at: new Date(Date.now() + 172800000).toISOString(), // Day after tomorrow
+    start_at: new Date(Date.now() + 172800000).toISOString(),
     end_at: null,
     venue_name: "The Vault",
-    venue_address: "City Center", 
+    venue_address: "Fitzroy, Melbourne", 
+    latitude: -37.7964,
+    longitude: 144.9784,
     capacity: 40,
-    tags: ["Music", "Jazz"],
+    price: 35,
+    tags: ["music", "jazz"],
     image_url: "/images/events/midnight-jazz.jpg",
     status: "published",
     organizer_id: "organizer2",
@@ -66,12 +72,15 @@ const sampleEvents = [
     id: "3",
     title: "Warehouse Rave",
     description: "Electronic music event in an abandoned warehouse with top DJs",
-    start_at: new Date(Date.now() + 604800000).toISOString(), // Next week
+    start_at: new Date(Date.now() + 604800000).toISOString(),
     end_at: null,
     venue_name: "Warehouse District",
-    venue_address: "Industrial Area",
+    venue_address: "Richmond, Melbourne",
+    latitude: -37.8197,
+    longitude: 144.9942,
     capacity: 200,
-    tags: ["Music", "Electronic", "Rave"],
+    price: 45,
+    tags: ["music", "electronic"],
     image_url: "/images/events/warehouse-rave.jpg",
     status: "published", 
     organizer_id: "organizer3",
@@ -80,6 +89,29 @@ const sampleEvents = [
     profiles: {
       full_name: "Underground Events",
       handle: "undergroundevents"
+    }
+  },
+  {
+    id: "4",
+    title: "Tech Startup Pitch Night",
+    description: "Present your startup ideas to Melbourne investors and entrepreneurs",
+    start_at: new Date(Date.now() + 259200000).toISOString(),
+    end_at: null,
+    venue_name: "Innovation Hub",
+    venue_address: "South Yarra, Melbourne",
+    latitude: -37.8467,
+    longitude: 144.9944,
+    capacity: 100,
+    price: 0, // Free event
+    tags: ["business", "technology"],
+    image_url: "/images/events/startup-pitch.jpg",
+    status: "published",
+    organizer_id: "organizer4",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    profiles: {
+      full_name: "Tech Melbourne",
+      handle: "techmelbourne"
     }
   }
 ];
@@ -92,12 +124,21 @@ export default function Events() {
   const [showMessagesDialog, setShowMessagesDialog] = useState(false);
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("date");
+  const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
   const { toast } = useToast();
   const { session } = useAuth();
   const isMobile = useIsMobile();
+
+  // Advanced filters state
+  const [filters, setFilters] = useState<EventFilters>({
+    search: '',
+    category: 'all',
+    date: null,
+    timeOfDay: 'all',
+    radius: 50,
+    maxPrice: 200,
+    location: ''
+  });
 
   // Fetch real events from database
   useEffect(() => {
@@ -129,65 +170,90 @@ export default function Events() {
     fetchEvents();
   }, []);
 
-  // Generate categories from events
-  const categories = useMemo(() => {
-    const categoryMap = new Map();
-    events.forEach(event => {
-      if (event.tags) {
-        event.tags.forEach((tag: string) => {
-          const count = categoryMap.get(tag) || 0;
-          categoryMap.set(tag, count + 1);
-        });
-      }
-    });
-
-    return Array.from(categoryMap.entries()).map(([name, count]) => ({
-      id: name.toLowerCase(),
-      name,
-      icon: null,
-      count
-    }));
-  }, [events]);
-
-  // Filter and sort events
+  // Advanced filtering logic
   useEffect(() => {
     let filtered = [...events];
 
-    // Filter by category
-    if (selectedCategory) {
+    // Search filter
+    if (filters.search) {
+      filtered = filtered.filter(event =>
+        event.title.toLowerCase().includes(filters.search.toLowerCase()) ||
+        event.description?.toLowerCase().includes(filters.search.toLowerCase()) ||
+        event.venue_name?.toLowerCase().includes(filters.search.toLowerCase()) ||
+        event.venue_address?.toLowerCase().includes(filters.search.toLowerCase()) ||
+        event.tags?.some((tag: string) => tag.toLowerCase().includes(filters.search.toLowerCase()))
+      );
+    }
+
+    // Category filter
+    if (filters.category !== 'all') {
       filtered = filtered.filter(event => 
         event.tags && event.tags.some((tag: string) => 
-          tag.toLowerCase() === selectedCategory.toLowerCase()
+          tag.toLowerCase() === filters.category.toLowerCase()
         )
       );
     }
 
-    // Filter by search query
-    if (searchQuery) {
+    // Date filter
+    if (filters.date) {
+      const filterDate = format(filters.date, 'yyyy-MM-dd');
+      filtered = filtered.filter(event => {
+        const eventDate = format(new Date(event.start_at), 'yyyy-MM-dd');
+        return eventDate === filterDate;
+      });
+    }
+
+    // Time of day filter
+    if (filters.timeOfDay !== 'all') {
+      filtered = filtered.filter(event => {
+        const eventHour = new Date(event.start_at).getHours();
+        switch (filters.timeOfDay) {
+          case 'morning':
+            return eventHour >= 6 && eventHour < 12;
+          case 'afternoon':
+            return eventHour >= 12 && eventHour < 18;
+          case 'evening':
+            return eventHour >= 18 && eventHour < 23;
+          case 'late':
+            return eventHour >= 23 || eventHour < 6;
+          default:
+            return true;
+        }
+      });
+    }
+
+    // Location filter (simplified - in real app would use geocoding)
+    if (filters.location) {
       filtered = filtered.filter(event =>
-        event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.venue_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.tags?.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+        event.venue_address?.toLowerCase().includes(filters.location.toLowerCase())
       );
     }
 
-    // Sort events
+    // Price filter
+    filtered = filtered.filter(event => {
+      const price = event.price || 0;
+      return price <= filters.maxPrice;
+    });
+
+    // Sort by date (upcoming first)
     filtered.sort((a, b) => {
-      switch (sortBy) {
-        case "date":
-          return new Date(a.start_at).getTime() - new Date(b.start_at).getTime();
-        case "popularity":
-          return 0; // Could implement based on RSVP count
-        case "newest":
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-        default:
-          return 0;
-      }
+      return new Date(a.start_at).getTime() - new Date(b.start_at).getTime();
     });
 
     setFilteredEvents(filtered);
-  }, [events, selectedCategory, searchQuery, sortBy]);
+  }, [events, filters]);
+
+  const clearFilters = () => {
+    setFilters({
+      search: '',
+      category: 'all',
+      date: null,
+      timeOfDay: 'all',
+      radius: 50,
+      maxPrice: 200,
+      location: ''
+    });
+  };
 
   const handleShare = (eventId: string) => {
     navigator.clipboard.writeText(`${window.location.origin}/events/${eventId}`);
@@ -273,6 +339,21 @@ export default function Events() {
     return <LoadingState />;
   }
 
+  // Transform events for map component
+  const mapEvents = filteredEvents.map(event => ({
+    id: event.id,
+    title: event.title,
+    description: event.description,
+    date: format(new Date(event.start_at), 'MMM dd, yyyy'),
+    time: format(new Date(event.start_at), 'h:mm a'),
+    location: event.venue_address || event.venue_name || 'Location TBD',
+    category: event.tags?.[0] || 'other',
+    coordinates: [event.longitude || 144.9631, event.latitude || -37.8136] as [number, number],
+    price: event.price || 0,
+    attendees: Math.floor(Math.random() * (event.capacity * 0.7)) + 1,
+    capacity: event.capacity || 50
+  }));
+
   return (
     <>
       <AppLayout 
@@ -296,81 +377,86 @@ export default function Events() {
                 Create Event
               </Button>
             </div>
-            
-            {/* Search and Filters */}
-            <div className="space-y-4">
-              <div className="flex flex-col lg:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search events, organizers, or topics..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-                
-                <div className="flex gap-2">
-                  <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="w-48">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="date">Upcoming</SelectItem>
-                      <SelectItem value="popularity">Most Popular</SelectItem>
-                      <SelectItem value="newest">Recently Added</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+              {/* Advanced Filters Sidebar */}
+              <div className="lg:col-span-1">
+                <AdvancedEventFilters
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  onClearFilters={clearFilters}
+                />
               </div>
 
-              <CategoryFilter 
-                categories={categories}
-                selectedCategory={selectedCategory}
-                onCategorySelect={setSelectedCategory}
-              />
-            </div>
-            
-            {/* Events Grid */}
-            {filteredEvents.length > 0 ? (
-              <div className={isMobile 
-                ? "space-y-4" 
-                : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              }>
-                {filteredEvents.map((event) => {
-                  const link = getEventLink(event);
-                  if (!link) return null;
-
-                  const n = normalizeEvent(event);
-                  
-                  return (
-                    <div
-                      key={String(n.id)}
-                      onClick={() => window.location.href = link}
-                      className="cursor-pointer block focus:outline-none focus:ring-2 focus:ring-ring"
-                    >
-                      {session?.user ? (
-                        <EventCard event={event} />
-                      ) : (
-                        <PreviewEventCard event={event} />
-                      )}
+              {/* Main Content Area */}
+              <div className="lg:col-span-3 space-y-6">
+                {/* View Mode Toggle */}
+                <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'grid' | 'map')}>
+                  <div className="flex items-center justify-between">
+                    <TabsList className="grid w-fit grid-cols-2">
+                      <TabsTrigger value="grid" className="gap-2">
+                        <Grid3X3 className="h-4 w-4" />
+                        Grid View
+                      </TabsTrigger>
+                      <TabsTrigger value="map" className="gap-2">
+                        <Map className="h-4 w-4" />
+                        Map View
+                      </TabsTrigger>
+                    </TabsList>
+                    
+                    <div className="text-sm text-muted-foreground">
+                      {filteredEvents.length} event{filteredEvents.length !== 1 ? 's' : ''} found
                     </div>
-                  );
-                })}
+                  </div>
+
+                  <TabsContent value="grid" className="mt-6">
+                    {/* Events Grid */}
+                    {filteredEvents.length > 0 ? (
+                      <div className={isMobile 
+                        ? "space-y-4" 
+                        : "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                      }>
+                        {filteredEvents.map((event) => {
+                          const link = getEventLink(event);
+                          if (!link) return null;
+
+                          const n = normalizeEvent(event);
+                          
+                          return (
+                            <div
+                              key={String(n.id)}
+                              onClick={() => window.location.href = link}
+                              className="cursor-pointer block focus:outline-none focus:ring-2 focus:ring-ring"
+                            >
+                              {session?.user ? (
+                                <EventCard event={event} />
+                              ) : (
+                                <PreviewEventCard event={event} />
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <EmptyState
+                        icon={Calendar}
+                        title="No events found"
+                        description="No events match your current filters. Try adjusting your search or category selection."
+                        action={{
+                          label: "Create Event",
+                          onClick: () => handleCreateEvent()
+                        }}
+                      />
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="map" className="mt-6">
+                    {/* Map View */}
+                    <EventMap events={mapEvents} />
+                  </TabsContent>
+                </Tabs>
               </div>
-            ) : (
-              <EmptyState
-                icon={Calendar}
-                title="No events found"
-                description="No events match your current filters. Try adjusting your search or category selection."
-                action={{
-                  label: "Create Event",
-                  onClick: () => handleCreateEvent()
-                }}
-              />
-            )}
+            </div>
           </div>
         </main>
       </AppLayout>
