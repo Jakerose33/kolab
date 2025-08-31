@@ -93,11 +93,11 @@ export default function EventDetail() {
     queryKey: ['event', key],
     enabled: !!key,
     queryFn: async () => {
-      // Try to get from Supabase first with id or slug
+      // Try to get from Supabase first with id only (no slug column)
       const { data, error } = await supabase
         .from('events')
         .select('*')
-        .or(`id.eq.${key},slug.eq.${key}`)
+        .eq('id', key)
         .maybeSingle()
       
       if (error && error.code !== 'PGRST116') {

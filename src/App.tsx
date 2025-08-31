@@ -48,10 +48,12 @@ function App() {
       optimizeImages();
     });
 
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
+    if (document.body) {
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+      });
+    }
 
     return () => observer.disconnect();
   }, []);

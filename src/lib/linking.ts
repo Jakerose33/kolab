@@ -5,12 +5,11 @@ export type AnyRec = Record<string, any>;
 
 export type EventLike = AnyRec;
 export function normalizeEvent(e: EventLike) {
-  const id =
-    e?.id ?? e?.eventId ?? e?.uuid ?? e?.slug ?? null; // tolerate many shapes
+  const id = e?.id ?? e?.eventId ?? e?.uuid ?? null; // removed slug since DB doesn't have it
   return {
     id,
     title: e?.title ?? e?.name ?? 'Untitled Event',
-    image: e?.heroImage ?? e?.image ?? e?.image_url ?? e?.images?.[0] ?? null,
+    image: e?.image_url ?? e?.heroImage ?? e?.image ?? e?.images?.[0] ?? null, // DB uses image_url
   };
 }
 export function getEventLink(e: EventLike): string | null {
