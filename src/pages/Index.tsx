@@ -8,6 +8,7 @@ import CollabsMarquee from "@/features/collabs/CollabsMarquee";
 import EventCard from "@/components/events/EventCard";
 import PreviewEventCard from "@/components/events/PreviewEventCard";
 import { MobileEventCard } from "@/components/MobileEventCard";
+import { MobileEventsCarousel } from "@/components/MobileEventsCarousel";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { CreateEventWizard } from "@/components/CreateEventWizard";
 import { MessagesDialog } from "@/components/MessagesDialog";
@@ -375,46 +376,56 @@ export default function Index() {
             {/* Events Display with semantic markup */}
             <article className="events-listing" aria-label="Event listings">
             {filteredEvents.length > 0 ? (
-              <div className={isMobile 
-                ? "space-y-4" 
-                : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              }>
-                {filteredEvents.map((event) => {
-                  const link = getEventLink(event);
-                  if (!link) return null;
+              isMobile ? (
+                session?.user ? (
+                  <MobileEventsCarousel
+                    events={filteredEvents}
+                    userRSVPs={userRSVPs}
+                    onShare={handleShare}
+                    onEventClick={(event) => {
+                      const link = getEventLink(event);
+                      if (link) window.location.href = link;
+                    }}
+                  />
+                ) : (
+                  <MobileEventsCarousel
+                    events={filteredEvents}
+                    onShare={handleShare}
+                    onEventClick={() => setShowAuth(true)}
+                  />
+                )
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredEvents.map((event) => {
+                    const link = getEventLink(event);
+                    if (!link) return null;
 
-                  const n = normalizeEvent(event);
-                  
-                  if (session?.user) {
-                    return isMobile ? (
-                      <MobileEventCard
-                        key={event.id}
-                        event={event}
-                        onShare={() => handleShare(event.id)}
-                        userRSVP={userRSVPs[event.id] as 'going' | 'interested' | undefined}
-                      />
-                    ) : (
-                      <div
-                        key={String(n.id)}
-                        onClick={() => window.location.href = link}
-                        className="cursor-pointer block focus:outline-none focus:ring-2 focus:ring-ring"
-                      >
-                        <EventCard event={event} />
-                      </div>
-                    );
-                  } else {
-                    return (
-                      <div
-                        key={String(n.id)}
-                        className="cursor-pointer"
-                        onClick={() => setShowAuth(true)}
-                      >
-                        <PreviewEventCard event={event} />
-                      </div>
-                    );
-                  }
-                })}
-              </div>
+                    const n = normalizeEvent(event);
+                    
+                    if (session?.user) {
+                      return (
+                        <div
+                          key={String(n.id)}
+                          onClick={() => window.location.href = link}
+                          className="cursor-pointer block focus:outline-none focus:ring-2 focus:ring-ring"
+                        >
+                          <EventCard event={event} />
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div
+                          key={String(n.id)}
+                          className="cursor-pointer"
+                          onClick={() => setShowAuth(true)}
+                        >
+                          <PreviewEventCard event={event} />
+                        </div>
+                      );
+                    }
+                  })}
+                </div>
+              )
             ) : (
               <EmptyState
                 icon={Calendar}
