@@ -333,9 +333,5 @@ export function EventCard({
   </Card>
   );
 
-  return eventLink 
-    ? <Link to={eventLink} className="block">{cardContent}</Link>
-    : <div className="block opacity-60 pointer-events-none" aria-disabled="true">
-        {cardContent}
-      </div>;
+  return cardContent;
 }

@@ -346,18 +346,17 @@ export default function Events() {
                   const n = normalizeEvent(event);
                   
                   return (
-                    <Link
+                    <div
                       key={String(n.id)}
-                      to={link}
-                      aria-label={`Open ${n.title}`}
-                      className="block focus:outline-none focus:ring-2 focus:ring-ring"
+                      onClick={() => window.location.href = link}
+                      className="cursor-pointer block focus:outline-none focus:ring-2 focus:ring-ring"
                     >
                       {session?.user ? (
                         <EventCard event={event} />
                       ) : (
                         <PreviewEventCard event={event} />
                       )}
-                    </Link>
+                    </div>
                   );
                 })}
               </div>

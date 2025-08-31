@@ -394,14 +394,13 @@ export default function Index() {
                         userRSVP={userRSVPs[event.id] as 'going' | 'interested' | undefined}
                       />
                     ) : (
-                      <Link
+                      <div
                         key={String(n.id)}
-                        to={link}
-                        aria-label={`Open ${n.title}`}
-                        className="block focus:outline-none focus:ring-2 focus:ring-ring"
+                        onClick={() => window.location.href = link}
+                        className="cursor-pointer block focus:outline-none focus:ring-2 focus:ring-ring"
                       >
                         <EventCard event={event} />
-                      </Link>
+                      </div>
                     );
                   } else {
                     return (

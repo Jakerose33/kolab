@@ -22,21 +22,21 @@ export default function BookingCTA({ className, eventId }: Props) {
 
       if (!authed) {
         // Send guests to sign-in and bounce them back here afterwards
-        nav(`/auth?next=${encodeURIComponent(location.pathname)}`)
+        window.location.href = `/auth?next=${encodeURIComponent(location.pathname)}`
         return
       }
 
       // Navigate to event-specific booking flow if valid ID exists
       if (currentEventId) {
-        nav(`/events/${currentEventId}/book`)
+        window.location.href = `/events/${currentEventId}/book`
       } else {
         // Fallback to general bookings page
-        nav('/bookings')
+        window.location.href = '/bookings'
       }
     } catch (error) {
       console.error('BookingCTA navigation error:', error)
       // Fallback navigation
-      nav('/bookings')
+      window.location.href = '/bookings'
     }
   }
 
