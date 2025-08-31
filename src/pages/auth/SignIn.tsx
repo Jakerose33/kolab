@@ -1,6 +1,6 @@
 // src/pages/auth/SignIn.tsx
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -101,8 +101,8 @@ export default function SignIn() {
 
             <div className="flex items-center justify-between text-sm">
               {/* FIX: route matches tests */}
-              <Link to="/auth/forgot-password" className="underline">Forgot password?</Link>
-              <Link to="/auth/signup" className="underline">Create account</Link>
+              <span onClick={() => window.location.href = "/auth/forgot-password"} className="underline cursor-pointer">Forgot password?</span>
+              <span onClick={() => window.location.href = "/auth/signup"} className="underline cursor-pointer">Create account</span>
             </div>
           </form>
         </CardContent>

@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, MapPin, Users, Clock } from "lucide-react"
 import EventHeader from "@/features/events/EventHeader"
@@ -77,7 +76,6 @@ const getEventProp = (event: any, mockProp: string, dbProp?: string) => {
 }
 
 export default function EventDetail() {
-  const navigate = useNavigate()
   const [userRSVP, setUserRSVP] = useState<'going' | 'interested' | null>(null)
   
   // Use safe route param extraction
@@ -180,7 +178,7 @@ export default function EventDetail() {
         <div className="container mx-auto px-4 py-4">
           <Button
             variant="ghost"
-            onClick={() => navigate('/')}
+            onClick={() => window.location.href = '/'}
             className="group"
           >
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />

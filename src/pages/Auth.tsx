@@ -272,12 +272,10 @@ export default function Auth() {
                 <div className="text-center">
                   <Button 
                     variant="link" 
-                    asChild 
+                    onClick={() => window.location.href = "/auth/forgot-password"}
                     className="text-sm text-muted-foreground"
                   >
-                    <Link to="/auth/forgot-password">
-                      Forgot your password?
-                    </Link>
+                    Forgot your password?
                   </Button>
                 </div>
               </form>

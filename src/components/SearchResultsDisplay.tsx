@@ -8,7 +8,7 @@ import { getEventLink, normalizeEvent } from '@/lib/linking'
 import { EmptyState } from './EmptyState'
 import { LoadingState } from './LoadingState'
 import { cn } from '@/lib/utils'
-import { Link } from 'react-router-dom'
+
 
 interface SearchResultsDisplayProps {
   events: any[]
@@ -222,14 +222,14 @@ export function SearchResultsDisplay({
 
             const n = normalizeEvent(event);
             return (
-              <Link
+              <div
                 key={String(n.id)}
-                to={link}
+                onClick={() => window.location.href = link}
                 aria-label={`Open ${n.title}`}
-                className="block focus:outline-none focus:ring-2 focus:ring-ring"
+                className="block cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring"
               >
                 <EventCard event={event} />
-              </Link>
+              </div>
             );
           })}
         </div>

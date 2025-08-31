@@ -10,7 +10,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { NavLink, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
   Home,
   Calendar,
@@ -59,15 +59,12 @@ export function AppSidebar() {
             <SidebarMenu className="space-y-1">
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="h-12">
-                    <NavLink 
-                      to={item.url} 
-                      end={item.url === "/"}
-                      className={getNavCls}
-                    >
-                      <item.icon className="h-5 w-5 mr-3" />
-                      <span className="text-sm font-medium">{item.title}</span>
-                    </NavLink>
+                  <SidebarMenuButton 
+                    onClick={() => window.location.href = item.url}
+                    className={`h-12 cursor-pointer ${location.pathname === item.url ? 'bg-primary text-primary-foreground' : ''}`}
+                  >
+                    <item.icon className="h-5 w-5 mr-3" />
+                    <span className="text-sm font-medium">{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

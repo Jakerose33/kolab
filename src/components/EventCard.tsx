@@ -21,7 +21,7 @@ import { rsvpToEvent } from "@/lib/supabase";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { Link } from "react-router-dom";
+
 import { getEventLink } from "@/lib/entities";
 
 interface Event {

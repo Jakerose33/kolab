@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+
 import { supabase } from '@/integrations/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -100,7 +100,7 @@ export default function SignUp() {
               </Button>
 
               <div className="text-sm text-center">
-                Already have an account? <Link to="/auth" className="underline">Sign in</Link>
+                Already have an account? <span onClick={() => window.location.href = "/auth"} className="underline cursor-pointer">Sign in</span>
               </div>
             </form>
           ) : (

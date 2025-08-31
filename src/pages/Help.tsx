@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -225,11 +225,9 @@ export default function Help() {
                 Our support team is here to help you succeed. Get in touch and we'll respond within 24 hours.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link to="/contact">
-                  <Button size="lg" className="w-full sm:w-auto">
-                    Contact Support
-                  </Button>
-                </Link>
+                <Button size="lg" className="w-full sm:w-auto" onClick={() => window.location.href = "/contact"}>
+                  Contact Support
+                </Button>
                 <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
                   <a href="mailto:venues@kolab.co.uk">
                     Email Venue Team

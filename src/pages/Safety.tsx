@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -253,10 +253,8 @@ export default function Safety() {
                 Our safety team is always available to discuss concerns or answer questions about our guidelines.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" asChild>
-                  <Link to="/contact">
-                    Contact Safety Team
-                  </Link>
+                <Button size="lg" onClick={() => window.location.href = "/contact"}>
+                  Contact Safety Team
                 </Button>
                 <Button size="lg" variant="outline" asChild>
                   <a href="mailto:safety@kolab.co.uk">

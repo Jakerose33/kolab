@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -264,15 +264,11 @@ export default function AboutUs() {
                 there's a place for you in the Kolab community.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" asChild>
-                  <Link to="/venue-partners">
-                    Partner with Us
-                  </Link>
+                <Button size="lg" onClick={() => window.location.href = "/venue-partners"}>
+                  Partner with Us
                 </Button>
-                <Button size="lg" variant="outline" asChild>
-                  <Link to="/contact">
-                    Get in Touch
-                  </Link>
+                <Button size="lg" variant="outline" onClick={() => window.location.href = "/contact"}>
+                  Get in Touch
                 </Button>
               </div>
             </div>

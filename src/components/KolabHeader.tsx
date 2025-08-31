@@ -17,7 +17,7 @@ import {
   BookOpen,
   LogOut
 } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -67,12 +67,12 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
       <div className="container flex h-16 items-center justify-between px-4">
         {/* Logo & Branding */}
         <div className="flex items-center space-x-8">
-          <Link to="/" className="flex items-center space-x-2">
+          <div onClick={() => window.location.href = "/"} className="flex items-center space-x-2 cursor-pointer">
             <div className="h-8 w-8 rounded-sm bg-gradient-primary flex items-center justify-center">
               <span className="text-white font-bold text-lg">K</span>
             </div>
             <span className="kolab-heading-medium font-accent tracking-wide text-foreground">Kolab</span>
-          </Link>
+          </div>
           
           {/* Navigation - Hidden on mobile */}
           <nav className="hidden md:flex items-center space-x-1">
@@ -80,10 +80,10 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
               return (
-                <Link
+                <div
                   key={item.name}
-                  to={item.path}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-sm text-sm font-medium transition-colors ${
+                  onClick={() => window.location.href = item.path}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-sm text-sm font-medium transition-colors cursor-pointer ${
                     isActive 
                       ? "bg-primary text-primary-foreground" 
                       : "hover:bg-muted text-muted-foreground hover:text-foreground"
@@ -91,7 +91,7 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
                 >
                   <Icon className="h-4 w-4" />
                   {item.name}
-                </Link>
+                </div>
               );
             })}
           </nav>
@@ -133,7 +133,7 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
                 className="relative"
                 aria-label="View messages (3 unread)"
               >
-                <Link to="/messages">
+                <div onClick={() => window.location.href = "/messages"} className="cursor-pointer">
                   <MessageSquare className="h-5 w-5" aria-hidden="true" />
                   <Badge 
                     className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-primary"
@@ -141,7 +141,7 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
                   >
                     3
                   </Badge>
-                </Link>
+                </div>
               </Button>
 
               {/* Notifications */}
@@ -187,29 +187,29 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/profile" className="flex items-center">
+                  <DropdownMenuItem onClick={() => window.location.href = "/profile"}>
+                    <div className="flex items-center">
                       <User className="mr-2 h-4 w-4" />
                       Profile
-                    </Link>
+                    </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/bookings" className="flex items-center">
+                  <DropdownMenuItem onClick={() => window.location.href = "/bookings"}>
+                    <div className="flex items-center">
                       <Calendar className="mr-2 h-4 w-4" />
                       My Bookings
-                    </Link>
+                    </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/analytics" className="flex items-center">
+                  <DropdownMenuItem onClick={() => window.location.href = "/analytics"}>
+                    <div className="flex items-center">
                       <Calendar className="mr-2 h-4 w-4" />
                       Analytics
-                    </Link>
+                    </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/settings" className="flex items-center">
+                  <DropdownMenuItem onClick={() => window.location.href = "/settings"}>
+                    <div className="flex items-center">
                       <Settings className="mr-2 h-4 w-4" />
                       Settings
-                    </Link>
+                    </div>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
@@ -250,20 +250,20 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   return (
-                    <DropdownMenuItem key={item.name} asChild>
-                      <Link to={item.path} className="flex items-center">
+                    <DropdownMenuItem key={item.name} onClick={() => window.location.href = item.path}>
+                      <div className="flex items-center">
                         <Icon className="mr-2 h-4 w-4" />
                         {item.name}
-                      </Link>
+                      </div>
                     </DropdownMenuItem>
                   );
                 })}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/search" className="flex items-center">
+                <DropdownMenuItem onClick={() => window.location.href = "/search"}>
+                  <div className="flex items-center">
                     <Search className="mr-2 h-4 w-4" />
                     Search
-                  </Link>
+                  </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

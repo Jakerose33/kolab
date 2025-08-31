@@ -129,7 +129,7 @@ export default function VenueDetail() {
           <div className="mb-6">
             <Button
               variant="ghost"
-              onClick={() => navigate('/venues')}
+              onClick={() => window.location.href = '/venues'}
               className="group"
             >
               <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />

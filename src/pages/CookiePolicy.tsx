@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+
 import { SEOOptimizer } from '@/components/SEOOptimizer';
 
 export default function CookiePolicy() {
@@ -243,7 +243,7 @@ export default function CookiePolicy() {
               
               <p className="mt-4">
                 For general privacy questions, please see our 
-                <Link to="/privacy" className="text-primary hover:underline ml-1">Privacy Policy</Link>.
+                <span onClick={() => window.location.href = "/privacy"} className="text-primary hover:underline ml-1 cursor-pointer">Privacy Policy</span>.
               </p>
             </div>
           </section>

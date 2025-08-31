@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useToast } from '@/hooks/use-toast'
 import { ArrowLeft, CheckCircle } from 'lucide-react'
-import { Link } from 'react-router-dom'
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('')
@@ -112,8 +111,8 @@ export default function ForgotPassword() {
               </Button>
             </div>
 
-            <Button variant="ghost" asChild className="w-full">
-              <Link to="/auth">Back to sign in</Link>
+            <Button variant="ghost" onClick={() => window.location.href = "/auth"} className="w-full">
+              Back to sign in
             </Button>
           </CardContent>
         </Card>
@@ -155,11 +154,9 @@ export default function ForgotPassword() {
               {loading ? 'Sending…' : 'Send reset email'}
             </Button>
 
-            <Button variant="ghost" asChild className="w-full">
-              <Link to="/auth" className="flex items-center gap-2">
-                <ArrowLeft className="h-4 w-4" />
-                Back to sign in
-              </Link>
+            <Button variant="ghost" onClick={() => window.location.href = "/auth"} className="w-full flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Back to sign in
             </Button>
           </form>
         </CardContent>

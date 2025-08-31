@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
+
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -75,7 +75,7 @@ const EventCard = ({ event }: { event: Event }) => {
   );
 
   return link 
-    ? <Link to={link} className="block">{content}</Link>
+    ? <div onClick={() => window.location.href = link} className="block cursor-pointer">{content}</div>
     : <div className="block opacity-60 pointer-events-none" aria-disabled="true">
         {content}
       </div>;

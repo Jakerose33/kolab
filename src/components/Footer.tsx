@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+
 import { 
   Mail, 
   Phone, 
@@ -52,11 +52,11 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Platform</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/events" className="text-muted-foreground hover:text-primary">Events</Link></li>
-              <li><Link to="/venues" className="text-muted-foreground hover:text-primary">Venues</Link></li>
-              <li><Link to="/careers" className="text-muted-foreground hover:text-primary">Careers</Link></li>
-              <li><Link to="/social" className="text-muted-foreground hover:text-primary">Community</Link></li>
-              <li><Link to="/venue-partners" className="text-muted-foreground hover:text-primary">Partner with Us</Link></li>
+              <li><span onClick={() => window.location.href = "/events"} className="text-muted-foreground hover:text-primary cursor-pointer">Events</span></li>
+              <li><span onClick={() => window.location.href = "/venues"} className="text-muted-foreground hover:text-primary cursor-pointer">Venues</span></li>
+              <li><span onClick={() => window.location.href = "/careers"} className="text-muted-foreground hover:text-primary cursor-pointer">Careers</span></li>
+              <li><span onClick={() => window.location.href = "/social"} className="text-muted-foreground hover:text-primary cursor-pointer">Community</span></li>
+              <li><span onClick={() => window.location.href = "/venue-partners"} className="text-muted-foreground hover:text-primary cursor-pointer">Partner with Us</span></li>
             </ul>
           </div>
 
@@ -64,11 +64,11 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Support</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/help" className="text-muted-foreground hover:text-primary">Help Center</Link></li>
-              <li><Link to="/contact" className="text-muted-foreground hover:text-primary">Contact Support</Link></li>
-              <li><Link to="/safety" className="text-muted-foreground hover:text-primary">Safety Guidelines</Link></li>
-              <li><Link to="/community-guidelines" className="text-muted-foreground hover:text-primary">Community Guidelines</Link></li>
-              <li><Link to="/accessibility" className="text-muted-foreground hover:text-primary">Accessibility</Link></li>
+              <li><span onClick={() => window.location.href = "/help"} className="text-muted-foreground hover:text-primary cursor-pointer">Help Center</span></li>
+              <li><span onClick={() => window.location.href = "/contact"} className="text-muted-foreground hover:text-primary cursor-pointer">Contact Support</span></li>
+              <li><span onClick={() => window.location.href = "/safety"} className="text-muted-foreground hover:text-primary cursor-pointer">Safety Guidelines</span></li>
+              <li><span onClick={() => window.location.href = "/community-guidelines"} className="text-muted-foreground hover:text-primary cursor-pointer">Community Guidelines</span></li>
+              <li><span onClick={() => window.location.href = "/accessibility"} className="text-muted-foreground hover:text-primary cursor-pointer">Accessibility</span></li>
             </ul>
           </div>
 
@@ -76,10 +76,10 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Legal</h3>
             <ul className="space-y-2 text-sm mb-6">
-              <li><Link to="/privacy" className="text-muted-foreground hover:text-primary">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="text-muted-foreground hover:text-primary">Terms of Service</Link></li>
-              <li><Link to="/cookies" className="text-muted-foreground hover:text-primary">Cookie Policy</Link></li>
-              <li><Link to="/about" className="text-muted-foreground hover:text-primary">About Us</Link></li>
+              <li><span onClick={() => window.location.href = "/privacy"} className="text-muted-foreground hover:text-primary cursor-pointer">Privacy Policy</span></li>
+              <li><span onClick={() => window.location.href = "/terms"} className="text-muted-foreground hover:text-primary cursor-pointer">Terms of Service</span></li>
+              <li><span onClick={() => window.location.href = "/cookies"} className="text-muted-foreground hover:text-primary cursor-pointer">Cookie Policy</span></li>
+              <li><span onClick={() => window.location.href = "/about"} className="text-muted-foreground hover:text-primary cursor-pointer">About Us</span></li>
             </ul>
 
             <div>
