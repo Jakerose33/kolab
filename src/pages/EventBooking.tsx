@@ -135,30 +135,19 @@ export default function EventBooking() {
     setIsBooking(true);
     
     try {
-      // Create booking record
-      const bookingData = {
-        event_id: event.id,
-        user_id: session.user.id,
-        ticket_count: ticketCount,
-        total_amount: event.price * ticketCount,
-        special_requests: specialRequests,
-        attendee_type: attendeeType,
-        status: 'pending'
-      };
-
-      // In real app, this would be stored in database
-      console.log('Booking data:', bookingData);
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Show success and redirect
-      toast({
-        title: "Booking Request Sent!",
-        description: `Your booking for ${ticketCount} ticket(s) has been submitted. You'll receive confirmation soon.`,
+      // Prepare payment data and redirect to payment page
+      const paymentParams = new URLSearchParams({
+        eventId: event.id,
+        eventTitle: event.title,
+        ticketCount: ticketCount.toString(),
+        attendeeType,
+        subtotal: subtotal.toFixed(2),
+        serviceFee: serviceFee.toFixed(2),
+        total: total.toFixed(2),
       });
 
-      window.location.href = '/bookings';
+      // Redirect to payment page with booking data
+      window.location.href = `/payment?${paymentParams.toString()}`;
     } catch (error) {
       console.error('Booking error:', error);
       toast({

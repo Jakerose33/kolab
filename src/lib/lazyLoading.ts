@@ -6,6 +6,7 @@ export const LazyPages = {
   Events: lazy(() => import('@/pages/Events')),
   EventDetail: lazy(() => import('@/pages/EventDetail')),
   EventBooking: lazy(() => import('@/pages/EventBooking')),
+  Payment: lazy(() => import('@/pages/Payment')),
   JournalArchive: lazy(() => import('@/pages/JournalArchive')),
   Venues: lazy(() => import('@/pages/Venues')),
   Social: lazy(() => import('@/pages/Social')),

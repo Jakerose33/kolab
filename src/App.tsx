@@ -97,6 +97,7 @@ function RoutesWithErrorReset() {
         <Route path="/events" element={<LazyPages.Events />} />
         <Route path="/events/:idOrSlug" element={<LazyPages.EventDetail />} />
         <Route path="/events/:idOrSlug/book" element={<LazyPages.EventBooking />} />
+        <Route path="/payment" element={<LazyPages.Payment />} />
         <Route path="/journal" element={<LazyPages.JournalArchive />} />
         <Route path="/venues" element={<LazyPages.Venues />} />
         <Route path="/venues/:id" element={<LazyPages.VenueDetail />} />
