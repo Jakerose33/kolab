@@ -85,9 +85,9 @@ const sampleEvents = [
 ];
 
 export default function Events() {
-  const [events, setEvents] = useState(sampleEvents);
-  const [filteredEvents, setFilteredEvents] = useState(sampleEvents);
-  const [loading, setLoading] = useState(false);
+  const [events, setEvents] = useState<any[]>(sampleEvents);
+  const [filteredEvents, setFilteredEvents] = useState<any[]>(sampleEvents);
+  const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showMessagesDialog, setShowMessagesDialog] = useState(false);
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
@@ -98,6 +98,36 @@ export default function Events() {
   const { toast } = useToast();
   const { session } = useAuth();
   const isMobile = useIsMobile();
+
+  // Fetch real events from database
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('events')
+          .select('*')
+          .eq('status', 'published')
+          .order('start_at', { ascending: true });
+
+        if (error) throw error;
+        
+        // Use real events from database, fallback to sample events
+        if (data && data.length > 0) {
+          setEvents(data);
+        } else {
+          setEvents(sampleEvents);
+        }
+      } catch (error) {
+        console.error('Failed to fetch events:', error);
+        // Fallback to sample events
+        setEvents(sampleEvents);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   // Generate categories from events
   const categories = useMemo(() => {
@@ -315,23 +345,19 @@ export default function Events() {
 
                   const n = normalizeEvent(event);
                   
-                  return session?.user ? (
+                  return (
                     <Link
                       key={String(n.id)}
                       to={link}
                       aria-label={`Open ${n.title}`}
                       className="block focus:outline-none focus:ring-2 focus:ring-ring"
                     >
-                      <EventCard event={event} />
+                      {session?.user ? (
+                        <EventCard event={event} />
+                      ) : (
+                        <PreviewEventCard event={event} />
+                      )}
                     </Link>
-                  ) : (
-                    <div
-                      key={String(n.id)}
-                      className="cursor-pointer"
-                      onClick={() => setShowAuth(true)}
-                    >
-                      <PreviewEventCard event={event} />
-                    </div>
                   );
                 })}
               </div>
