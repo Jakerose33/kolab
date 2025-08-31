@@ -55,13 +55,53 @@ const getEventData = (id: string) => {
       image_url: '/images/events/warehouse-rave.jpg',
       organizer: { name: 'Underground Events', handle: 'undergroundevents' },
       price: 45
+    },
+    // Add the actual Supabase UUIDs for booking
+    '256ec2c0-5194-4d5d-8362-cbcaf0163994': {
+      id: '256ec2c0-5194-4d5d-8362-cbcaf0163994',
+      title: 'Underground Jazz Night',
+      description: 'Intimate jazz session in a hidden basement venue',
+      start_at: new Date(Date.now() + 86400000).toISOString(),
+      venue_name: 'Secret Basement',
+      venue_address: 'Downtown District, London',
+      capacity: 150,
+      tags: ['Jazz', 'Music'],
+      image_url: '/images/events/midnight-jazz.jpg',
+      organizer: { name: 'Underground Music Collective', handle: 'jazzcollective' },
+      price: 35
+    },
+    'a226d064-cddc-4735-8b2c-1c1f79bb2d47': {
+      id: 'a226d064-cddc-4735-8b2c-1c1f79bb2d47',
+      title: 'Warehouse Rave',
+      description: 'Electronic music and visual arts in an industrial space',
+      start_at: new Date(Date.now() + 172800000).toISOString(),
+      venue_name: 'Warehouse District',
+      venue_address: 'Industrial Zone, London',
+      capacity: 500,
+      tags: ['Electronic', 'Music', 'Rave'],
+      image_url: '/images/events/warehouse-rave.jpg',
+      organizer: { name: 'Warehouse Collective', handle: 'warehousecrew' },
+      price: 45
+    },
+    'cadc3a4b-9882-4e10-87ba-5d3a6ece6ad5': {
+      id: 'cadc3a4b-9882-4e10-87ba-5d3a6ece6ad5',
+      title: 'Street Art Opening',
+      description: 'Gallery opening featuring underground street artists',
+      start_at: new Date(Date.now() + 259200000).toISOString(),
+      venue_name: 'Underground Gallery',
+      venue_address: 'Arts District, London',
+      capacity: 200,
+      tags: ['Art', 'Gallery'],
+      image_url: '/images/events/street-art-opening.jpg',
+      organizer: { name: 'Street Art Collective', handle: 'streetartist' },
+      price: 25
     }
   };
   return events[id as keyof typeof events];
 };
 
 export default function EventBooking() {
-  const { id } = useParams<{ id: string }>();
+  const { idOrSlug } = useParams<{ idOrSlug: string }>();
   const navigate = useNavigate();
   const { session } = useAuth();
   const { toast } = useToast();
@@ -74,20 +114,20 @@ export default function EventBooking() {
   const [attendeeType, setAttendeeType] = useState('general');
 
   useEffect(() => {
-    if (!id) {
+    if (!idOrSlug) {
       navigate('/events');
       return;
     }
 
     // Simulate loading event data
     setTimeout(() => {
-      const eventData = getEventData(id);
+      const eventData = getEventData(idOrSlug);
       if (eventData) {
         setEvent(eventData);
       }
       setLoading(false);
     }, 500);
-  }, [id, navigate]);
+  }, [idOrSlug, navigate]);
 
   const handleBooking = async () => {
     if (!session?.user || !event) return;
@@ -118,7 +158,7 @@ export default function EventBooking() {
         description: `Your booking for ${ticketCount} ticket(s) has been submitted. You'll receive confirmation soon.`,
       });
 
-      navigate('/bookings');
+      window.location.href = '/bookings';
     } catch (error) {
       console.error('Booking error:', error);
       toast({
@@ -142,7 +182,7 @@ export default function EventBooking() {
           <div className="text-center space-y-4">
             <h1 className="text-2xl font-bold">Event Not Found</h1>
             <p className="text-muted-foreground">The event you're trying to book doesn't exist.</p>
-            <Button onClick={() => navigate('/events')}>
+            <Button onClick={() => window.location.href = '/events'}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Events
             </Button>
@@ -163,7 +203,7 @@ export default function EventBooking() {
         <div className="flex items-center gap-4 mb-6">
           <Button
             variant="ghost"
-            onClick={() => navigate(`/events/${event.id}`)}
+            onClick={() => window.location.href = `/events/${event.id}`}
             className="group"
           >
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
