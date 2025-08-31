@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, MapPin, Users, Clock } from "lucide-react"
 import EventHeader from "@/features/events/EventHeader"
@@ -8,7 +8,8 @@ import EventRSVPBar from "@/features/events/EventRSVPBar"
 import { EventJsonLD, BreadcrumbJsonLD } from "@/components/SEOJsonLD"
 import { editorialData } from "@/data/editorial"
 import BookingCTA from "@/components/booking/BookingCTA"
-import { useRequiredParam, PageSkeleton, NotFound, InlineError } from "@/lib/safe"
+import { useRouteId } from "@/utils/routing"
+import { PageSkeleton, NotFound, InlineError } from "@/components/common/ErrorBits"
 import { useQuery } from "@tanstack/react-query"
 import { supabase } from "@/integrations/supabase/client"
 
@@ -76,40 +77,46 @@ const getEventProp = (event: any, mockProp: string, dbProp?: string) => {
 }
 
 export default function EventDetail() {
-  const { idOrSlug } = useParams<{ idOrSlug: string }>()
   const navigate = useNavigate()
   const [userRSVP, setUserRSVP] = useState<'going' | 'interested' | null>(null)
-
-  // Use the route param as the event ID
-  const eventId = idOrSlug
   
-  // Validate param early
-  if (!eventId || eventId === 'undefined' || eventId === 'null') {
-    return <NotFound title="Event not found" subtitle="Invalid event identifier." />
+  // Use safe route param extraction
+  const eventId = useRouteId('idOrSlug')
+  
+  // Early return for invalid IDs - no exceptions thrown
+  if (!eventId) {
+    return <NotFound title="Event not found" subtitle="Invalid or missing event identifier." />
   }
 
   const eventQuery = useQuery({
     queryKey: ['event', eventId],
     enabled: !!eventId,
     queryFn: async () => {
-      // Try to get from Supabase first with id only (no slug column)
-      const { data, error } = await supabase
-        .from('events')
-        .select('*')
-        .eq('id', eventId)
-        .maybeSingle()
-      
-      if (error && error.code !== 'PGRST116') {
-        throw error
+      try {
+        // Try to get from Supabase first - use maybeSingle to avoid throws on 0 rows
+        const { data, error } = await supabase
+          .from('events')
+          .select('*')
+          .eq('id', eventId)
+          .maybeSingle()
+        
+        // Only throw on real database errors, not "no rows found"
+        if (error && error.code !== 'PGRST116') {
+          throw error
+        }
+        
+        if (data) {
+          return data
+        }
+        
+        // Fallback to mock data
+        const eventData = extendedEventData[eventId as keyof typeof extendedEventData]
+        return eventData || null
+      } catch (err) {
+        console.error('Event query error:', err)
+        // Return null instead of throwing to prevent ErrorBoundary trigger
+        return null
       }
-      
-      if (data) {
-        return data
-      }
-      
-      // Fallback to mock data
-      const eventData = extendedEventData[eventId as keyof typeof extendedEventData]
-      return eventData || null
     },
   })
 
@@ -117,20 +124,19 @@ export default function EventDetail() {
     setUserRSVP(status)
   }
 
-  // Early validation handled above
-
+  // Safe rendering with proper loading states
   if (eventQuery.isLoading) {
     return <PageSkeleton />
   }
 
   if (eventQuery.isError) {
     console.error('[EventDetail] query error:', eventQuery.error)
-    return <InlineError message="We couldn't load this event." />
+    return <InlineError message="We couldn't load this event. Please try again." />
   }
 
   const event = eventQuery.data
   if (!event) {
-    return <NotFound title="Event not found" />
+    return <NotFound title="Event not found" subtitle="This event may have been removed or doesn't exist." />
   }
 
   // Format dates for JSON-LD

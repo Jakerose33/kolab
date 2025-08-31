@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
-import { useNavigate, useLocation, useParams } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '@/integrations/supabase/client'
+import { isValidRouteId } from '@/utils/routing'
 
 type Props = { 
   className?: string;
@@ -10,28 +11,46 @@ type Props = {
 export default function BookingCTA({ className, eventId }: Props) {
   const nav = useNavigate()
   const location = useLocation()
-  const params = useParams()
   
-  // Get eventId from props or URL params
-  const currentEventId = eventId || params.id
+  // Only use eventId if it's valid
+  const currentEventId = isValidRouteId(eventId) ? eventId : null
 
   const onClick = async () => {
-    const { data } = await supabase.auth.getSession()
-    const authed = !!data?.session
+    try {
+      const { data } = await supabase.auth.getSession()
+      const authed = !!data?.session
 
-    if (!authed) {
-      // Send guests to sign-in and bounce them back here afterwards
-      nav(`/auth?next=${encodeURIComponent(location.pathname)}`)
-      return
-    }
+      if (!authed) {
+        // Send guests to sign-in and bounce them back here afterwards
+        nav(`/auth?next=${encodeURIComponent(location.pathname)}`)
+        return
+      }
 
-    // Navigate to event-specific booking flow if valid ID exists
-    if (currentEventId && currentEventId !== 'undefined' && currentEventId !== 'null') {
-      nav(`/events/${currentEventId}/book`)
-    } else {
-      // Fallback to general bookings page
+      // Navigate to event-specific booking flow if valid ID exists
+      if (currentEventId) {
+        nav(`/events/${currentEventId}/book`)
+      } else {
+        // Fallback to general bookings page
+        nav('/bookings')
+      }
+    } catch (error) {
+      console.error('BookingCTA navigation error:', error)
+      // Fallback navigation
       nav('/bookings')
     }
+  }
+
+  // Disable button if no valid event ID
+  if (!currentEventId) {
+    return (
+      <Button
+        disabled
+        className={className}
+        aria-label="Booking unavailable"
+      >
+        Booking Unavailable
+      </Button>
+    )
   }
 
   return (
