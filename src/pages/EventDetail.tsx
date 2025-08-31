@@ -67,6 +67,58 @@ No phones policy in effect - this is about losing yourself in the music and conn
     ticketUrl: 'https://example.com/tickets/warehouse-rave',
     organizer: 'Underground Collective',
     tags: ['Techno', 'Industrial', 'Warehouse', 'Underground']
+  },
+  // Add the actual Supabase UUIDs for fallback
+  '256ec2c0-5194-4d5d-8362-cbcaf0163994': {
+    id: '256ec2c0-5194-4d5d-8362-cbcaf0163994',
+    title: 'Underground Jazz Night',
+    description: 'Intimate jazz session in a hidden basement venue',
+    venue: 'Secret Basement',
+    venueAddress: 'Downtown District, London',
+    capacity: 150,
+    lineup: [
+      'Jazz Ensemble - 9:00 PM',
+      'Solo Piano - 10:30 PM',
+      'Late Night Jam - 12:00 AM'
+    ],
+    images: ['/images/events/midnight-jazz.jpg'],
+    ticketUrl: '#',
+    organizer: 'Underground Music Collective',
+    tags: ['Jazz', 'Live Music', 'Underground', 'Intimate']
+  },
+  'a226d064-cddc-4735-8b2c-1c1f79bb2d47': {
+    id: 'a226d064-cddc-4735-8b2c-1c1f79bb2d47',
+    title: 'Warehouse Rave',
+    description: 'Electronic music and visual arts in an industrial space',
+    venue: 'Warehouse District',
+    venueAddress: 'Industrial Zone, London',
+    capacity: 500,
+    lineup: [
+      'Electronic Artist 1 - 10:00 PM',
+      'Visual Arts Performance - 11:30 PM',
+      'Main DJ Set - 1:00 AM'
+    ],
+    images: ['/images/events/warehouse-rave.jpg'],
+    ticketUrl: '#',
+    organizer: 'Warehouse Collective',
+    tags: ['Electronic', 'Industrial', 'Warehouse', 'Underground']
+  },
+  'cadc3a4b-9882-4e10-87ba-5d3a6ece6ad5': {
+    id: 'cadc3a4b-9882-4e10-87ba-5d3a6ece6ad5',
+    title: 'Street Art Opening',
+    description: 'Gallery opening featuring underground street artists',
+    venue: 'Underground Gallery',
+    venueAddress: 'Arts District, London',
+    capacity: 200,
+    lineup: [
+      'Gallery Opening - 7:00 PM',
+      'Artist Talks - 8:30 PM',
+      'Closing Reception - 10:00 PM'
+    ],
+    images: ['/images/events/street-art-opening.jpg'],
+    ticketUrl: '#',
+    organizer: 'Street Art Collective',
+    tags: ['Art', 'Gallery', 'Street Art', 'Opening']
   }
 }
 
@@ -90,6 +142,7 @@ export default function EventDetail() {
     queryKey: ['event', eventId],
     enabled: !!eventId,
     queryFn: async () => {
+      console.log('EventDetail: Querying for eventId:', eventId)
       try {
         // Try to get from Supabase first - use maybeSingle to avoid throws on 0 rows
         const { data, error } = await supabase
@@ -98,17 +151,23 @@ export default function EventDetail() {
           .eq('id', eventId)
           .maybeSingle()
         
+        console.log('EventDetail: Supabase query result:', { data, error })
+        
         // Only throw on real database errors, not "no rows found"
         if (error && error.code !== 'PGRST116') {
+          console.error('EventDetail: Database error:', error)
           throw error
         }
         
         if (data) {
+          console.log('EventDetail: Found data in Supabase:', data)
           return data
         }
         
         // Fallback to mock data
+        console.log('EventDetail: No Supabase data, checking mock data for:', eventId)
         const eventData = extendedEventData[eventId as keyof typeof extendedEventData]
+        console.log('EventDetail: Mock data result:', eventData)
         return eventData || null
       } catch (err) {
         console.error('Event query error:', err)
