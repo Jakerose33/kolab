@@ -31,6 +31,12 @@ export function normalizeEventData(event: any) {
     organizer_name: event?.organizer_name || event?.organizerName || event?.profiles?.full_name,
     organizer_handle: event?.organizer_handle || event?.organizerHandle || event?.profiles?.handle,
     organizer_avatar: event?.organizer_avatar || event?.organizerAvatar || event?.profiles?.avatar_url,
+    capacity: event?.capacity || null,
+    ticket_url: event?.ticket_url || event?.ticketUrl || null,
+    status: event?.status || 'published',
+    published: event?.published !== false,
+    created_at: event?.created_at || event?.createdAt || new Date().toISOString(),
+    updated_at: event?.updated_at || event?.updatedAt || new Date().toISOString(),
     geocoded: event?.geocoded !== false // Default to true unless explicitly false
   };
 }

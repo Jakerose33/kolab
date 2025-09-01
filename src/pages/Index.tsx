@@ -55,20 +55,18 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { getEventLink, normalizeEvent } from "@/lib/linking";
+import { useEventsFeed } from "@/hooks/useEventsData";
+import { normalizeEventData, getEventLinkSafe } from "@/utils/eventHelpers";
 import { Link } from "react-router-dom";
 import { useRealtime } from "@/hooks/useRealtime";
 import { useOfflineQueue } from "@/hooks/useOfflineQueue";
 import { usePerformanceOptimizations } from "@/hooks/usePerformanceOptimizations";
 import EventMap from "@/components/EventMap";
-import { getEvents, getUserRSVPs } from "@/lib/supabase";
 import React from "react";
 
 export default function Index() {
-  const [events, setEvents] = useState<any[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<any[]>([]);
   const [userRSVPs, setUserRSVPs] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showMessagesDialog, setShowMessagesDialog] = useState(false);
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
@@ -79,11 +77,15 @@ export default function Index() {
   const [sortBy, setSortBy] = useState("date");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("events");
+  
   const { toast } = useToast();
   const { session } = useAuth();
   const { isOnline } = useOfflineQueue();
   const isMobile = useIsMobile();
   usePerformanceOptimizations();
+
+  // Use canonical event data hook
+  const { data: events = [], isLoading, error } = useEventsFeed({});
 
   // Generate categories from events
   const categories = React.useMemo(() => {
@@ -107,14 +109,13 @@ export default function Index() {
 
   // Real-time event handlers
   const handleNewEvent = (event: any) => {
-    // Only add if it's published and not already in the list
-    if (event.status === 'published' && !events.find(e => e.id === event.id)) {
-      setEvents(prev => [event, ...prev]);
-    }
+    // Handle real-time updates - the canonical hook will automatically update
+    console.log('New event received:', event);
   };
 
   const handleEventUpdate = (event: any) => {
-    setEvents(prev => prev.map(e => e.id === event.id ? event : e));
+    // Handle real-time updates - the canonical hook will automatically update
+    console.log('Event updated:', event);
   };
 
   const handleNewRSVP = (rsvp: any) => {
@@ -135,41 +136,6 @@ export default function Index() {
     onRSVPUpdated: handleNewRSVP
   });
 
-  // Load events and user RSVPs
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        const { data: eventsData, error: eventsError } = await getEvents();
-        if (eventsError) throw eventsError;
-        
-        setEvents(eventsData || []);
-        
-        // Load user RSVPs if authenticated
-        if (session?.user) {
-          const { data: rsvpData } = await getUserRSVPs();
-          const rsvpMap: Record<string, string> = {};
-          rsvpData?.forEach((rsvp: any) => {
-            if (rsvp.events?.id) {
-              rsvpMap[rsvp.events.id] = rsvp.status;
-            }
-          });
-          setUserRSVPs(rsvpMap);
-        }
-      } catch (error: any) {
-        toast({
-          title: "Error loading events",
-          description: error.message,
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, [session?.user, toast]);
-
   // Filter and sort events
   useEffect(() => {
     let filtered = [...events];
@@ -186,22 +152,26 @@ export default function Index() {
     // Filter by search query
     if (searchQuery) {
       filtered = filtered.filter(event =>
-        event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         event.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         event.venue_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         event.tags?.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     }
 
-    // Sort events
-    filtered.sort((a, b) => {
+    // Sort events (use any type to avoid property access issues)
+    filtered.sort((a: any, b: any) => {
       switch (sortBy) {
         case "date":
-          return new Date(a.start_at).getTime() - new Date(b.start_at).getTime();
+          const dateA = new Date(a.start_at || a.created_at || new Date()).getTime();
+          const dateB = new Date(b.start_at || b.created_at || new Date()).getTime();
+          return dateA - dateB;
         case "popularity":
           return 0; // Could implement based on RSVP count
         case "newest":
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          const createdA = new Date(a.created_at || new Date()).getTime();
+          const createdB = new Date(b.created_at || new Date()).getTime();
+          return createdB - createdA;
         default:
           return 0;
       }
@@ -236,8 +206,12 @@ export default function Index() {
     })), [events]
   );
 
-  if (loading) {
+  if (isLoading) {
     return <LoadingState />;
+  }
+
+  if (error) {
+    console.error('Events fetch error:', error);
   }
 
   return (
@@ -383,7 +357,7 @@ export default function Index() {
                     userRSVPs={userRSVPs}
                     onShare={handleShare}
                     onEventClick={(event) => {
-                      const link = getEventLink(event);
+                      const link = getEventLinkSafe(event);
                       if (link) window.location.href = link;
                     }}
                   />
@@ -397,15 +371,15 @@ export default function Index() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredEvents.map((event) => {
-                    const link = getEventLink(event);
+                    const link = getEventLinkSafe(event);
                     if (!link) return null;
 
-                    const n = normalizeEvent(event);
+                    const normalizedEvent = normalizeEventData(event);
                     
                     if (session?.user) {
                       return (
                         <div
-                          key={String(n.id)}
+                          key={String(normalizedEvent.id)}
                           onClick={() => window.location.href = link}
                           className="cursor-pointer block focus:outline-none focus:ring-2 focus:ring-ring"
                         >
@@ -415,7 +389,7 @@ export default function Index() {
                     } else {
                       return (
                         <div
-                          key={String(n.id)}
+                          key={String(normalizedEvent.id)}
                           className="cursor-pointer"
                           onClick={() => setShowAuth(true)}
                         >

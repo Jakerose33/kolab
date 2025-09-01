@@ -9,8 +9,8 @@ import { editorialData } from "@/data/editorial"
 import BookingCTA from "@/components/booking/BookingCTA"
 import { useRouteId } from "@/utils/routing"
 import { PageSkeleton, NotFound, InlineError } from "@/components/common/ErrorBits"
-import { useQuery } from "@tanstack/react-query"
-import { supabase } from "@/integrations/supabase/client"
+import { useEvent } from "@/hooks/useEventsData"
+import { normalizeEventData } from "@/utils/eventHelpers"
 
 // Extended event data for detail view
 const extendedEventData = {
@@ -138,74 +138,38 @@ export default function EventDetail() {
     return <NotFound title="Event not found" subtitle="Invalid or missing event identifier." />
   }
 
-  const eventQuery = useQuery({
-    queryKey: ['event', eventId],
-    enabled: !!eventId,
-    queryFn: async () => {
-      console.log('EventDetail: Querying for eventId:', eventId)
-      try {
-        // Try to get from Supabase first - use maybeSingle to avoid throws on 0 rows
-        const { data, error } = await supabase
-          .from('events')
-          .select('*')
-          .eq('id', eventId)
-          .maybeSingle()
-        
-        console.log('EventDetail: Supabase query result:', { data, error })
-        
-        // Only throw on real database errors, not "no rows found"
-        if (error && error.code !== 'PGRST116') {
-          console.error('EventDetail: Database error:', error)
-          throw error
-        }
-        
-        if (data) {
-          console.log('EventDetail: Found data in Supabase:', data)
-          return data
-        }
-        
-        // Fallback to mock data
-        console.log('EventDetail: No Supabase data, checking mock data for:', eventId)
-        const eventData = extendedEventData[eventId as keyof typeof extendedEventData]
-        console.log('EventDetail: Mock data result:', eventData)
-        return eventData || null
-      } catch (err) {
-        console.error('Event query error:', err)
-        // Return null instead of throwing to prevent ErrorBoundary trigger
-        return null
-      }
-    },
-  })
+  // Use canonical event data hook
+  const { data: event, isLoading, error } = useEvent(eventId);
+
+  // Safe rendering with proper loading states
+  if (isLoading) {
+    return <PageSkeleton />
+  }
+
+  if (error) {
+    console.error('[EventDetail] query error:', error)
+    return <InlineError message="We couldn't load this event. Please try again." />
+  }
+
+  if (!event) {
+    return <NotFound title="Event not found" subtitle="This event may have been removed or doesn't exist." />
+  }
+
+  // Normalize the event data for consistent access
+  const normalizedEvent = normalizeEventData(event);
 
   const handleRSVPChange = (status: 'going' | 'interested' | null) => {
     setUserRSVP(status)
   }
 
-  // Safe rendering with proper loading states
-  if (eventQuery.isLoading) {
-    return <PageSkeleton />
-  }
-
-  if (eventQuery.isError) {
-    console.error('[EventDetail] query error:', eventQuery.error)
-    return <InlineError message="We couldn't load this event. Please try again." />
-  }
-
-  const event = eventQuery.data
-  if (!event) {
-    return <NotFound title="Event not found" subtitle="This event may have been removed or doesn't exist." />
-  }
-
   // Format dates for JSON-LD
-  const eventStartDate = new Date()
-  eventStartDate.setHours(23, 0, 0, 0) // Set to 11 PM today
-  const eventEndDate = new Date(eventStartDate)
-  eventEndDate.setHours(eventStartDate.getHours() + 4) // Assume 4-hour events
+  const eventStartDate = normalizedEvent.start_at ? new Date(normalizedEvent.start_at) : new Date()
+  const eventEndDate = normalizedEvent.end_at ? new Date(normalizedEvent.end_at) : new Date(eventStartDate.getTime() + 4 * 60 * 60 * 1000)
 
   const breadcrumbItems = [
     { name: "Home", url: "/" },
-    { name: "Events", url: "/" },
-    { name: event.title, url: `/events/${event.id}` }
+    { name: "Events", url: "/events" },
+    { name: normalizedEvent.title, url: `/events/${normalizedEvent.id}` }
   ]
 
   return (
@@ -213,20 +177,20 @@ export default function EventDetail() {
       {/* SEO JSON-LD structured data */}
       <EventJsonLD 
         event={{
-          id: event.id,
-          title: event.title,
-          description: event.description,
+          id: normalizedEvent.id,
+          title: normalizedEvent.title,
+          description: normalizedEvent.description || '',
           startDate: eventStartDate.toISOString(),
           endDate: eventEndDate.toISOString(),
-          venue: getEventProp(event, 'venue', 'venue_name') || 'TBD',
-          venueAddress: getEventProp(event, 'venueAddress', 'venue_address') || 'TBD',
-          image: getEventProp(event, 'image', 'image_url') || '/placeholder.svg',
-          ticketUrl: getEventProp(event, 'ticketUrl') || '#',
-          organizer: getEventProp(event, 'organizer') || 'Event Organizer',
-          capacity: event.capacity || 0,
-          tags: event.tags || [],
-          going: getEventProp(event, 'going') || 0,
-          interested: getEventProp(event, 'interested') || 0
+          venue: normalizedEvent.venue_name || 'TBD',
+          venueAddress: normalizedEvent.venue_address || 'TBD',
+          image: normalizedEvent.image_url || '/placeholder.svg',
+          ticketUrl: normalizedEvent.ticket_url || '#',
+          organizer: normalizedEvent.organizer_name || 'Event Organizer',
+          capacity: normalizedEvent.capacity || 0,
+          tags: normalizedEvent.tags || [],
+          going: 0, // Would come from RSVP data
+          interested: 0 // Would come from RSVP data
         }}
       />
       <BreadcrumbJsonLD items={breadcrumbItems} />
@@ -254,13 +218,13 @@ export default function EventDetail() {
             <div className="space-y-12">
               {/* Event header */}
               <EventHeader
-                title={event.title}
-                date={getEventProp(event, 'date') || 'Tonight'}
-                time={getEventProp(event, 'time') || '11PM'}
-                neighbourhood={getEventProp(event, 'neighbourhood') || 'London'}
-                venue={getEventProp(event, 'venue', 'venue_name') || 'TBD'}
-                capacity={event.capacity || 0}
-                going={getEventProp(event, 'going') || 0}
+                title={normalizedEvent.title}
+                date={normalizedEvent.start_at ? new Date(normalizedEvent.start_at).toLocaleDateString() : 'TBD'}
+                time={normalizedEvent.start_at ? new Date(normalizedEvent.start_at).toLocaleTimeString() : 'TBD'}
+                neighbourhood={normalizedEvent.city || 'Location TBD'}
+                venue={normalizedEvent.venue_name || 'Venue TBD'}
+                capacity={normalizedEvent.capacity || 0}
+                going={0} // Would come from RSVP data
               />
 
               {/* Booking CTA */}
@@ -270,8 +234,8 @@ export default function EventDetail() {
 
               {/* Event gallery */}
               <EventGallery
-                images={getEventProp(event, 'images') || [getEventProp(event, 'image', 'image_url') || '/placeholder.svg']}
-                title={event.title}
+                images={normalizedEvent.image_url ? [normalizedEvent.image_url] : ['/placeholder.svg']}
+                title={normalizedEvent.title}
               />
 
               {/* Event details */}
@@ -281,7 +245,7 @@ export default function EventDetail() {
                   <div>
                     <h2 className="text-2xl font-bold mb-4">About This Event</h2>
                     <div className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                      {event.description}
+                      {normalizedEvent.description || 'No description available for this event.'}
                     </div>
                   </div>
 
@@ -307,26 +271,24 @@ export default function EventDetail() {
                       <div className="flex items-center gap-3">
                         <MapPin className="w-5 h-5 text-muted-foreground" />
                         <div>
-                          <p className="font-semibold">{getEventProp(event, 'venue', 'venue_name') || 'TBD'}</p>
-                          <p className="text-sm text-muted-foreground">{getEventProp(event, 'venueAddress', 'venue_address') || 'Address TBD'}</p>
+                          <p className="font-semibold">{normalizedEvent.venue_name || 'Venue TBD'}</p>
+                          <p className="text-sm text-muted-foreground">{normalizedEvent.venue_address || 'Address TBD'}</p>
                         </div>
                       </div>
-                      {event.capacity && (
+                      {normalizedEvent.capacity && (
                         <div className="flex items-center gap-3">
                           <Users className="w-5 h-5 text-muted-foreground" />
-                          <span className="text-sm">Capacity: {event.capacity} people</span>
+                          <span className="text-sm">Capacity: {normalizedEvent.capacity} people</span>
                         </div>
                       )}
                     </div>
                   </div>
 
                   {/* Organizer */}
-                  {(getEventProp(event, 'organizer') || getEventProp(event, 'organizer_id')) && (
-                    <div>
-                      <h2 className="text-2xl font-bold mb-4">Organizer</h2>
-                      <p className="text-muted-foreground">{getEventProp(event, 'organizer') || 'Event Organizer'}</p>
-                    </div>
-                  )}
+                  <div>
+                    <h2 className="text-2xl font-bold mb-4">Organizer</h2>
+                    <p className="text-muted-foreground">{normalizedEvent.organizer_name || 'Event Organizer'}</p>
+                  </div>
                 </div>
               </div>
 
@@ -339,11 +301,11 @@ export default function EventDetail() {
         {/* Sticky RSVP sidebar */}
         <div className="lg:w-80 lg:shrink-0">
           <EventRSVPBar
-            eventId={event.id}
-            going={getEventProp(event, 'going') || 0}
-            interested={getEventProp(event, 'interested') || 0}
+            eventId={normalizedEvent.id}
+            going={0} // Would come from RSVP data
+            interested={0} // Would come from RSVP data
             userRSVP={userRSVP}
-            ticketUrl={getEventProp(event, 'ticketUrl') || '#'}
+            ticketUrl={normalizedEvent.ticket_url || '#'}
             onRSVPChange={handleRSVPChange}
           />
         </div>

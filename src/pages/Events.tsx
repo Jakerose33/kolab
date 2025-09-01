@@ -2,7 +2,7 @@ import { AppLayout } from "@/components/AppLayout";
 import EventCard from "@/components/events/EventCard";
 import PreviewEventCard from "@/components/events/PreviewEventCard";
 import EventMap from "@/components/EventMap";
-import AdvancedEventFilters, { EventFilters as LegacyEventFilters } from "@/components/AdvancedEventFilters";
+import UnifiedEventFilters from "@/components/UnifiedEventFilters";
 import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { AuthDialog } from "@/components/AuthDialog";
@@ -22,15 +22,6 @@ import { Calendar, Plus, Map, Grid3X3 } from "lucide-react";
 
 export default function Events() {
   const [filters, setFilters] = useState<EventFilters>({});
-  const [legacyFilters, setLegacyFilters] = useState<LegacyEventFilters>({
-    search: '',
-    category: 'all',
-    date: null,
-    timeOfDay: 'all',
-    radius: 10,
-    maxPrice: 1000,
-    location: ''
-  });
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showMessagesDialog, setShowMessagesDialog] = useState(false);
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
@@ -146,18 +137,10 @@ export default function Events() {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
               {/* Advanced Filters Sidebar */}
               <div className="lg:col-span-1">
-                <AdvancedEventFilters
-                  filters={legacyFilters}
-                  onFiltersChange={setLegacyFilters}
-                  onClearFilters={() => setLegacyFilters({
-                    search: '',
-                    category: 'all',
-                    date: null,
-                    timeOfDay: 'all',
-                    radius: 10,
-                    maxPrice: 1000,
-                    location: ''
-                  })}
+                <UnifiedEventFilters
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  onClearFilters={() => setFilters({})}
                 />
               </div>
 
