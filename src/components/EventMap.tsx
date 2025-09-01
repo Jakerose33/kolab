@@ -75,6 +75,7 @@ interface EventMapProps {
 const EventMap = ({ events: propsEvents }: EventMapProps = {}) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
+  const markers = useRef<mapboxgl.Marker[]>([]);
   const mapboxToken = 'pk.eyJ1Ijoia29sYWIiLCJhIjoiY21ka3Jzc3duMTB2bjJ4cTNhYjBmNDI4NCJ9.joO5ftfGwuKkHBV6rwDJdA';
   const [events, setEvents] = useState<Event[]>(propsEvents || mockMapEvents);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -82,6 +83,13 @@ const EventMap = ({ events: propsEvents }: EventMapProps = {}) => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
+
+  // Update events when props change
+  useEffect(() => {
+    if (propsEvents) {
+      setEvents(propsEvents);
+    }
+  }, [propsEvents]);
 
   // Filter events
   const filteredEvents = events.filter(event => {
@@ -118,47 +126,6 @@ const EventMap = ({ events: propsEvents }: EventMapProps = {}) => {
         console.log('Map loaded successfully!');
         setMapLoaded(true);
         setMapError(null);
-        
-        // Add markers after map loads
-        filteredEvents.forEach((event, index) => {
-          console.log(`Adding marker ${index + 1}: ${event.title}`);
-          
-          // Create marker element
-          const el = document.createElement('div');
-          el.style.width = '24px';
-          el.style.height = '24px';
-          el.style.borderRadius = '50%';
-          el.style.backgroundColor = '#ef4444';
-          el.style.border = '2px solid white';
-          el.style.cursor = 'pointer';
-          el.style.display = 'flex';
-          el.style.alignItems = 'center';
-          el.style.justifyContent = 'center';
-          el.style.color = 'white';
-          el.style.fontSize = '12px';
-          el.style.fontWeight = 'bold';
-          el.textContent = (index + 1).toString();
-          
-          // Create marker
-          const marker = new mapboxgl.Marker(el)
-            .setLngLat(event.coordinates)
-            .addTo(map.current!);
-
-          // Create popup
-          const popup = new mapboxgl.Popup({ offset: 25 })
-            .setHTML(`
-              <div style="padding: 12px; min-width: 200px;">
-                <h3 style="font-weight: bold; margin-bottom: 8px;">${event.title}</h3>
-                <p style="font-size: 12px; color: #666; margin-bottom: 8px;">${event.description}</p>
-                <div style="display: flex; justify-content: space-between; font-size: 12px;">
-                  <span>${event.date}</span>
-                  <span style="font-weight: bold;">${event.price ? `$${event.price}` : 'Free'}</span>
-                </div>
-              </div>
-            `);
-
-          marker.setPopup(popup);
-        });
       });
 
       // Handle map errors
@@ -177,7 +144,112 @@ const EventMap = ({ events: propsEvents }: EventMapProps = {}) => {
         map.current.remove();
       }
     };
-  }, [filteredEvents]);
+  }, []);
+
+  // Separate effect for updating markers when filteredEvents change
+  useEffect(() => {
+    if (!map.current || !mapLoaded) return;
+
+    // Clear existing markers
+    markers.current.forEach(marker => marker.remove());
+    markers.current = [];
+
+    // Add new markers
+    filteredEvents.forEach((event, index) => {
+      console.log(`Adding marker ${index + 1}: ${event.title}`);
+      
+      // Create custom marker element with category-based colors
+      const el = document.createElement('div');
+      el.style.width = '32px';
+      el.style.height = '32px';
+      el.style.borderRadius = '50%';
+      el.style.cursor = 'pointer';
+      el.style.display = 'flex';
+      el.style.alignItems = 'center';
+      el.style.justifyContent = 'center';
+      el.style.color = 'white';
+      el.style.fontSize = '12px';
+      el.style.fontWeight = 'bold';
+      el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
+      el.style.transition = 'transform 0.2s ease';
+      
+      // Category-based colors
+      const categoryColors: Record<string, string> = {
+        art: '#8b5cf6',
+        music: '#ef4444', 
+        technology: '#3b82f6',
+        business: '#059669',
+        photography: '#f97316',
+        food: '#eab308',
+        sports: '#06b6d4',
+        workshop: '#84cc16',
+        networking: '#ec4899'
+      };
+      
+      el.style.backgroundColor = categoryColors[event.category] || '#6b7280';
+      el.style.border = '2px solid white';
+      el.textContent = (index + 1).toString();
+      
+      // Hover effects
+      el.addEventListener('mouseenter', () => {
+        el.style.transform = 'scale(1.1)';
+      });
+      
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = 'scale(1)';
+      });
+      
+      // Create marker
+      const marker = new mapboxgl.Marker(el)
+        .setLngLat(event.coordinates)
+        .addTo(map.current!);
+
+      // Enhanced popup with better styling
+      const popup = new mapboxgl.Popup({ 
+        offset: 25,
+        className: 'event-popup'
+      }).setHTML(`
+        <div style="padding: 16px; min-width: 250px; max-width: 300px;">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+            <h3 style="font-weight: bold; font-size: 16px; margin: 0; line-height: 1.2;">${event.title}</h3>
+            <span style="background: ${categoryColors[event.category] || '#6b7280'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; text-transform: uppercase; font-weight: 500;">${event.category}</span>
+          </div>
+          <p style="font-size: 13px; color: #666; margin: 0 0 12px 0; line-height: 1.4;">${event.description}</p>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div style="font-size: 12px; color: #888;">
+              <div>${event.date}</div>
+              <div>${event.time}</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-weight: bold; font-size: 14px;">${event.price ? `$${event.price}` : 'Free'}</div>
+              <div style="font-size: 11px; color: #666;">${event.attendees}/${event.capacity} attending</div>
+            </div>
+          </div>
+          <div style="font-size: 11px; color: #888; border-top: 1px solid #eee; padding-top: 8px;">
+            📍 ${event.location}
+          </div>
+        </div>
+      `);
+
+      marker.setPopup(popup);
+      markers.current.push(marker);
+    });
+
+    // Auto-fit bounds if we have events
+    if (filteredEvents.length > 0 && filteredEvents.length !== events.length) {
+      const bounds = new mapboxgl.LngLatBounds();
+      filteredEvents.forEach(event => {
+        bounds.extend(event.coordinates);
+      });
+      
+      // Add padding and animate to bounds
+      map.current.fitBounds(bounds, {
+        padding: { top: 50, bottom: 50, left: 50, right: 50 },
+        maxZoom: 15,
+        duration: 1000
+      });
+    }
+  }, [filteredEvents, mapLoaded]);
 
   if (mapError) {
     return (

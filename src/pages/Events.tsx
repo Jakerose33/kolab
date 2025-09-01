@@ -339,20 +339,53 @@ export default function Events() {
     return <LoadingState />;
   }
 
-  // Transform events for map component
-  const mapEvents = filteredEvents.map(event => ({
-    id: event.id,
-    title: event.title,
-    description: event.description,
-    date: format(new Date(event.start_at), 'MMM dd, yyyy'),
-    time: format(new Date(event.start_at), 'h:mm a'),
-    location: event.venue_address || event.venue_name || 'Location TBD',
-    category: event.tags?.[0] || 'other',
-    coordinates: [event.longitude || 144.9631, event.latitude || -37.8136] as [number, number],
-    price: event.price || 0,
-    attendees: Math.floor(Math.random() * (event.capacity * 0.7)) + 1,
-    capacity: event.capacity || 50
-  }));
+  // Transform events for map component with better coordinate distribution
+  const mapEvents = filteredEvents.map((event, index) => {
+    // Generate varied coordinates around Melbourne if none provided
+    const baseLatitude = -37.8136;
+    const baseLongitude = 144.9631;
+    const spread = 0.1; // Approximately 10km spread
+    
+    let latitude = event.latitude || (baseLatitude + (Math.random() - 0.5) * spread);
+    let longitude = event.longitude || (baseLongitude + (Math.random() - 0.5) * spread);
+    
+    // Ensure coordinates are valid
+    if (!event.latitude || !event.longitude) {
+      // Use venue-specific locations if available
+      const venueCoordinates: Record<string, [number, number]> = {
+        'collins street': [144.9651, -37.8141],
+        'fitzroy': [144.9784, -37.7964],
+        'richmond': [144.9942, -37.8197],
+        'south yarra': [144.9944, -37.8467],
+        'st kilda': [144.9770, -37.8677],
+        'brunswick': [144.9648, -37.7659],
+        'carlton': [144.9631, -37.7982],
+        'prahran': [144.9950, -37.8506]
+      };
+      
+      const venueKey = Object.keys(venueCoordinates).find(key => 
+        event.venue_address?.toLowerCase().includes(key)
+      );
+      
+      if (venueKey) {
+        [longitude, latitude] = venueCoordinates[venueKey];
+      }
+    }
+
+    return {
+      id: event.id,
+      title: event.title,
+      description: event.description?.substring(0, 120) + (event.description?.length > 120 ? '...' : ''),
+      date: format(new Date(event.start_at), 'MMM dd, yyyy'),
+      time: format(new Date(event.start_at), 'h:mm a'),
+      location: event.venue_address || event.venue_name || 'Location TBD',
+      category: event.tags?.[0] || 'other',
+      coordinates: [longitude, latitude] as [number, number],
+      price: event.price || 0,
+      attendees: Math.floor(Math.random() * (event.capacity * 0.7)) + 1,
+      capacity: event.capacity || 50
+    };
+  });
 
   return (
     <>
@@ -451,8 +484,23 @@ export default function Events() {
                   </TabsContent>
 
                   <TabsContent value="map" className="mt-6">
-                    {/* Map View */}
-                    <EventMap events={mapEvents} />
+                    {/* Map View with integrated filters */}
+                    <div className="space-y-4">
+                      {mapEvents.length > 0 ? (
+                        <EventMap events={mapEvents} />
+                      ) : (
+                        <div className="text-center py-12 bg-muted/50 rounded-lg border-2 border-dashed">
+                          <Map className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                          <h3 className="text-lg font-semibold mb-2">No events to display on map</h3>
+                          <p className="text-muted-foreground mb-4">
+                            Adjust your filters to see events in this area.
+                          </p>
+                          <Button variant="outline" onClick={clearFilters}>
+                            Clear Filters
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                   </TabsContent>
                 </Tabs>
               </div>

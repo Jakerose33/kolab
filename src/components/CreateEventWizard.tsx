@@ -42,7 +42,10 @@ const EventSchema = z.object({
   end_at: EventValidation.endAt.optional(),
   venue_name: z.string().optional(),
   venue_address: z.string().optional(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
   capacity: z.number().positive().optional(),
+  price: z.number().min(0).optional(),
   tags: z.array(z.string()).optional(),
   status: z.enum(['draft', 'published']),
 });
@@ -62,7 +65,10 @@ export function CreateEventWizard({
     end_at: new Date(),
     venue_name: '',
     venue_address: '',
+    latitude: '',
+    longitude: '',
     capacity: '',
+    price: '',
     tags: [] as string[],
     status: 'draft' as 'draft' | 'published'
   });
@@ -78,6 +84,9 @@ export function CreateEventWizard({
       const eventData = {
         ...formData,
         capacity: formData.capacity ? parseInt(formData.capacity) : null,
+        price: formData.price ? parseFloat(formData.price) : null,
+        latitude: formData.latitude ? parseFloat(formData.latitude) : null,
+        longitude: formData.longitude ? parseFloat(formData.longitude) : null,
         start_at: formData.start_at.toISOString(),
         end_at: formData.end_at.toISOString(),
       };
@@ -104,7 +113,8 @@ export function CreateEventWizard({
       
       setFormData({
         title: '', description: '', start_at: new Date(), end_at: new Date(),
-        venue_name: '', venue_address: '', capacity: '', tags: [], status: 'draft'
+        venue_name: '', venue_address: '', latitude: '', longitude: '', 
+        capacity: '', price: '', tags: [], status: 'draft'
       });
     } catch (error: any) {
       toast({
@@ -251,22 +261,63 @@ export function CreateEventWizard({
                 placeholder="Full address including postcode"
               />
             </div>
+
+            {/* Coordinates for map accuracy */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="latitude">Latitude (Optional)</Label>
+                <Input
+                  id="latitude"
+                  type="number"
+                  step="any"
+                  value={formData.latitude}
+                  onChange={(e) => setFormData(prev => ({ ...prev, latitude: e.target.value }))}
+                  placeholder="-37.8136"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="longitude">Longitude (Optional)</Label>
+                <Input
+                  id="longitude"
+                  type="number"
+                  step="any"
+                  value={formData.longitude}
+                  onChange={(e) => setFormData(prev => ({ ...prev, longitude: e.target.value }))}
+                  placeholder="144.9631"
+                />
+              </div>
+            </div>
           </div>
 
-          {/* Capacity */}
-          <div className="space-y-2">
-            <Label htmlFor="capacity" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Capacity (Optional)
-            </Label>
-            <Input
-              id="capacity"
-              type="number"
-              value={formData.capacity}
-              onChange={(e) => setFormData(prev => ({ ...prev, capacity: e.target.value }))}
-              placeholder="How many people can attend?"
-              min="1"
-            />
+          {/* Event Details */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="capacity" className="flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                Capacity (Optional)
+              </Label>
+              <Input
+                id="capacity"
+                type="number"
+                value={formData.capacity}
+                onChange={(e) => setFormData(prev => ({ ...prev, capacity: e.target.value }))}
+                placeholder="How many people can attend?"
+                min="1"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="price">Price (Optional)</Label>
+              <Input
+                id="price"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.price}
+                onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                placeholder="0.00 (leave empty for free event)"
+              />
+            </div>
           </div>
 
           {/* Tags */}
