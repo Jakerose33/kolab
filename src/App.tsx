@@ -145,7 +145,8 @@ function RoutesWithErrorReset() {
   );
 }
 
-function App() {
+// Component to handle app-level effects inside provider context
+function AppEffects() {
   useEffect(() => {
     // Optimise performance on mount
     optimizeImages();
@@ -168,6 +169,10 @@ function App() {
     return () => observer.disconnect();
   }, []);
 
+  return null; // This component only handles effects
+}
+
+function App() {
   return (
     <ErrorBoundary
       FallbackComponent={AppErrorFallback}
@@ -179,6 +184,7 @@ function App() {
             <TooltipProvider>
               <SecurityProvider>
                 <AuthProvider>
+                  <AppEffects />
                   <Toaster />
                   <Sonner />
                   <OfflineIndicator />
