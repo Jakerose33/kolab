@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { EventErrorBoundary } from "@/components/ErrorBoundaries"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, MapPin, Users, Clock } from "lucide-react"
 import EventHeader from "@/features/events/EventHeader"
@@ -173,7 +174,7 @@ export default function EventDetail() {
   ]
 
   return (
-    <>
+    <EventErrorBoundary>
       {/* SEO JSON-LD structured data */}
       <EventJsonLD 
         event={{
@@ -196,121 +197,121 @@ export default function EventDetail() {
       <BreadcrumbJsonLD items={breadcrumbItems} />
       
       <div className="min-h-screen bg-background">
-      {/* Back button */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b">
-        <div className="container mx-auto px-4 py-4">
-          <Button
-            variant="ghost"
-            onClick={() => window.location.href = '/'}
-            className="group"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-            Back to Events
-          </Button>
-        </div>
-      </div>
-
-      {/* Main content */}
-      <div className="lg:flex lg:gap-8 lg:max-w-7xl lg:mx-auto">
-        {/* Content area */}
-        <div className="flex-1 lg:pr-8">
-          <div className="container mx-auto px-4 py-8 lg:px-0">
-            <div className="space-y-12">
-              {/* Event header */}
-              <EventHeader
-                title={normalizedEvent.title}
-                date={normalizedEvent.start_at ? new Date(normalizedEvent.start_at).toLocaleDateString() : 'TBD'}
-                time={normalizedEvent.start_at ? new Date(normalizedEvent.start_at).toLocaleTimeString() : 'TBD'}
-                neighbourhood={normalizedEvent.city || 'Location TBD'}
-                venue={normalizedEvent.venue_name || 'Venue TBD'}
-                capacity={normalizedEvent.capacity || 0}
-                going={0} // Would come from RSVP data
-              />
-
-              {/* Booking CTA */}
-              <div className="mt-4">
-                <BookingCTA eventId={eventId} className="w-full md:w-auto" />
-              </div>
-
-              {/* Event gallery */}
-              <EventGallery
-                images={normalizedEvent.image_url ? [normalizedEvent.image_url] : ['/placeholder.svg']}
-                title={normalizedEvent.title}
-              />
-
-              {/* Event details */}
-              <div className="prose prose-lg max-w-none">
-                <div className="space-y-8">
-                  {/* Description */}
-                  <div>
-                    <h2 className="text-2xl font-bold mb-4">About This Event</h2>
-                    <div className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                      {normalizedEvent.description || 'No description available for this event.'}
-                    </div>
-                  </div>
-
-                  {/* Lineup */}
-                  {getEventProp(event, 'lineup') && (
-                    <div>
-                      <h2 className="text-2xl font-bold mb-4">Lineup</h2>
-                      <div className="space-y-2">
-                        {getEventProp(event, 'lineup').map((item: string, index: number) => (
-                          <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                            <Clock className="w-4 h-4 text-muted-foreground" />
-                            <span className="font-medium">{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Venue information */}
-                  <div>
-                    <h2 className="text-2xl font-bold mb-4">Venue</h2>
-                    <div className="space-y-3 p-4 rounded-lg bg-muted/50">
-                      <div className="flex items-center gap-3">
-                        <MapPin className="w-5 h-5 text-muted-foreground" />
-                        <div>
-                          <p className="font-semibold">{normalizedEvent.venue_name || 'Venue TBD'}</p>
-                          <p className="text-sm text-muted-foreground">{normalizedEvent.venue_address || 'Address TBD'}</p>
-                        </div>
-                      </div>
-                      {normalizedEvent.capacity && (
-                        <div className="flex items-center gap-3">
-                          <Users className="w-5 h-5 text-muted-foreground" />
-                          <span className="text-sm">Capacity: {normalizedEvent.capacity} people</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Organizer */}
-                  <div>
-                    <h2 className="text-2xl font-bold mb-4">Organizer</h2>
-                    <p className="text-muted-foreground">{normalizedEvent.organizer_name || 'Event Organizer'}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Mobile spacing for sticky bar */}
-              <div className="h-32 lg:hidden" />
-            </div>
+        {/* Back button */}
+        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b">
+          <div className="container mx-auto px-4 py-4">
+            <Button
+              variant="ghost"
+              onClick={() => window.location.href = '/'}
+              className="group"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+              Back to Events
+            </Button>
           </div>
         </div>
 
-        {/* Sticky RSVP sidebar */}
-        <div className="lg:w-80 lg:shrink-0">
-          <EventRSVPBar
-            eventId={normalizedEvent.id}
-            going={0} // Would come from RSVP data
-            interested={0} // Would come from RSVP data
-            userRSVP={userRSVP}
-            ticketUrl={normalizedEvent.ticket_url || '#'}
-            onRSVPChange={handleRSVPChange}
-          />
+        {/* Main content */}
+        <div className="lg:flex lg:gap-8 lg:max-w-7xl lg:mx-auto">
+          {/* Content area */}
+          <div className="flex-1 lg:pr-8">
+            <div className="container mx-auto px-4 py-8 lg:px-0">
+              <div className="space-y-12">
+                {/* Event header */}
+                <EventHeader
+                  title={normalizedEvent.title}
+                  date={normalizedEvent.start_at ? new Date(normalizedEvent.start_at).toLocaleDateString() : 'TBD'}
+                  time={normalizedEvent.start_at ? new Date(normalizedEvent.start_at).toLocaleTimeString() : 'TBD'}
+                  neighbourhood={normalizedEvent.city || 'Location TBD'}
+                  venue={normalizedEvent.venue_name || 'Venue TBD'}
+                  capacity={normalizedEvent.capacity || 0}
+                  going={0} // Would come from RSVP data
+                />
+
+                {/* Booking CTA */}
+                <div className="mt-4">
+                  <BookingCTA eventId={eventId} className="w-full md:w-auto" />
+                </div>
+
+                {/* Event gallery */}
+                <EventGallery
+                  images={normalizedEvent.image_url ? [normalizedEvent.image_url] : ['/placeholder.svg']}
+                  title={normalizedEvent.title}
+                />
+
+                {/* Event details */}
+                <div className="prose prose-lg max-w-none">
+                  <div className="space-y-8">
+                    {/* Description */}
+                    <div>
+                      <h2 className="text-2xl font-bold mb-4">About This Event</h2>
+                      <div className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                        {normalizedEvent.description || 'No description available for this event.'}
+                      </div>
+                    </div>
+
+                    {/* Lineup */}
+                    {getEventProp(event, 'lineup') && (
+                      <div>
+                        <h2 className="text-2xl font-bold mb-4">Lineup</h2>
+                        <div className="space-y-2">
+                          {getEventProp(event, 'lineup').map((item: string, index: number) => (
+                            <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                              <Clock className="w-4 h-4 text-muted-foreground" />
+                              <span className="font-medium">{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Venue information */}
+                    <div>
+                      <h2 className="text-2xl font-bold mb-4">Venue</h2>
+                      <div className="space-y-3 p-4 rounded-lg bg-muted/50">
+                        <div className="flex items-center gap-3">
+                          <MapPin className="w-5 h-5 text-muted-foreground" />
+                          <div>
+                            <p className="font-semibold">{normalizedEvent.venue_name || 'Venue TBD'}</p>
+                            <p className="text-sm text-muted-foreground">{normalizedEvent.venue_address || 'Address TBD'}</p>
+                          </div>
+                        </div>
+                        {normalizedEvent.capacity && (
+                          <div className="flex items-center gap-3">
+                            <Users className="w-5 h-5 text-muted-foreground" />
+                            <span className="text-sm">Capacity: {normalizedEvent.capacity} people</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Organizer */}
+                    <div>
+                      <h2 className="text-2xl font-bold mb-4">Organizer</h2>
+                      <p className="text-muted-foreground">{normalizedEvent.organizer_name || 'Event Organizer'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mobile spacing for sticky bar */}
+                <div className="h-32 lg:hidden" />
+              </div>
+            </div>
+          </div>
+
+          {/* Sticky RSVP sidebar */}
+          <div className="lg:w-80 lg:shrink-0">
+            <EventRSVPBar
+              eventId={normalizedEvent.id}
+              going={0} // Would come from RSVP data
+              interested={0} // Would come from RSVP data
+              userRSVP={userRSVP}
+              ticketUrl={normalizedEvent.ticket_url || '#'}
+              onRSVPChange={handleRSVPChange}
+            />
+          </div>
         </div>
       </div>
-      </div>
-    </>
+    </EventErrorBoundary>
   )
 }
