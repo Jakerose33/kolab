@@ -22,7 +22,15 @@ import { Calendar, Plus, Map, Grid3X3 } from "lucide-react";
 
 export default function Events() {
   const [filters, setFilters] = useState<EventFilters>({});
-  const [legacyFilters, setLegacyFilters] = useState<LegacyEventFilters>({});
+  const [legacyFilters, setLegacyFilters] = useState<LegacyEventFilters>({
+    search: '',
+    category: 'all',
+    date: null,
+    timeOfDay: 'all',
+    radius: 10,
+    maxPrice: 1000,
+    location: ''
+  });
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showMessagesDialog, setShowMessagesDialog] = useState(false);
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
@@ -92,9 +100,23 @@ export default function Events() {
     });
   };
 
-  // Filter map events to only include geocoded events
+  // Convert map events to EventMap format
   const validMapEvents = useMemo(() => {
-    return mapEvents.filter(hasValidCoordinates);
+    return mapEvents
+      .filter(hasValidCoordinates)
+      .map(event => ({
+        id: event.id,
+        title: event.title,
+        description: '',
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString(),
+        location: event.venue_name || 'Unknown location',
+        category: event.categories?.[0] || 'general',
+        coordinates: [event.longitude!, event.latitude!] as [number, number],
+        price: event.price_min,
+        attendees: 0,
+        capacity: 100
+      }));
   }, [mapEvents]);
 
   return (
@@ -127,7 +149,15 @@ export default function Events() {
                 <AdvancedEventFilters
                   filters={legacyFilters}
                   onFiltersChange={setLegacyFilters}
-                  onClearFilters={() => setLegacyFilters({})}
+                  onClearFilters={() => setLegacyFilters({
+                    search: '',
+                    category: 'all',
+                    date: null,
+                    timeOfDay: 'all',
+                    radius: 10,
+                    maxPrice: 1000,
+                    location: ''
+                  })}
                 />
               </div>
 
