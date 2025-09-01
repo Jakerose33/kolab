@@ -10,6 +10,7 @@ import BookingCTA from "@/components/booking/BookingCTA";
 import { useRequiredParam, PageSkeleton, NotFound, InlineError } from "@/lib/safe";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import VenueMap from "@/components/VenueMap";
 
 // Mock venue data
 const mockVenues = {
@@ -195,27 +196,38 @@ export default function VenueDetail() {
                 </div>
               </div>
 
-              <div>
-                <h2 className="text-xl font-semibold mb-4">Details</h2>
-                <div className="space-y-3">
-                  {getVenueProp(venue, 'hours', 'opening_hours') && (
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span>{getVenueProp(venue, 'hours', 'opening_hours')}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                    <span>Max Capacity: {venue.capacity} people</span>
-                  </div>
-                  {getVenueProp(venue, 'contact', 'contact_email') && (
-                    <div>
-                      <p className="text-sm text-muted-foreground">Contact:</p>
-                      <p>{getVenueProp(venue, 'contact', 'contact_email')}</p>
-                    </div>
-                  )}
+                <div>
+                  <h2 className="text-xl font-semibold mb-4">Location</h2>
+                  <VenueMap 
+                    latitude={getVenueProp(venue, 'latitude', 'latitude') ? Number(getVenueProp(venue, 'latitude', 'latitude')) : null}
+                    longitude={getVenueProp(venue, 'longitude', 'longitude') ? Number(getVenueProp(venue, 'longitude', 'longitude')) : null}
+                    address={venue.address}
+                    venueName={venue.name}
+                    className="h-[300px] w-full rounded-lg border border-border overflow-hidden mb-6"
+                  />
                 </div>
-              </div>
+                
+                <div>
+                  <h2 className="text-xl font-semibold mb-4">Details</h2>
+                  <div className="space-y-3">
+                    {getVenueProp(venue, 'hours', 'opening_hours') && (
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                        <span>{getVenueProp(venue, 'hours', 'opening_hours')}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <span>Max Capacity: {venue.capacity} people</span>
+                    </div>
+                    {getVenueProp(venue, 'contact', 'contact_email') && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Contact:</p>
+                        <p>{getVenueProp(venue, 'contact', 'contact_email')}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
             </div>
           </div>
         </main>

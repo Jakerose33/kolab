@@ -1,4 +1,5 @@
 import { Suspense, useEffect } from "react";
+import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -174,22 +175,24 @@ function App() {
     >
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <TooltipProvider>
-            <SecurityProvider>
-              <AuthProvider>
-                <Toaster />
-                <Sonner />
-                <OfflineIndicator />
-                <AdvancedSEOSystem>
-                  <AdvancedSitemapGenerator />
-                  <AdvancedRobotsTxtManager />
-                  <Suspense fallback={<div />}>
-                    <RoutesWithErrorReset />
-                  </Suspense>
-                </AdvancedSEOSystem>
-              </AuthProvider>
-            </SecurityProvider>
-          </TooltipProvider>
+          <ThemeProvider defaultTheme="dark">
+            <TooltipProvider>
+              <SecurityProvider>
+                <AuthProvider>
+                  <Toaster />
+                  <Sonner />
+                  <OfflineIndicator />
+                  <AdvancedSEOSystem>
+                    <AdvancedSitemapGenerator />
+                    <AdvancedRobotsTxtManager />
+                    <Suspense fallback={<div />}>
+                      <RoutesWithErrorReset />
+                    </Suspense>
+                  </AdvancedSEOSystem>
+                </AuthProvider>
+              </SecurityProvider>
+            </TooltipProvider>
+          </ThemeProvider>
         </BrowserRouter>
       </QueryClientProvider>
     </ErrorBoundary>

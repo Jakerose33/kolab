@@ -138,8 +138,12 @@ export const getFeaturedGuides = () => {
 }
 
 export const getGuidesByNeighbourhood = (neighbourhood: string) => {
-  if (neighbourhood === 'All') return cityGuidesData
-  return cityGuidesData.filter(guide => guide.neighbourhood === neighbourhood)
+  const guides = neighbourhood === 'All' 
+    ? cityGuidesData 
+    : cityGuidesData.filter(guide => guide.neighbourhood === neighbourhood)
+  
+  // Limit to 8 cards max
+  return guides.slice(0, 8)
 }
 
 export const getGuidesByCategory = (category: string) => {

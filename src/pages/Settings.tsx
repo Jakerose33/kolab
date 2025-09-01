@@ -16,6 +16,7 @@ import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { AuthDialog } from "@/components/AuthDialog";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { useSettings } from "@/hooks/useSettings";
+import { useTheme } from '@/components/theme/ThemeProvider';
 
 export default function Settings() {
   const [showAuth, setShowAuth] = useState(false);
@@ -23,6 +24,7 @@ export default function Settings() {
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
   const { toast } = useToast();
   const { session } = useAuth();
+  const { theme, setTheme } = useTheme();
   const { 
     notificationPrefs, 
     privacySettings, 
@@ -309,23 +311,17 @@ export default function Settings() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div>
-                    <Label htmlFor="theme" className="text-base">Theme</Label>
-                    <p className="text-sm text-muted-foreground mb-3">Choose your preferred theme</p>
-                    <Select
-                      value="system"
-                      onValueChange={(value) => toast({ title: "Coming Soon", description: "Theme selection will be available soon." })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="light">Light</SelectItem>
-                        <SelectItem value="dark">Dark</SelectItem>
-                        <SelectItem value="system">System</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                   <div className="flex items-center justify-between">
+                     <div>
+                       <Label htmlFor="dark-mode" className="text-base">Dark Mode</Label>
+                       <p className="text-sm text-muted-foreground">Use dark theme</p>
+                     </div>
+                     <Switch
+                       id="dark-mode"
+                       checked={theme === 'dark'}
+                       onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+                     />
+                   </div>
                   <Separator />
                   <div>
                     <Label htmlFor="language" className="text-base">Language</Label>

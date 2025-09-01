@@ -196,21 +196,9 @@ export function VenueBooking() {
         </TabsList>
         
         <TabsContent value="map" className="space-y-4">
-          <VenueMap venues={sortedVenues.map(venue => ({
-            id: venue.id,
-            name: venue.name,
-            description: venue.description,
-            location: venue.address,
-            coordinates: [
-              venue.longitude || (144.9631 + (Math.random() - 0.5) * 0.1), 
-              venue.latitude || (-37.8136 + (Math.random() - 0.5) * 0.1)
-            ],
-            price: venue.hourly_rate || 0,
-            capacity: venue.capacity || 0,
-            rating: 4.5, // Default rating
-            type: venue.tags?.[0] || 'Venue',
-            amenities: venue.amenities || []
-          }))} />
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">Map view coming soon</p>
+          </div>
         </TabsContent>
 
         <TabsContent value="list">
