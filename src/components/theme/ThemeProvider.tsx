@@ -26,9 +26,15 @@ export function ThemeProvider({
   storageKey = 'kolab-ui-theme',
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-  )
+  const [theme, setTheme] = useState<Theme>(defaultTheme)
+
+  // Initialize theme from localStorage after component mounts
+  useEffect(() => {
+    const stored = localStorage.getItem(storageKey) as Theme
+    if (stored && stored !== theme) {
+      setTheme(stored)
+    }
+  }, [storageKey])
 
   useEffect(() => {
     const root = window.document.documentElement
