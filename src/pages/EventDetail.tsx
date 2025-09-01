@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { EventErrorBoundary } from "@/components/ErrorBoundaries"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, MapPin, Users, Clock } from "lucide-react"
 import EventHeader from "@/features/events/EventHeader"
@@ -174,7 +173,7 @@ export default function EventDetail() {
   ]
 
   return (
-    <EventErrorBoundary>
+    <div>
       {/* SEO JSON-LD structured data */}
       <EventJsonLD 
         event={{
@@ -312,6 +311,6 @@ export default function EventDetail() {
           </div>
         </div>
       </div>
-    </EventErrorBoundary>
+    </div>
   )
 }
