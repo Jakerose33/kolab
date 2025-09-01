@@ -20,18 +20,18 @@ import { Calendar, Search, Filter, Plus, Map, Grid3X3 } from "lucide-react";
 import { getEventLink, normalizeEvent } from "@/lib/linking";
 import { format } from "date-fns";
 
-// Enhanced sample events data with coordinates and pricing
+// Enhanced sample events data with real Melbourne venues and coordinates
 const sampleEvents = [
   {
     id: "1",
     title: "Underground Art Gallery Opening",
-    description: "Exclusive underground art exhibition featuring emerging local artists",
+    description: "Exclusive underground art exhibition featuring emerging local artists in the iconic basement gallery space",
     start_at: new Date(Date.now() + 86400000).toISOString(),
     end_at: null,
-    venue_name: "Hidden Gallery",
-    venue_address: "Collins Street, Melbourne CBD",
-    latitude: -37.8136,
-    longitude: 144.9631,
+    venue_name: "fortyfivedownstairs",
+    venue_address: "45 Flinders Lane, Melbourne VIC 3000",
+    latitude: -37.8172,
+    longitude: 144.9692,
     capacity: 50,
     price: 25,
     tags: ["art", "gallery"],
@@ -41,21 +41,21 @@ const sampleEvents = [
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     profiles: {
-      full_name: "Art Curator",
+      full_name: "Art Curator Melbourne",
       handle: "artcurator"
     }
   },
   {
     id: "2", 
     title: "Midnight Jazz Session",
-    description: "Intimate jazz performance in a secret speakeasy location",
+    description: "Intimate jazz performance featuring local musicians in Fitzroy's legendary music venue",
     start_at: new Date(Date.now() + 172800000).toISOString(),
     end_at: null,
-    venue_name: "The Vault",
-    venue_address: "Fitzroy, Melbourne", 
+    venue_name: "The Night Cat",
+    venue_address: "141 Johnston Street, Fitzroy VIC 3065", 
     latitude: -37.7964,
     longitude: 144.9784,
-    capacity: 40,
+    capacity: 120,
     price: 35,
     tags: ["music", "jazz"],
     image_url: "/images/events/midnight-jazz.jpg",
@@ -64,21 +64,21 @@ const sampleEvents = [
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     profiles: {
-      full_name: "Jazz Collective",
+      full_name: "Melbourne Jazz Collective",
       handle: "jazzvibes"
     }
   },
   {
     id: "3",
-    title: "Warehouse Rave",
-    description: "Electronic music event in an abandoned warehouse with top DJs",
+    title: "Warehouse Electronic Night",
+    description: "Electronic music event in a converted Richmond warehouse with international and local DJs",
     start_at: new Date(Date.now() + 604800000).toISOString(),
     end_at: null,
-    venue_name: "Warehouse District",
-    venue_address: "Richmond, Melbourne",
+    venue_name: "Holla Richmond",
+    venue_address: "25 Church Street, Richmond VIC 3121",
     latitude: -37.8197,
     longitude: 144.9942,
-    capacity: 200,
+    capacity: 250,
     price: 45,
     tags: ["music", "electronic"],
     image_url: "/images/events/warehouse-rave.jpg",
@@ -87,21 +87,21 @@ const sampleEvents = [
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     profiles: {
-      full_name: "Underground Events",
+      full_name: "Underground Events Melbourne",
       handle: "undergroundevents"
     }
   },
   {
     id: "4",
     title: "Tech Startup Pitch Night",
-    description: "Present your startup ideas to Melbourne investors and entrepreneurs",
+    description: "Present your startup ideas to Melbourne investors and entrepreneurs at the premier innovation hub",
     start_at: new Date(Date.now() + 259200000).toISOString(),
     end_at: null,
-    venue_name: "Innovation Hub",
-    venue_address: "South Yarra, Melbourne",
+    venue_name: "The Commons South Yarra",
+    venue_address: "11 Wilson Street, South Yarra VIC 3141",
     latitude: -37.8467,
     longitude: 144.9944,
-    capacity: 100,
+    capacity: 80,
     price: 0, // Free event
     tags: ["business", "technology"],
     image_url: "/images/events/startup-pitch.jpg",
@@ -110,8 +110,54 @@ const sampleEvents = [
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     profiles: {
-      full_name: "Tech Melbourne",
+      full_name: "Tech Melbourne Hub",
       handle: "techmelbourne"
+    }
+  },
+  {
+    id: "5",
+    title: "Rooftop Photography Workshop",
+    description: "Capture stunning Melbourne skyline views from an exclusive rooftop location with professional guidance",
+    start_at: new Date(Date.now() + 345600000).toISOString(),
+    end_at: null,
+    venue_name: "101 Collins Street",
+    venue_address: "101 Collins Street, Melbourne VIC 3000",
+    latitude: -37.8151,
+    longitude: 144.9634,
+    capacity: 15,
+    price: 65,
+    tags: ["photography", "workshop"],
+    image_url: "/images/events/street-art-opening.jpg",
+    status: "published",
+    organizer_id: "organizer5",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    profiles: {
+      full_name: "Melbourne Photography Collective",
+      handle: "melbournephoto"
+    }
+  },
+  {
+    id: "6",
+    title: "Street Food & Culture Night",
+    description: "Explore Melbourne's diverse street food scene while learning about cultural heritage from local communities",
+    start_at: new Date(Date.now() + 432000000).toISOString(),
+    end_at: null,
+    venue_name: "Prahran Market",
+    venue_address: "163 Commercial Road, South Yarra VIC 3141",
+    latitude: -37.8506,
+    longitude: 144.9950,
+    capacity: 40,
+    price: 30,
+    tags: ["food", "cultural"],
+    image_url: "/images/events/underground-market.jpg",
+    status: "published",
+    organizer_id: "organizer6",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    profiles: {
+      full_name: "Melbourne Food Tours",
+      handle: "melbournefood"
     }
   }
 ];
@@ -339,37 +385,16 @@ export default function Events() {
     return <LoadingState />;
   }
 
-  // Transform events for map component with better coordinate distribution
+  // Transform events for map component with real venue coordinates
   const mapEvents = filteredEvents.map((event, index) => {
-    // Generate varied coordinates around Melbourne if none provided
-    const baseLatitude = -37.8136;
-    const baseLongitude = 144.9631;
-    const spread = 0.1; // Approximately 10km spread
+    // Use the actual coordinates from the event data
+    let latitude = event.latitude;
+    let longitude = event.longitude;
     
-    let latitude = event.latitude || (baseLatitude + (Math.random() - 0.5) * spread);
-    let longitude = event.longitude || (baseLongitude + (Math.random() - 0.5) * spread);
-    
-    // Ensure coordinates are valid
-    if (!event.latitude || !event.longitude) {
-      // Use venue-specific locations if available
-      const venueCoordinates: Record<string, [number, number]> = {
-        'collins street': [144.9651, -37.8141],
-        'fitzroy': [144.9784, -37.7964],
-        'richmond': [144.9942, -37.8197],
-        'south yarra': [144.9944, -37.8467],
-        'st kilda': [144.9770, -37.8677],
-        'brunswick': [144.9648, -37.7659],
-        'carlton': [144.9631, -37.7982],
-        'prahran': [144.9950, -37.8506]
-      };
-      
-      const venueKey = Object.keys(venueCoordinates).find(key => 
-        event.venue_address?.toLowerCase().includes(key)
-      );
-      
-      if (venueKey) {
-        [longitude, latitude] = venueCoordinates[venueKey];
-      }
+    // Ensure coordinates are valid, fallback to Melbourne CBD if not
+    if (!latitude || !longitude) {
+      latitude = -37.8136;
+      longitude = 144.9631;
     }
 
     return {
