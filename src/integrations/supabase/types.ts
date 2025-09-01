@@ -1280,6 +1280,53 @@ export type Database = {
           },
         ]
       }
+      venue_onboarding_status: {
+        Row: {
+          business_type: string | null
+          created_at: string
+          id: string
+          onboarding_completed: boolean | null
+          step_completed: string[] | null
+          stripe_account_id: string | null
+          tax_id: string | null
+          updated_at: string
+          user_id: string
+          venue_id: string | null
+        }
+        Insert: {
+          business_type?: string | null
+          created_at?: string
+          id?: string
+          onboarding_completed?: boolean | null
+          step_completed?: string[] | null
+          stripe_account_id?: string | null
+          tax_id?: string | null
+          updated_at?: string
+          user_id?: string
+          venue_id?: string | null
+        }
+        Update: {
+          business_type?: string | null
+          created_at?: string
+          id?: string
+          onboarding_completed?: boolean | null
+          step_completed?: string[] | null
+          stripe_account_id?: string | null
+          tax_id?: string | null
+          updated_at?: string
+          user_id?: string
+          venue_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_onboarding_status_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       venue_payouts: {
         Row: {
           amount: number

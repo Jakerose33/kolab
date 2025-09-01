@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CheckCircle, ExternalLink, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, CreditCard, ExternalLink, CheckCircle, AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface StripeConnectSetupProps {
   data: any;
@@ -14,53 +14,40 @@ interface StripeConnectSetupProps {
 }
 
 export function StripeConnectSetup({ data, onUpdate, onNext }: StripeConnectSetupProps) {
-  const [formData, setFormData] = useState({
-    stripeAccountId: data.stripeAccountId || "",
-    stripeConnected: data.stripeConnected || false,
-    bankAccountLastFour: data.bankAccountLastFour || "",
-    payoutEnabled: data.payoutEnabled || false,
-    taxId: data.taxId || "",
-    businessType: data.businessType || "",
-  });
-  
   const [isConnecting, setIsConnecting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    stripeAccountId: data.stripeAccountId || "",
+    businessType: data.businessType || "",
+    taxId: data.taxId || "",
+    isConnected: data.isConnected || false,
+    ...data
+  });
   const { toast } = useToast();
-
-  const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
 
   const handleStripeConnect = async () => {
     setIsConnecting(true);
-
     try {
-      // In a real app, you'd call your backend to create a Stripe Connect account
-      // and get the onboarding URL
-      
-      // Simulate API call
+      // Simulate Stripe Connect setup
+      // In production, this would redirect to Stripe Connect OAuth flow
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // For demo purposes, we'll simulate a successful connection
-      const mockAccountId = `acct_${Date.now()}`;
+      const mockStripeAccountId = `acct_${Math.random().toString(36).substr(2, 9)}`;
       
       setFormData(prev => ({
         ...prev,
-        stripeAccountId: mockAccountId,
-        stripeConnected: true,
-        bankAccountLastFour: "1234",
-        payoutEnabled: true,
+        stripeAccountId: mockStripeAccountId,
+        isConnected: true
       }));
 
       toast({
-        title: "Stripe Account Connected",
-        description: "Your payment account has been successfully set up.",
+        title: "Stripe Connected Successfully",
+        description: "Your payment processing is now set up.",
       });
     } catch (error) {
-      console.error("Error connecting Stripe:", error);
       toast({
         title: "Connection Failed",
-        description: "Failed to connect Stripe account. Please try again.",
+        description: "Please try again or contact support.",
         variant: "destructive",
       });
     } finally {
@@ -70,30 +57,24 @@ export function StripeConnectSetup({ data, onUpdate, onNext }: StripeConnectSetu
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      if (!formData.stripeConnected) {
-        toast({
-          title: "Stripe Account Required",
-          description: "Please connect your Stripe account to continue.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Update parent component data
-      onUpdate(formData);
-      
+    
+    if (!formData.isConnected) {
       toast({
-        title: "Payment Setup Complete",
-        description: "Your payment information has been saved successfully.",
+        title: "Stripe Connection Required",
+        description: "Please connect your Stripe account before continuing.",
+        variant: "destructive",
       });
+      return;
+    }
 
-      // Move to next step
+    setIsSubmitting(true);
+    try {
+      // Simulate form submission
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      onUpdate(formData);
       onNext();
     } catch (error) {
-      console.error("Error saving payment setup:", error);
       toast({
         title: "Error",
         description: "Failed to save payment setup. Please try again.",
@@ -104,74 +85,59 @@ export function StripeConnectSetup({ data, onUpdate, onNext }: StripeConnectSetu
     }
   };
 
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Stripe Connect */}
+      {/* Stripe Connection Status */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <CreditCard className="h-5 w-5" />
-            <span>Payment Setup</span>
+          <CardTitle className="flex items-center gap-2">
+            {formData.isConnected ? (
+              <CheckCircle className="h-5 w-5 text-green-600" />
+            ) : (
+              <AlertCircle className="h-5 w-5 text-orange-500" />
+            )}
+            Stripe Connect Status
           </CardTitle>
-          <p className="text-sm text-muted-foreground">
+          <CardDescription>
             Connect your Stripe account to receive payments from venue bookings
-          </p>
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {formData.stripeConnected ? (
-            <Alert>
-              <CheckCircle className="h-4 w-4" />
-              <AlertDescription>
-                Your Stripe account is connected and ready to receive payments.
-                Account ID: {formData.stripeAccountId}
-              </AlertDescription>
-            </Alert>
-          ) : (
-            <div className="border rounded-lg p-6 text-center space-y-4">
-              <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                <CreditCard className="h-8 w-8 text-blue-600" />
-              </div>
+        <CardContent>
+          {formData.isConnected ? (
+            <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
               <div>
-                <h3 className="font-semibold mb-2">Connect with Stripe</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Stripe handles all payment processing securely. You'll be redirected to complete your account setup.
-                </p>
-                <Button
-                  type="button"
-                  onClick={handleStripeConnect}
-                  disabled={isConnecting}
-                  className="w-full"
-                >
-                  {isConnecting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Connecting...
-                    </>
-                  ) : (
-                    <>
-                      Connect Stripe Account
-                      <ExternalLink className="ml-2 h-4 w-4" />
-                    </>
-                  )}
-                </Button>
+                <p className="font-medium text-green-800">Stripe Account Connected</p>
+                <p className="text-sm text-green-600">Account ID: {formData.stripeAccountId}</p>
               </div>
+              <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-          )}
-
-          {formData.stripeConnected && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <div className="bg-green-50 p-4 rounded-lg">
-                <h4 className="font-medium text-green-900">Payment Status</h4>
-                <p className="text-sm text-green-700">
-                  ✓ Ready to receive payments
+          ) : (
+            <div className="space-y-4">
+              <div className="p-4 bg-orange-50 rounded-lg">
+                <p className="text-orange-800 font-medium">Stripe Account Required</p>
+                <p className="text-sm text-orange-600">
+                  You need to connect a Stripe account to receive payments from bookings
                 </p>
               </div>
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h4 className="font-medium text-blue-900">Bank Account</h4>
-                <p className="text-sm text-blue-700">
-                  ✓ Ending in {formData.bankAccountLastFour}
-                </p>
-              </div>
+              <Button 
+                type="button"
+                onClick={handleStripeConnect}
+                disabled={isConnecting}
+                className="w-full"
+              >
+                {isConnecting ? (
+                  "Connecting..."
+                ) : (
+                  <>
+                    Connect with Stripe
+                    <ExternalLink className="h-4 w-4 ml-2" />
+                  </>
+                )}
+              </Button>
             </div>
           )}
         </CardContent>
@@ -181,39 +147,38 @@ export function StripeConnectSetup({ data, onUpdate, onNext }: StripeConnectSetu
       <Card>
         <CardHeader>
           <CardTitle>Business Information</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Required for tax reporting and compliance
-          </p>
+          <CardDescription>
+            Additional details required for payment processing
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="businessType">Business Type</Label>
-              <Input
-                id="businessType"
-                value={formData.businessType}
-                onChange={(e) => handleInputChange("businessType", e.target.value)}
-                placeholder="e.g., LLC, Corporation, Sole Proprietorship"
-              />
-            </div>
-            <div>
-              <Label htmlFor="taxId">Tax ID (EIN)</Label>
-              <Input
-                id="taxId"
-                value={formData.taxId}
-                onChange={(e) => handleInputChange("taxId", e.target.value)}
-                placeholder="XX-XXXXXXX"
-              />
-            </div>
+          <div>
+            <Label htmlFor="businessType">Business Type</Label>
+            <Select 
+              value={formData.businessType} 
+              onValueChange={(value) => handleInputChange('businessType', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select business type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="individual">Individual</SelectItem>
+                <SelectItem value="company">Company</SelectItem>
+                <SelectItem value="non_profit">Non-profit</SelectItem>
+                <SelectItem value="government_entity">Government Entity</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              This information is securely stored and used only for tax reporting purposes.
-              You can update this information later in your dashboard.
-            </AlertDescription>
-          </Alert>
+          <div>
+            <Label htmlFor="taxId">Tax ID (Optional)</Label>
+            <Input
+              id="taxId"
+              value={formData.taxId}
+              onChange={(e) => handleInputChange('taxId', e.target.value)}
+              placeholder="Enter your tax identification number"
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -221,45 +186,41 @@ export function StripeConnectSetup({ data, onUpdate, onNext }: StripeConnectSetu
       <Card>
         <CardHeader>
           <CardTitle>Payment Terms</CardTitle>
+          <CardDescription>
+            Review the payment processing terms
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">
-              <span>Platform fee:</span>
+              <span>Platform Fee:</span>
               <span className="font-medium">5% per booking</span>
             </div>
             <div className="flex justify-between">
-              <span>Payment processing:</span>
-              <span className="font-medium">2.9% + $0.30</span>
+              <span>Stripe Processing Fee:</span>
+              <span className="font-medium">2.9% + 30¢</span>
             </div>
             <div className="flex justify-between">
-              <span>Payout schedule:</span>
-              <span className="font-medium">Next business day</span>
+              <span>Payout Schedule:</span>
+              <span className="font-medium">Weekly (Fridays)</span>
             </div>
-            <div className="flex justify-between border-t pt-2">
-              <span className="font-medium">Your earnings:</span>
-              <span className="font-medium">~92% of booking total</span>
+            <div className="pt-2 border-t">
+              <div className="flex justify-between font-medium">
+                <span>Your Net Rate:</span>
+                <span>~92% of booking amount</span>
+              </div>
             </div>
           </div>
-          
-          <p className="text-xs text-muted-foreground mt-4">
-            Final amounts may vary based on booking details and applicable taxes.
-          </p>
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
-        <Button type="submit" disabled={isSubmitting || !formData.stripeConnected}>
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            "Save & Continue"
-          )}
-        </Button>
-      </div>
+      <Button 
+        type="submit" 
+        className="w-full" 
+        disabled={isSubmitting || !formData.isConnected}
+      >
+        {isSubmitting ? "Saving..." : "Save & Continue"}
+      </Button>
     </form>
   );
 }
