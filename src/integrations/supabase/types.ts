@@ -278,18 +278,30 @@ export type Database = {
       }
       events: {
         Row: {
+          address_full: string | null
           capacity: number | null
+          categories: string[] | null
+          city: string | null
+          country: string | null
           created_at: string
+          currency: string | null
           description: string | null
           end_at: string | null
+          geocoded: boolean | null
           id: string
           image_url: string | null
           latitude: number | null
           longitude: number | null
           organizer_id: string
+          price_max: number | null
+          price_min: number | null
+          published: boolean | null
+          region: string | null
+          search_vector: unknown | null
           start_at: string
           status: string
           tags: string[] | null
+          ticket_url: string | null
           title: string
           updated_at: string
           venue_address: string | null
@@ -297,18 +309,30 @@ export type Database = {
           visibility: string
         }
         Insert: {
+          address_full?: string | null
           capacity?: number | null
+          categories?: string[] | null
+          city?: string | null
+          country?: string | null
           created_at?: string
+          currency?: string | null
           description?: string | null
           end_at?: string | null
+          geocoded?: boolean | null
           id?: string
           image_url?: string | null
           latitude?: number | null
           longitude?: number | null
           organizer_id: string
+          price_max?: number | null
+          price_min?: number | null
+          published?: boolean | null
+          region?: string | null
+          search_vector?: unknown | null
           start_at: string
           status?: string
           tags?: string[] | null
+          ticket_url?: string | null
           title: string
           updated_at?: string
           venue_address?: string | null
@@ -316,18 +340,30 @@ export type Database = {
           visibility?: string
         }
         Update: {
+          address_full?: string | null
           capacity?: number | null
+          categories?: string[] | null
+          city?: string | null
+          country?: string | null
           created_at?: string
+          currency?: string | null
           description?: string | null
           end_at?: string | null
+          geocoded?: boolean | null
           id?: string
           image_url?: string | null
           latitude?: number | null
           longitude?: number | null
           organizer_id?: string
+          price_max?: number | null
+          price_min?: number | null
+          published?: boolean | null
+          region?: string | null
+          search_vector?: unknown | null
           start_at?: string
           status?: string
           tags?: string[] | null
+          ticket_url?: string | null
           title?: string
           updated_at?: string
           venue_address?: string | null
@@ -1572,6 +1608,42 @@ export type Database = {
           organizer_avatar: string
           organizer_handle: string
           organizer_name: string
+          start_at: string
+          tags: string[]
+          title: string
+          venue_area: string
+          venue_name: string
+        }[]
+      }
+      get_public_events_enhanced: {
+        Args: {
+          category_filter?: string[]
+          end_date?: string
+          event_limit?: number
+          latitude_center?: number
+          longitude_center?: number
+          max_price?: number
+          min_price?: number
+          radius_km?: number
+          search_query?: string
+          start_date?: string
+        }
+        Returns: {
+          capacity: number
+          categories: string[]
+          city: string
+          currency: string
+          description: string
+          end_at: string
+          id: string
+          image_url: string
+          latitude: number
+          longitude: number
+          organizer_avatar: string
+          organizer_handle: string
+          organizer_name: string
+          price_max: number
+          price_min: number
           start_at: string
           tags: string[]
           title: string
