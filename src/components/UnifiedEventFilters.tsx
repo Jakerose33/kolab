@@ -85,33 +85,27 @@ export default function UnifiedEventFilters({
         {/* Categories */}
         <div className="space-y-2">
           <Label>Categories</Label>
-          <div className="flex flex-wrap gap-2">
-            {eventCategories.map((category) => {
-              const isSelected = filters.categories?.includes(category) || 
-                (category === 'all' && !filters.categories?.length);
-              
-              return (
-                <Badge
-                  key={category}
-                  variant={isSelected ? "default" : "outline"}
-                  className="cursor-pointer capitalize"
-                  onClick={() => {
-                    if (category === 'all') {
-                      updateFilter('categories', []);
-                    } else {
-                      const currentCategories = filters.categories || [];
-                      const newCategories = isSelected
-                        ? currentCategories.filter(c => c !== category)
-                        : [...currentCategories.filter(c => c !== 'all'), category];
-                      updateFilter('categories', newCategories);
-                    }
-                  }}
-                >
-                  {category}
-                </Badge>
-              );
-            })}
-          </div>
+          <Select
+            value={filters.categories?.length === 1 ? filters.categories[0] : 'all'}
+            onValueChange={(value) => {
+              if (value === 'all') {
+                updateFilter('categories', []);
+              } else {
+                updateFilter('categories', [value]);
+              }
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              {eventCategories.map((category) => (
+                <SelectItem key={category} value={category} className="capitalize">
+                  {category === 'all' ? 'All Categories' : category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Price Range */}
