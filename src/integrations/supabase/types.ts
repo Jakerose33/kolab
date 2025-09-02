@@ -107,6 +107,45 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_logs: {
+        Row: {
+          action_type: string
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          new_data: Json | null
+          old_data: Json | null
+          record_id: string | null
+          table_name: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string | null
+          table_name: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string | null
+          table_name?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       content_reports: {
         Row: {
           content_type: string
@@ -979,6 +1018,33 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limits: {
+        Row: {
+          action_type: string
+          created_at: string
+          id: string
+          identifier: string
+          request_count: number
+          window_start: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          id?: string
+          identifier: string
+          request_count?: number
+          window_start?: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          id?: string
+          identifier?: string
+          request_count?: number
+          window_start?: string
+        }
+        Relationships: []
+      }
       saved_jobs: {
         Row: {
           id: string
@@ -1491,6 +1557,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      anonymize_user_data: {
+        Args: { target_user_id: string }
+        Returns: undefined
+      }
       calculate_daily_metrics: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -1503,6 +1573,15 @@ export type Database = {
           p_views: number
         }
         Returns: number
+      }
+      check_rate_limit: {
+        Args: {
+          p_action_type: string
+          p_identifier: string
+          p_limit?: number
+          p_window_minutes?: number
+        }
+        Returns: boolean
       }
       create_activity_entry: {
         Args: {
@@ -1531,6 +1610,14 @@ export type Database = {
       current_user_has_role: {
         Args: { check_role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
+      }
+      decrypt_sensitive_data: {
+        Args: { encrypted_data: string; key_name?: string }
+        Returns: string
+      }
+      encrypt_sensitive_data: {
+        Args: { data: string; key_name?: string }
+        Returns: string
       }
       get_basic_profile_info: {
         Args: { target_user_id: string }
@@ -1850,6 +1937,16 @@ export type Database = {
       is_user_suspended: {
         Args: { user_id: string }
         Returns: boolean
+      }
+      log_sensitive_access: {
+        Args: {
+          p_action_type: string
+          p_new_data?: Json
+          p_old_data?: Json
+          p_record_id?: string
+          p_table_name: string
+        }
+        Returns: undefined
       }
       process_offline_action: {
         Args: { p_action_data: Json; p_action_type: string; p_user_id: string }
