@@ -86,7 +86,7 @@ export function Footer() {
               <h4 className="text-sm font-semibold mb-3">Follow Us</h4>
               <div className="flex gap-3">
                 <a 
-                  href="https://instagram.com/kolab" 
+                  href="https://www.instagram.com/kolab_event/" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary"
