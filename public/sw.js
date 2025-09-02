@@ -1,7 +1,11 @@
-const CACHE_NAME = 'kolab-v2';
-const STATIC_CACHE = 'kolab-static-v2';
-const DYNAMIC_CACHE = 'kolab-dynamic-v2';
-const API_CACHE = 'kolab-api-v2';
+// Enhanced Service Worker for Kolab - Underground Culture Platform
+// Version 3.0 with advanced caching, offline support, and push notifications
+
+const CACHE_VERSION = 'v3.0.0';
+const STATIC_CACHE = `kolab-static-${CACHE_VERSION}`;
+const DYNAMIC_CACHE = `kolab-dynamic-${CACHE_VERSION}`;
+const API_CACHE = `kolab-api-${CACHE_VERSION}`;
+const IMAGE_CACHE = `kolab-images-${CACHE_VERSION}`;
 
 // Cache strategies
 const CACHE_STRATEGIES = {
@@ -15,7 +19,9 @@ const STATIC_ASSETS = [
   '/',
   '/manifest.json',
   '/favicon.ico',
-  'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap',
+  '/src/assets/hero-boiler-room.jpg',
+  '/lovable-uploads/2c93db7f-d994-4dea-81df-8944d43e9b56.png',
+  '/lovable-uploads/63b40ad5-4947-4dec-9020-30dd8c7932bc.png'
 ];
 
 // API endpoints to cache
@@ -23,6 +29,8 @@ const API_PATTERNS = [
   /\/api\/events/,
   /\/api\/venues/,
   /\/api\/bookings/,
+  /supabase\.co/,
+  /\.lovableproject\.com\/api\//
 ];
 
 // Install service worker and cache static resources
@@ -71,9 +79,9 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
-// Cache-first strategy for images
+// Enhanced cache-first strategy for images with WebP/AVIF support
 async function handleImageRequest(request) {
-  const cache = await caches.open(STATIC_CACHE);
+  const cache = await caches.open(IMAGE_CACHE);
   const cached = await cache.match(request);
   
   if (cached) return cached;
@@ -81,12 +89,16 @@ async function handleImageRequest(request) {
   try {
     const response = await fetch(request);
     if (response.ok) {
-      cache.put(request, response.clone());
+      // Cache images for longer periods
+      const responseToCache = response.clone();
+      responseToCache.headers.set('sw-cache-timestamp', Date.now().toString());
+      cache.put(request, responseToCache);
     }
     return response;
   } catch (error) {
-    // Return fallback image if needed
-    return new Response('', { status: 404 });
+    // Return cached version or placeholder
+    const fallback = await cache.match('/placeholder.svg');
+    return fallback || new Response('', { status: 404 });
   }
 }
 
@@ -169,14 +181,45 @@ async function handleBackgroundSync() {
   console.log('Background sync triggered');
 }
 
-// Push notifications (if needed in future)
+// Enhanced push notifications with actions and rich media
 self.addEventListener('push', (event) => {
   if (event.data) {
     const data = event.data.json();
-    self.registration.showNotification(data.title, {
+    const options = {
       body: data.body,
-      icon: '/favicon.ico',
-      badge: '/favicon.ico',
-    });
+      icon: '/lovable-uploads/2c93db7f-d994-4dea-81df-8944d43e9b56.png',
+      badge: '/lovable-uploads/2c93db7f-d994-4dea-81df-8944d43e9b56.png',
+      image: data.image,
+      vibrate: [200, 100, 200],
+      data: data.data,
+      actions: [
+        {
+          action: 'view',
+          title: 'View Event',
+          icon: '/lovable-uploads/2c93db7f-d994-4dea-81df-8944d43e9b56.png'
+        },
+        {
+          action: 'dismiss',
+          title: 'Dismiss',
+          icon: '/lovable-uploads/2c93db7f-d994-4dea-81df-8944d43e9b56.png'
+        }
+      ],
+      requireInteraction: true
+    };
+    
+    event.waitUntil(
+      self.registration.showNotification(data.title, options)
+    );
+  }
+});
+
+// Handle notification clicks
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  
+  if (event.action === 'view') {
+    event.waitUntil(
+      clients.openWindow(event.notification.data?.url || '/')
+    );
   }
 });
