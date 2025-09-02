@@ -160,21 +160,24 @@ export function EnhancedSecurityProvider({ children }: EnhancedSecurityProviderP
   };
 
   const checkRateLimit = async (action: string, limit: number = 10): Promise<boolean> => {
-    if (!user) return true; // Allow unauthenticated users for now
-    
-    return await SecurityManager.checkRateLimit(user.id, action, limit, 60);
+    return await SecurityManager.checkRateLimit(action, limit, 60);
   };
 
   const auditAction = async (action: string, details: any = {}) => {
     if (!user) return;
     
-    await SecurityManager.auditAccess(action, 'user_actions', user.id, {
-      ...details,
-      security_level: securityLevel,
-      csrf_token: csrfToken,
-      device_secure: isDeviceSecure,
-      timestamp: new Date().toISOString()
-    });
+    await SecurityManager.auditAccess(
+      action,
+      'user_actions', 
+      user.id,
+      {
+        ...details,
+        security_level: securityLevel,
+        csrf_token: csrfToken,
+        device_secure: isDeviceSecure,
+        timestamp: new Date().toISOString()
+      }
+    );
   };
 
   const sanitizeInput = (input: string): string => {
