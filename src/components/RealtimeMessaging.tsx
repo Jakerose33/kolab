@@ -221,12 +221,14 @@ export function RealtimeMessaging({ className }: RealtimeMessagingProps) {
 
       setNewMessage('')
       
+      const messageContent = newMessage.trim()
+      
       // Create mock message for UI
-      const newMessage: Message = {
+      const messageData: Message = {
         id: Date.now().toString(),
         sender_id: user?.id || '',
         recipient_id: conversation.other_participant.id,
-        content: newMessage.trim(),
+        content: messageContent,
         message_type: 'text',
         created_at: new Date().toISOString(),
         sender: {
@@ -236,8 +238,10 @@ export function RealtimeMessaging({ className }: RealtimeMessagingProps) {
         }
       }
       
+      setNewMessage('')
+      
       // Optimistically add message to UI
-      setMessages(prev => [...prev, newMessage])
+      setMessages(prev => [...prev, messageData])
 
       // Update conversation last message
       await supabase

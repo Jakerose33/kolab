@@ -186,7 +186,7 @@ export function EnhancedSearchFilters({
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" className="w-full justify-start text-left">
-                <Calendar className="h-4 w-4 mr-2" />
+                <MapPin className="h-4 w-4 mr-2" />
                 {filters.dateRange?.from ? (
                   filters.dateRange.to ? (
                     `${filters.dateRange.from.toLocaleDateString()} - ${filters.dateRange.to.toLocaleDateString()}`
@@ -199,11 +199,12 @@ export function EnhancedSearchFilters({
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
+              <CalendarComponent
                 mode="range"
                 selected={filters.dateRange}
                 onSelect={(range) => updateFilter('dateRange', range)}
                 numberOfMonths={2}
+                className="pointer-events-auto"
               />
             </PopoverContent>
           </Popover>
