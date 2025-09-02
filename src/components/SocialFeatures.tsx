@@ -22,7 +22,8 @@ interface Connection {
   connected_user_id: string
   status: 'pending' | 'accepted' | 'blocked'
   created_at: string
-  profiles: {
+  updated_at: string
+  user?: {
     full_name: string
     avatar_url: string
     handle: string
@@ -71,7 +72,8 @@ export function SocialFeatures({ eventId, userId, className }: SocialFeaturesPro
           connected_user_id: '2',
           status: 'accepted',
           created_at: new Date().toISOString(),
-          profiles: {
+          updated_at: new Date().toISOString(),
+          user: {
             full_name: 'Sarah Chen',
             avatar_url: 'https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop',
             handle: 'sarah_chen',
@@ -327,16 +329,16 @@ export function SocialFeatures({ eventId, userId, className }: SocialFeaturesPro
                 {connections.map((connection) => (
                   <div key={connection.id} className="flex items-center gap-4 p-3 rounded-lg border">
                     <Avatar>
-                      <AvatarImage src={connection.profiles.avatar_url} />
+                      <AvatarImage src={connection.user?.avatar_url} />
                       <AvatarFallback>
-                        {connection.profiles.full_name?.charAt(0) || 'U'}
+                        {connection.user?.full_name?.charAt(0) || 'U'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 space-y-1">
-                      <h4 className="font-medium">{connection.profiles.full_name}</h4>
-                      <p className="text-sm text-muted-foreground">@{connection.profiles.handle}</p>
+                      <h4 className="font-medium">{connection.user?.full_name}</h4>
+                      <p className="text-sm text-muted-foreground">@{connection.user?.handle}</p>
                       <div className="flex flex-wrap gap-1">
-                        {connection.profiles.skills?.slice(0, 3).map((skill) => (
+                        {connection.user?.skills?.slice(0, 3).map((skill) => (
                           <Badge key={skill} variant="secondary" className="text-xs">
                             {skill}
                           </Badge>

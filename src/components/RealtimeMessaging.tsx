@@ -19,10 +19,11 @@ interface Message {
   sender_id: string
   recipient_id: string
   content: string
-  message_type: 'text' | 'image' | 'file' | 'system'
+  message_type: string
   attachment_url?: string
   read_at?: string
   created_at: string
+  updated_at: string
   sender?: {
     full_name: string
     avatar_url: string
@@ -142,6 +143,7 @@ export function RealtimeMessaging({ className }: RealtimeMessagingProps) {
           content: 'Hey! How are you doing?',
           message_type: 'text',
           created_at: new Date(Date.now() - 3600000).toISOString(),
+          updated_at: new Date(Date.now() - 3600000).toISOString(),
           sender: {
             full_name: 'Sarah Chen',
             avatar_url: 'https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop',
@@ -155,6 +157,7 @@ export function RealtimeMessaging({ className }: RealtimeMessagingProps) {
           content: 'I\'m great! Just working on some exciting projects.',
           message_type: 'text',
           created_at: new Date(Date.now() - 1800000).toISOString(),
+          updated_at: new Date(Date.now() - 1800000).toISOString(),
           sender: {
             full_name: 'You',
             avatar_url: '',
@@ -231,6 +234,7 @@ export function RealtimeMessaging({ className }: RealtimeMessagingProps) {
         content: messageContent,
         message_type: 'text',
         created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
         sender: {
           full_name: user?.user_metadata?.full_name || 'You',
           avatar_url: user?.user_metadata?.avatar_url || '',

@@ -24,10 +24,14 @@ interface PaymentIntegrationProps {
 
 interface PaymentMethod {
   id: string
-  type: 'card' | 'bank' | 'digital_wallet'
+  type: string
   last4?: string
   brand?: string
   is_default: boolean
+  stripe_payment_method_id: string
+  user_id?: string
+  created_at: string
+  updated_at: string
 }
 
 interface PaymentPlan {
@@ -78,10 +82,14 @@ export function PaymentIntegration({
       // Transform the data to match our interface
       const transformedMethods: PaymentMethod[] = (data || []).map(method => ({
         id: method.id,
-        type: method.type as 'card' | 'bank' | 'digital_wallet',
+        type: method.type,
         last4: method.last4,
         brand: method.brand,
-        is_default: method.is_default
+        is_default: method.is_default,
+        stripe_payment_method_id: method.stripe_payment_method_id,
+        user_id: method.user_id,
+        created_at: method.created_at,
+        updated_at: method.updated_at
       }))
       
       setPaymentMethods(transformedMethods)
