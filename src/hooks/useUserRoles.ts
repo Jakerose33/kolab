@@ -54,6 +54,33 @@ export function useUserRoles() {
 
   const assignRole = async (userId: string, role: AppRole) => {
     try {
+      // Security: Prevent self-role assignment
+      if (userId === user?.id) {
+        console.error('Security violation: Users cannot assign roles to themselves');
+        return { 
+          success: false, 
+          error: { message: 'Users cannot assign roles to themselves' }
+        };
+      }
+
+      // Security: Only admins can assign admin roles
+      if (role === 'admin' && !isAdmin()) {
+        console.error('Security violation: Only admins can assign admin roles');
+        return { 
+          success: false, 
+          error: { message: 'Only admins can assign admin roles' }
+        };
+      }
+
+      // Security: Only admins or moderators can assign moderator roles
+      if (role === 'moderator' && !isAdminOrModerator()) {
+        console.error('Security violation: Only admins or moderators can assign moderator roles');
+        return { 
+          success: false, 
+          error: { message: 'Only admins or moderators can assign moderator roles' }
+        };
+      }
+
       const { error } = await supabase
         .from('user_roles')
         .insert({
@@ -64,11 +91,6 @@ export function useUserRoles() {
 
       if (error) throw error;
       
-      // Refresh roles if assigning to current user
-      if (userId === user?.id) {
-        await fetchUserRoles();
-      }
-      
       return { success: true };
     } catch (error) {
       console.error('Error assigning role:', error);
@@ -78,6 +100,33 @@ export function useUserRoles() {
 
   const removeRole = async (userId: string, role: AppRole) => {
     try {
+      // Security: Prevent self-role removal for admin role
+      if (userId === user?.id && role === 'admin') {
+        console.error('Security violation: Users cannot remove their own admin role');
+        return { 
+          success: false, 
+          error: { message: 'Users cannot remove their own admin role' }
+        };
+      }
+
+      // Security: Only admins can remove admin roles
+      if (role === 'admin' && !isAdmin()) {
+        console.error('Security violation: Only admins can remove admin roles');
+        return { 
+          success: false, 
+          error: { message: 'Only admins can remove admin roles' }
+        };
+      }
+
+      // Security: Only admins or moderators can remove moderator roles
+      if (role === 'moderator' && !isAdminOrModerator()) {
+        console.error('Security violation: Only admins or moderators can remove moderator roles');
+        return { 
+          success: false, 
+          error: { message: 'Only admins or moderators can remove moderator roles' }
+        };
+      }
+
       const { error } = await supabase
         .from('user_roles')
         .delete()
@@ -85,11 +134,6 @@ export function useUserRoles() {
         .eq('role', role);
 
       if (error) throw error;
-      
-      // Refresh roles if removing from current user
-      if (userId === user?.id) {
-        await fetchUserRoles();
-      }
       
       return { success: true };
     } catch (error) {

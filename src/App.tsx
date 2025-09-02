@@ -12,6 +12,7 @@ import { AuthProvider } from "@/features/auth/AuthProvider";
 import { AdvancedSEOSystem } from "@/components/AdvancedSEOSystem";
 import { AdvancedSitemapGenerator } from "@/components/AdvancedSitemapGenerator";
 import { AdvancedRobotsTxtManager } from "@/components/AdvancedRobotsTxtManager";
+import { SecurityMonitor } from "@/components/SecurityMonitor";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AppRoutes from "@/components/AppRoutes";
@@ -89,6 +90,7 @@ function App() {
                     <AdvancedRobotsTxtManager />
                     <Suspense fallback={<div className="min-h-screen bg-background" />}>
                       <AppRoutes />
+                      <SecurityMonitor />
                     </Suspense>
                   </AdvancedSEOSystem>
                 </AuthProvider>
