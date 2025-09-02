@@ -8,7 +8,8 @@ import { Slider } from './ui/slider'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Badge } from './ui/badge'
 import { Switch } from './ui/switch'
-import { DateRangePicker } from './ui/date-range-picker'
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
+import { Calendar } from './ui/calendar'
 import { Checkbox } from './ui/checkbox'
 import { Separator } from './ui/separator'
 import { cn } from '@/lib/utils'
@@ -182,11 +183,30 @@ export function EnhancedSearchFilters({
             <Calendar className="h-4 w-4" />
             Date Range
           </Label>
-          <DateRangePicker
-            selected={filters.dateRange}
-            onSelect={(range) => updateFilter('dateRange', range)}
-            placeholder="Select date range..."
-          />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="w-full justify-start text-left">
+                <Calendar className="h-4 w-4 mr-2" />
+                {filters.dateRange?.from ? (
+                  filters.dateRange.to ? (
+                    `${filters.dateRange.from.toLocaleDateString()} - ${filters.dateRange.to.toLocaleDateString()}`
+                  ) : (
+                    filters.dateRange.from.toLocaleDateString()
+                  )
+                ) : (
+                  'Select date range...'
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="range"
+                selected={filters.dateRange}
+                onSelect={(range) => updateFilter('dateRange', range)}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
         </div>
 
         {/* Location with Distance */}

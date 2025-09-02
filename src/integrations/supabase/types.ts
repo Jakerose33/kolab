@@ -790,6 +790,50 @@ export type Database = {
           },
         ]
       }
+      payment_installments: {
+        Row: {
+          amount: number
+          created_at: string
+          due_date: string
+          id: string
+          installment_number: number
+          paid_at: string | null
+          payment_intent_id: string | null
+          payment_plan_id: string
+          status: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          due_date: string
+          id?: string
+          installment_number: number
+          paid_at?: string | null
+          payment_intent_id?: string | null
+          payment_plan_id: string
+          status?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          due_date?: string
+          id?: string
+          installment_number?: number
+          paid_at?: string | null
+          payment_intent_id?: string | null
+          payment_plan_id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_installments_payment_plan_id_fkey"
+            columns: ["payment_plan_id"]
+            isOneToOne: false
+            referencedRelation: "payment_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_methods: {
         Row: {
           brand: string | null
@@ -823,6 +867,48 @@ export type Database = {
           type?: string
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      payment_plans: {
+        Row: {
+          created_at: string
+          id: string
+          installment_amount: number
+          installments: number
+          interest_rate: number | null
+          next_payment_date: string | null
+          order_id: string
+          plan_type: string
+          status: string | null
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          installment_amount: number
+          installments?: number
+          interest_rate?: number | null
+          next_payment_date?: string | null
+          order_id: string
+          plan_type: string
+          status?: string | null
+          total_amount: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          installment_amount?: number
+          installments?: number
+          interest_rate?: number | null
+          next_payment_date?: string | null
+          order_id?: string
+          plan_type?: string
+          status?: string | null
+          total_amount?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1110,6 +1196,111 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_searches_enhanced: {
+        Row: {
+          alert_frequency: string | null
+          created_at: string
+          filters: Json | null
+          id: string
+          is_alert: boolean | null
+          name: string
+          query: string
+          search_type: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_frequency?: string | null
+          created_at?: string
+          filters?: Json | null
+          id?: string
+          is_alert?: boolean | null
+          name: string
+          query: string
+          search_type?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_frequency?: string | null
+          created_at?: string
+          filters?: Json | null
+          id?: string
+          is_alert?: boolean | null
+          name?: string
+          query?: string
+          search_type?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      search_analytics: {
+        Row: {
+          clicked_result_id: string | null
+          created_at: string
+          filters: Json | null
+          id: string
+          query: string
+          results_count: number | null
+          search_duration_ms: number | null
+          session_id: string
+          user_id: string | null
+        }
+        Insert: {
+          clicked_result_id?: string | null
+          created_at?: string
+          filters?: Json | null
+          id?: string
+          query: string
+          results_count?: number | null
+          search_duration_ms?: number | null
+          session_id: string
+          user_id?: string | null
+        }
+        Update: {
+          clicked_result_id?: string | null
+          created_at?: string
+          filters?: Json | null
+          id?: string
+          query?: string
+          results_count?: number | null
+          search_duration_ms?: number | null
+          session_id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      social_interactions: {
+        Row: {
+          created_at: string
+          id: string
+          interaction_type: string
+          metadata: Json | null
+          target_id: string
+          target_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          interaction_type: string
+          metadata?: Json | null
+          target_id: string
+          target_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          interaction_type?: string
+          metadata?: Json | null
+          target_id?: string
+          target_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_behavior_analytics: {
         Row: {
           bookings_made: number
@@ -1179,6 +1370,33 @@ export type Database = {
           created_at?: string
           id?: string
           reason?: string | null
+        }
+        Relationships: []
+      }
+      user_connections: {
+        Row: {
+          connected_user_id: string
+          created_at: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          connected_user_id: string
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          connected_user_id?: string
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

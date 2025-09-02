@@ -74,10 +74,20 @@ export function PaymentIntegration({
         .order('is_default', { ascending: false })
 
       if (error) throw error
-      setPaymentMethods(data || [])
+      
+      // Transform the data to match our interface
+      const transformedMethods: PaymentMethod[] = (data || []).map(method => ({
+        id: method.id,
+        type: method.type as 'card' | 'bank' | 'digital_wallet',
+        last4: method.last4,
+        brand: method.brand,
+        is_default: method.is_default
+      }))
+      
+      setPaymentMethods(transformedMethods)
       
       // Auto-select default payment method
-      const defaultMethod = data?.find(method => method.is_default)
+      const defaultMethod = transformedMethods.find(method => method.is_default)
       if (defaultMethod) {
         setSelectedPaymentMethod(defaultMethod.id)
       }

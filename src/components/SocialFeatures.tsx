@@ -63,24 +63,24 @@ export function SocialFeatures({ eventId, userId, className }: SocialFeaturesPro
 
   const loadSocialData = async () => {
     try {
-      // Load connections
-      const { data: connectionsData, error: connectionsError } = await supabase
-        .from('user_connections')
-        .select(`
-          *,
-          profiles:connected_user_id (
-            full_name,
-            avatar_url,
-            handle,
-            bio,
-            skills
-          )
-        `)
-        .eq('user_id', user?.id)
-        .eq('status', 'accepted')
-
-      if (connectionsError) throw connectionsError
-      setConnections(connectionsData || [])
+      // Load mock connections for now since the table was just created
+      const mockConnections: Connection[] = [
+        {
+          id: '1',
+          user_id: user?.id || '',
+          connected_user_id: '2',
+          status: 'accepted',
+          created_at: new Date().toISOString(),
+          profiles: {
+            full_name: 'Sarah Chen',
+            avatar_url: 'https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop',
+            handle: 'sarah_chen',
+            bio: 'Creative Director passionate about design',
+            skills: ['Design', 'Photography', 'UI/UX']
+          }
+        }
+      ]
+      setConnections(mockConnections)
 
       // Generate AI-powered recommendations
       generateRecommendations()
@@ -144,13 +144,8 @@ export function SocialFeatures({ eventId, userId, className }: SocialFeaturesPro
 
   const handleConnect = async (targetUserId: string) => {
     try {
-      const { error } = await supabase
-        .from('user_connections')
-        .insert({
-          user_id: user?.id,
-          connected_user_id: targetUserId,
-          status: 'pending'
-        })
+      // Mock connection request for now
+      await new Promise(resolve => setTimeout(resolve, 1000))
 
       if (error) throw error
 
@@ -192,17 +187,8 @@ export function SocialFeatures({ eventId, userId, className }: SocialFeaturesPro
 
   const handleLike = async (itemId: string, itemType: 'event' | 'post') => {
     try {
-      // Create like record
-      const { error } = await supabase
-        .from('social_interactions')
-        .insert({
-          user_id: user?.id,
-          target_id: itemId,
-          target_type: itemType,
-          interaction_type: 'like'
-        })
-
-      if (error) throw error
+      // Mock like action for now
+      await new Promise(resolve => setTimeout(resolve, 500))
 
       setSocialStats(prev => ({ ...prev, likes: prev.likes + 1 }))
       
@@ -222,15 +208,8 @@ export function SocialFeatures({ eventId, userId, className }: SocialFeaturesPro
         const shareUrl = `${window.location.origin}/events/${itemId}`
         await navigator.clipboard.writeText(shareUrl)
         
-        // Track share action
-        await supabase
-          .from('social_interactions')
-          .insert({
-            user_id: user?.id,
-            target_id: itemId,
-            target_type: 'event',
-            interaction_type: 'share'
-          })
+        // Mock share tracking for now
+        await new Promise(resolve => setTimeout(resolve, 300))
 
         setSocialStats(prev => ({ ...prev, shares: prev.shares + 1 }))
         

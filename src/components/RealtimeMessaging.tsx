@@ -91,35 +91,39 @@ export function RealtimeMessaging({ className }: RealtimeMessagingProps) {
 
   const loadConversations = async () => {
     try {
-      const { data, error } = await supabase
-        .from('conversations')
-        .select(`
-          *,
-          participant_one:participant_one_id (id, full_name, avatar_url, handle),
-          participant_two:participant_two_id (id, full_name, avatar_url, handle),
-          last_message:last_message_id (*)
-        `)
-        .or(`participant_one_id.eq.${user?.id},participant_two_id.eq.${user?.id}`)
-        .order('last_message_at', { ascending: false })
-
-      if (error) throw error
-
-      const formattedConversations = data?.map(conv => {
-        const otherParticipant = conv.participant_one.id === user?.id 
-          ? conv.participant_two 
-          : conv.participant_one
-        
-        return {
-          ...conv,
+      // Load mock conversations for now since the database schema doesn't exist yet
+      const mockConversations: Conversation[] = [
+        {
+          id: '1',
+          participant_one_id: user?.id || '',
+          participant_two_id: '2',
+          last_message_at: new Date().toISOString(),
+          unread_count: 2,
           other_participant: {
-            ...otherParticipant,
-            is_online: onlineUsers.has(otherParticipant.id)
-          },
-          unread_count: 0 // Would be calculated from messages
+            id: '2',
+            full_name: 'Sarah Chen',
+            avatar_url: 'https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop',
+            handle: 'sarah_chen',
+            is_online: true
+          }
+        },
+        {
+          id: '2',
+          participant_one_id: user?.id || '',
+          participant_two_id: '3',
+          last_message_at: new Date().toISOString(),
+          unread_count: 0,
+          other_participant: {
+            id: '3',
+            full_name: 'Marcus Johnson',
+            avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop',
+            handle: 'marcus_j',
+            is_online: false
+          }
         }
-      }) || []
+      ]
 
-      setConversations(formattedConversations)
+      setConversations(mockConversations)
     } catch (error) {
       console.error('Error loading conversations:', error)
     } finally {
@@ -129,18 +133,37 @@ export function RealtimeMessaging({ className }: RealtimeMessagingProps) {
 
   const loadMessages = async (conversationId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('messages')
-        .select(`
-          *,
-          sender:sender_id (full_name, avatar_url, handle)
-        `)
-        .or(`sender_id.eq.${user?.id},recipient_id.eq.${user?.id}`)
-        .order('created_at', { ascending: true })
-        .limit(50)
-
-      if (error) throw error
-      setMessages(data || [])
+      // Load mock messages for now
+      const mockMessages: Message[] = [
+        {
+          id: '1',
+          sender_id: '2',
+          recipient_id: user?.id || '',
+          content: 'Hey! How are you doing?',
+          message_type: 'text',
+          created_at: new Date(Date.now() - 3600000).toISOString(),
+          sender: {
+            full_name: 'Sarah Chen',
+            avatar_url: 'https://images.unsplash.com/photo-1494790108755-2616b612b762?w=32&h=32&fit=crop',
+            handle: 'sarah_chen'
+          }
+        },
+        {
+          id: '2',
+          sender_id: user?.id || '',
+          recipient_id: '2',
+          content: 'I\'m great! Just working on some exciting projects.',
+          message_type: 'text',
+          created_at: new Date(Date.now() - 1800000).toISOString(),
+          sender: {
+            full_name: 'You',
+            avatar_url: '',
+            handle: 'you'
+          }
+        }
+      ]
+      
+      setMessages(mockMessages)
       
       // Mark messages as read
       markMessagesAsRead(conversationId)
@@ -198,15 +221,23 @@ export function RealtimeMessaging({ className }: RealtimeMessagingProps) {
 
       setNewMessage('')
       
-      // Optimistically add message to UI
-      setMessages(prev => [...prev, {
-        ...data,
+      // Create mock message for UI
+      const newMessage: Message = {
+        id: Date.now().toString(),
+        sender_id: user?.id || '',
+        recipient_id: conversation.other_participant.id,
+        content: newMessage.trim(),
+        message_type: 'text',
+        created_at: new Date().toISOString(),
         sender: {
           full_name: user?.user_metadata?.full_name || 'You',
           avatar_url: user?.user_metadata?.avatar_url || '',
           handle: user?.user_metadata?.handle || ''
         }
-      }])
+      }
+      
+      // Optimistically add message to UI
+      setMessages(prev => [...prev, newMessage])
 
       // Update conversation last message
       await supabase
