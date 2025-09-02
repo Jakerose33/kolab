@@ -3,6 +3,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PreviewMessagesList } from "@/components/PreviewMessagesList";
 import { MessagesDialog } from "@/components/MessagesDialog";
+import { NewConversationDialog } from "@/components/NewConversationDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
 import { AuthDialog } from "@/components/AuthDialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -89,6 +90,7 @@ export default function Messages() {
   const [showAuth, setShowAuth] = useState(false);
   const [showMessages, setShowMessages] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showNewConversation, setShowNewConversation] = useState(false);
   const [selectedConversation, setSelectedConversation] = useState(mockConversations[1]);
   const [searchQuery, setSearchQuery] = useState("");
   const [newMessage, setNewMessage] = useState("");
@@ -114,6 +116,20 @@ export default function Messages() {
       description: "Your message has been delivered.",
     });
     setNewMessage("");
+  };
+
+  const handleStartNewConversation = (user: any) => {
+    // Create a new conversation with the selected user
+    const newConversation = {
+      id: Date.now().toString(),
+      name: user.name,
+      lastMessage: "Start your conversation...",
+      time: "now",
+      unread: 0,
+      type: "direct",
+      avatar: user.avatar
+    };
+    setSelectedConversation(newConversation);
   };
 
   return (
@@ -148,7 +164,12 @@ export default function Messages() {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">Conversations</CardTitle>
-                <Button size="sm" variant="ghost">
+                <Button 
+                  size="sm" 
+                  variant="ghost"
+                  onClick={() => setShowNewConversation(true)}
+                  className="text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50"
+                >
                   <PlusCircle className="h-4 w-4" />
                 </Button>
               </div>
@@ -317,6 +338,12 @@ export default function Messages() {
       <MessagesDialog
         open={showMessages}
         onOpenChange={setShowMessages}
+      />
+
+      <NewConversationDialog
+        open={showNewConversation}
+        onOpenChange={setShowNewConversation}
+        onConversationStart={handleStartNewConversation}
       />
       
       <NotificationsDrawer
