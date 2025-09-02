@@ -1779,6 +1779,15 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: undefined
       }
+      audit_payment_access: {
+        Args: {
+          p_action: string
+          p_metadata?: Json
+          p_payment_method_id: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
       calculate_daily_metrics: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -1829,8 +1838,16 @@ export type Database = {
         Args: { check_role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
       }
+      decrypt_payment_metadata: {
+        Args: { encrypted_data: string }
+        Returns: string
+      }
       decrypt_sensitive_data: {
         Args: { encrypted_data: string; key_name?: string }
+        Returns: string
+      }
+      encrypt_payment_metadata: {
+        Args: { data: string }
         Returns: string
       }
       encrypt_sensitive_data: {
@@ -2029,6 +2046,17 @@ export type Database = {
           id: string
           page_url: string
           session_id: string
+        }[]
+      }
+      get_user_payment_methods_secure: {
+        Args: { target_user_id: string }
+        Returns: {
+          brand_display: string
+          created_at: string
+          id: string
+          is_default: boolean
+          last4_display: string
+          type: string
         }[]
       }
       get_user_privacy_setting: {
