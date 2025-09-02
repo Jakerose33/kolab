@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Flame, Eye } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useViewTransition } from "@/hooks/useViewTransition"
-const heroImage = "/lovable-uploads/06a2454d-1384-4786-ad03-7aa308f11152.png"
+const heroImage = "/lovable-uploads/c69de1d4-cbd3-477e-becf-97b0075b7e3a.png"
 
 interface HeroProps {
   className?: string
@@ -29,7 +29,7 @@ export default function Hero({ className }: HeroProps) {
         {/* Hero background image with scroll parallax */}
         <img 
           src={heroImage}
-          alt="Underground electronic music scene"
+          alt="Boiler Room underground electronic music event with red lighting and crowd"
           className="w-full h-full object-cover opacity-70 scroll-parallax"
         />
         
