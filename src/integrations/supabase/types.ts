@@ -1788,6 +1788,14 @@ export type Database = {
         }
         Returns: undefined
       }
+      audit_payment_method_access: {
+        Args: {
+          p_context?: Json
+          p_operation: string
+          p_payment_method_id: string
+        }
+        Returns: undefined
+      }
       calculate_daily_metrics: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -2069,6 +2077,17 @@ export type Database = {
           type: string
         }[]
       }
+      get_user_payment_methods_secure_v2: {
+        Args: { target_user_id?: string }
+        Returns: {
+          brand_display: string
+          created_at: string
+          id: string
+          is_default: boolean
+          last4_masked: string
+          type: string
+        }[]
+      }
       get_user_privacy_setting: {
         Args: { setting_name: string; target_user_id: string }
         Returns: boolean
@@ -2228,6 +2247,10 @@ export type Database = {
           p_stripe_payment_method_id: string
           p_user_id: string
         }
+        Returns: boolean
+      }
+      validate_payment_method_ownership: {
+        Args: { p_payment_method_id: string; p_user_id: string }
         Returns: boolean
       }
     }
