@@ -5,6 +5,8 @@ import { Bell, Search, Menu } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ReportIssueButton } from "./ErrorReportDialog";
+import { GlobalErrorHandler } from "./GlobalErrorHandler";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -97,6 +99,10 @@ export function AppLayout({
           </main>
         </div>
       </div>
+      
+      {/* Error Reporting Components */}
+      <ReportIssueButton />
+      <GlobalErrorHandler />
     </SidebarProvider>
   );
 }

@@ -235,6 +235,66 @@ export type Database = {
           },
         ]
       }
+      error_reports: {
+        Row: {
+          browser_info: Json | null
+          contact_email: string | null
+          created_at: string
+          description: string | null
+          error_details: Json | null
+          error_type: string
+          id: string
+          screenshot_url: string | null
+          severity: string
+          stack_trace: string | null
+          status: string
+          steps_to_reproduce: string | null
+          title: string
+          updated_at: string
+          url: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          browser_info?: Json | null
+          contact_email?: string | null
+          created_at?: string
+          description?: string | null
+          error_details?: Json | null
+          error_type?: string
+          id?: string
+          screenshot_url?: string | null
+          severity?: string
+          stack_trace?: string | null
+          status?: string
+          steps_to_reproduce?: string | null
+          title: string
+          updated_at?: string
+          url: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          browser_info?: Json | null
+          contact_email?: string | null
+          created_at?: string
+          description?: string | null
+          error_details?: Json | null
+          error_type?: string
+          id?: string
+          screenshot_url?: string | null
+          severity?: string
+          stack_trace?: string | null
+          status?: string
+          steps_to_reproduce?: string | null
+          title?: string
+          updated_at?: string
+          url?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       event_analytics: {
         Row: {
           created_at: string
