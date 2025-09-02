@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Badge } from './ui/badge'
 import { Switch } from './ui/switch'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
-import { Calendar } from './ui/calendar'
+import { Calendar as CalendarComponent } from './ui/calendar'
 import { Checkbox } from './ui/checkbox'
 import { Separator } from './ui/separator'
 import { cn } from '@/lib/utils'
@@ -186,7 +186,7 @@ export function EnhancedSearchFilters({
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" className="w-full justify-start text-left">
-                <MapPin className="h-4 w-4 mr-2" />
+                <Calendar className="h-4 w-4 mr-2" />
                 {filters.dateRange?.from ? (
                   filters.dateRange.to ? (
                     `${filters.dateRange.from.toLocaleDateString()} - ${filters.dateRange.to.toLocaleDateString()}`

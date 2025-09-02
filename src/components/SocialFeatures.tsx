@@ -147,14 +147,12 @@ export function SocialFeatures({ eventId, userId, className }: SocialFeaturesPro
       // Mock connection request for now
       await new Promise(resolve => setTimeout(resolve, 1000))
 
-      if (error) throw error
-
       toast({
         title: "Connection Request Sent",
         description: "Your connection request has been sent successfully.",
       })
-    } catch (error) {
-      console.error('Error sending connection request:', error)
+    } catch (err) {
+      console.error('Error sending connection request:', err)
       toast({
         title: "Error",
         description: "Failed to send connection request. Please try again.",
