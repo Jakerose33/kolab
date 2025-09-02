@@ -1,5 +1,5 @@
 // tests/events-flow.spec.ts
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/hardening';
 
 test.describe('Events Data Flow E2E', () => {
   test.beforeEach(async ({ page }) => {

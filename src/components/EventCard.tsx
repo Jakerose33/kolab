@@ -136,10 +136,13 @@ export function EventCard({
   const eventLink = getEventLink(event);
 
   const cardContent = (
-    <Card className={cn(
-      "group overflow-hidden transition-all duration-300 hover:shadow-glow hover:-translate-y-1",
-      className
-    )}>
+    <Card 
+      data-testid="event-card"
+      className={cn(
+        "group overflow-hidden transition-all duration-300 hover:shadow-glow hover:-translate-y-1",
+        className
+      )}
+    >
       {/* Event Image */}
       <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5">
       {event.image_url ? (

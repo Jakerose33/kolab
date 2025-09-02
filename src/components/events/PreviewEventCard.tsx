@@ -7,7 +7,7 @@ export default function PreviewEventCard({ event, className, ...rest }: Props) {
   const n = normalizeEvent(event);
   
   return (
-    <article className={`overflow-hidden ${className ?? ''}`} {...rest}>
+    <article className={`overflow-hidden ${className ?? ''}`} {...rest} data-testid="event-card">
       <Card className="overflow-hidden">
         <div className="relative">
           {n.image ? (
