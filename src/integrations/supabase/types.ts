@@ -1854,6 +1854,10 @@ export type Database = {
         Args: { encrypted_data: string; key_name?: string }
         Returns: string
       }
+      deep_sanitize_user_input: {
+        Args: { p_input: string; p_max_length?: number }
+        Returns: string
+      }
       encrypt_payment_metadata: {
         Args: { data: string }
         Returns: string
