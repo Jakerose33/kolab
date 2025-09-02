@@ -1888,6 +1888,16 @@ export type Database = {
           visibility: string
         }[]
       }
+      get_payment_method_display_only: {
+        Args: { p_payment_method_id: string }
+        Returns: {
+          brand_display: string
+          id: string
+          is_default: boolean
+          last4_masked: string
+          type: string
+        }[]
+      }
       get_profile_with_privacy: {
         Args: { target_user_id: string }
         Returns: {
@@ -2198,9 +2208,27 @@ export type Database = {
         Args: { p_action_data: Json; p_action_type: string; p_user_id: string }
         Returns: boolean
       }
+      secure_payment_audit: {
+        Args: {
+          p_details?: Json
+          p_operation: string
+          p_payment_method_id?: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
       track_event_view: {
         Args: { p_event_id: string; p_is_unique?: boolean; p_user_id?: string }
         Returns: undefined
+      }
+      validate_payment_method_data: {
+        Args: {
+          p_brand?: string
+          p_last4?: string
+          p_stripe_payment_method_id: string
+          p_user_id: string
+        }
+        Returns: boolean
       }
     }
     Enums: {
