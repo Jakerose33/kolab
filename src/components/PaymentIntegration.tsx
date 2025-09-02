@@ -71,20 +71,17 @@ export function PaymentIntegration({
 
   const loadPaymentMethods = async () => {
     try {
-      // Use the secure function instead of direct table access
-      const { data, error } = await supabase.rpc('get_user_payment_methods_secure', {
-        target_user_id: user?.id
-      })
+      // Use the new enhanced secure function
+      const { data, error } = await supabase.rpc('get_user_payment_methods_secure_v2')
 
       if (error) throw error
       
       // Audit the payment method access
       if (user?.id && data?.length > 0) {
-        await supabase.rpc('audit_payment_access', {
-          p_action: 'LOAD_PAYMENT_METHODS',
+        await supabase.rpc('audit_payment_method_access', {
+          p_operation: 'LOAD_PAYMENT_METHODS',
           p_payment_method_id: null,
-          p_user_id: user.id,
-          p_metadata: { method_count: data.length }
+          p_context: { method_count: data.length }
         })
       }
       
@@ -92,7 +89,7 @@ export function PaymentIntegration({
       const transformedMethods: PaymentMethod[] = (data || []).map(method => ({
         id: method.id,
         type: method.type,
-        last4: method.last4_display || '••••',
+        last4: method.last4_masked || '••••',
         brand: method.brand_display || 'Card',
         is_default: method.is_default,
         stripe_payment_method_id: `pm_secure_${method.id}`, // Don't expose real Stripe ID
@@ -187,11 +184,10 @@ export function PaymentIntegration({
 
     try {
       // Audit the payment attempt
-      await supabase.rpc('audit_payment_access', {
-        p_action: 'PAYMENT_ATTEMPT',
+      await supabase.rpc('audit_payment_method_access', {
+        p_operation: 'PAYMENT_ATTEMPT',
         p_payment_method_id: selectedPaymentMethod,
-        p_user_id: user?.id,
-        p_metadata: {
+        p_context: {
           amount,
           currency,
           venue_booking_id: venueBookingId,
@@ -220,11 +216,10 @@ export function PaymentIntegration({
 
       if (data?.url) {
         // Audit successful payment initiation
-        await supabase.rpc('audit_payment_access', {
-          p_action: 'PAYMENT_SESSION_CREATED',
+        await supabase.rpc('audit_payment_method_access', {
+          p_operation: 'PAYMENT_SESSION_CREATED',
           p_payment_method_id: selectedPaymentMethod,
-          p_user_id: user?.id,
-          p_metadata: { session_id: data.session_id }
+          p_context: { session_id: data.session_id }
         })
 
         // Redirect to Stripe Checkout
@@ -249,11 +244,10 @@ export function PaymentIntegration({
       console.error('Payment error:', error)
       
       // Audit payment failure
-      await supabase.rpc('audit_payment_access', {
-        p_action: 'PAYMENT_FAILED',
+      await supabase.rpc('audit_payment_method_access', {
+        p_operation: 'PAYMENT_FAILED',
         p_payment_method_id: selectedPaymentMethod,
-        p_user_id: user?.id,
-        p_metadata: { error: error.message }
+        p_context: { error: error.message }
       })
 
       onError?.(error)
