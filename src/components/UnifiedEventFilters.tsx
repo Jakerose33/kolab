@@ -199,31 +199,17 @@ export default function UnifiedEventFilters({
             Location
           </Label>
           <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label htmlFor="latitude" className="text-xs">Latitude</Label>
-                <Input
-                  id="latitude"
-                  type="number"
-                  step="any"
-                  placeholder="51.5074"
-                  value={filters.latitude || ''}
-                  onChange={(e) => updateFilter('latitude', e.target.value ? Number(e.target.value) : undefined)}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="longitude" className="text-xs">Longitude</Label>
-                <Input
-                  id="longitude"
-                  type="number"
-                  step="any"
-                  placeholder="-0.1278"
-                  value={filters.longitude || ''}
-                  onChange={(e) => updateFilter('longitude', e.target.value ? Number(e.target.value) : undefined)}
-                />
-              </div>
+            <div className="space-y-1">
+              <Label htmlFor="address" className="text-xs">Search Area</Label>
+              <Input
+                id="address"
+                type="text"
+                placeholder="Enter city, neighborhood, or address..."
+                value={filters.address || ''}
+                onChange={(e) => updateFilter('address', e.target.value)}
+              />
             </div>
-            {(filters.latitude && filters.longitude) && (
+            {filters.address && (
               <div className="space-y-2">
                 <Label className="text-xs">
                   Radius: {filters.radius || 10} km

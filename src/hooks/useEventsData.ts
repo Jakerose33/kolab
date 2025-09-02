@@ -12,6 +12,7 @@ export interface EventFilters {
   latitude?: number;
   longitude?: number;
   radius?: number;
+  address?: string;
 }
 
 export interface MapBounds {
