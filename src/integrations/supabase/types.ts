@@ -1491,54 +1491,30 @@ export type Database = {
       public_profiles: {
         Row: {
           avatar_url: string | null
-          bio: string | null
           created_at: string | null
           full_name: string | null
           handle: string | null
           id: string | null
-          interests: string[] | null
           is_mentor: boolean | null
-          linkedin_url: string | null
-          location: string | null
-          mentor_bio: string | null
-          mentor_expertise: string[] | null
-          skills: string[] | null
           user_id: string | null
-          website: string | null
         }
         Insert: {
           avatar_url?: string | null
-          bio?: never
           created_at?: string | null
           full_name?: string | null
           handle?: string | null
           id?: string | null
-          interests?: never
           is_mentor?: boolean | null
-          linkedin_url?: never
-          location?: never
-          mentor_bio?: never
-          mentor_expertise?: never
-          skills?: never
           user_id?: string | null
-          website?: never
         }
         Update: {
           avatar_url?: string | null
-          bio?: never
           created_at?: string | null
           full_name?: string | null
           handle?: string | null
           id?: string | null
-          interests?: never
           is_mentor?: boolean | null
-          linkedin_url?: never
-          location?: never
-          mentor_bio?: never
-          mentor_expertise?: never
-          skills?: never
           user_id?: string | null
-          website?: never
         }
         Relationships: []
       }
