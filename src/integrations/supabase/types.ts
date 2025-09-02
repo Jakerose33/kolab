@@ -2223,6 +2223,19 @@ export type Database = {
         }
         Returns: undefined
       }
+      log_sensitive_data_access: {
+        Args: {
+          p_action_type: string
+          p_data_type?: string
+          p_record_id?: string
+          p_table_name: string
+        }
+        Returns: undefined
+      }
+      mask_sensitive_data: {
+        Args: { p_data: string; p_mask_type?: string }
+        Returns: string
+      }
       process_offline_action: {
         Args: { p_action_data: Json; p_action_type: string; p_user_id: string }
         Returns: boolean
