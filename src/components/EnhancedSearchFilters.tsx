@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Badge } from './ui/badge'
 import { Switch } from './ui/switch'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
-import { Calendar as CalendarComponent } from './ui/calendar'
+import { Calendar as CalendarUI } from './ui/calendar'
 import { Checkbox } from './ui/checkbox'
 import { Separator } from './ui/separator'
 import { cn } from '@/lib/utils'
@@ -199,7 +199,7 @@ export function EnhancedSearchFilters({
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <CalendarComponent
+              <CalendarUI
                 mode="range"
                 selected={filters.dateRange}
                 onSelect={(range) => updateFilter('dateRange', range)}
