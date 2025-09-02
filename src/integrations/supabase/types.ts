@@ -1314,13 +1314,6 @@ export type Database = {
             foreignKeyName: "venue_bookings_venue_id_fkey"
             columns: ["venue_id"]
             isOneToOne: false
-            referencedRelation: "public_venues"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "venue_bookings_venue_id_fkey"
-            columns: ["venue_id"]
-            isOneToOne: false
             referencedRelation: "venues"
             referencedColumns: ["id"]
           },
@@ -1364,13 +1357,6 @@ export type Database = {
           venue_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "venue_onboarding_status_venue_id_fkey"
-            columns: ["venue_id"]
-            isOneToOne: false
-            referencedRelation: "public_venues"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "venue_onboarding_status_venue_id_fkey"
             columns: ["venue_id"]
@@ -1426,13 +1412,6 @@ export type Database = {
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "venue_payouts_venue_id_fkey"
-            columns: ["venue_id"]
-            isOneToOne: false
-            referencedRelation: "public_venues"
             referencedColumns: ["id"]
           },
           {
@@ -1509,56 +1488,7 @@ export type Database = {
       }
     }
     Views: {
-      basic_profiles: {
-        Row: {
-          avatar_url: string | null
-          created_at: string | null
-          full_name: string | null
-          handle: string | null
-          id: string | null
-          user_id: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          created_at?: string | null
-          full_name?: string | null
-          handle?: string | null
-          id?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          created_at?: string | null
-          full_name?: string | null
-          handle?: string | null
-          id?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      public_venues: {
-        Row: {
-          address: string | null
-          amenities: string[] | null
-          capacity: number | null
-          created_at: string | null
-          description: string | null
-          hourly_rate: number | null
-          id: string | null
-          images: string[] | null
-          latitude: number | null
-          longitude: number | null
-          name: string | null
-          opening_hours: Json | null
-          owner_avatar: string | null
-          owner_handle: string | null
-          owner_name: string | null
-          status: string | null
-          tags: string[] | null
-          updated_at: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       calculate_daily_metrics: {
