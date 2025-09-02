@@ -1,23 +1,8 @@
 import React from 'react';
-
-import { 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Facebook, 
-  Twitter, 
-  Instagram, 
-  Linkedin,
-  Shield,
-  FileText,
-  HelpCircle
-} from 'lucide-react';
-
+import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin, Shield, FileText, HelpCircle } from 'lucide-react';
 export function Footer() {
   const currentYear = new Date().getFullYear();
-
-  return (
-    <footer className="bg-card border-t mt-auto">
+  return <footer className="bg-card border-t mt-auto">
       <div className="container mx-auto px-4 py-12">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -31,7 +16,8 @@ export function Footer() {
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <MapPin className="h-4 w-4" />
-                <span>London, United Kingdom</span>
+                <span>Melbourne, Australia
+              </span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Mail className="h-4 w-4" />
@@ -41,9 +27,7 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Phone className="h-4 w-4" />
-                <a href="tel:+442071234567" className="hover:text-primary">
-                  +44 20 7123 4567
-                </a>
+                <a href="tel:+442071234567" className="hover:text-primary">+61 480 734 669</a>
               </div>
             </div>
           </div>
@@ -85,40 +69,16 @@ export function Footer() {
             <div>
               <h4 className="text-sm font-semibold mb-3">Follow Us</h4>
               <div className="flex gap-3">
-                <a 
-                  href="https://www.instagram.com/kolab_event/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary"
-                  aria-label="Follow us on Instagram"
-                >
+                <a href="https://instagram.com/kolab" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary" aria-label="Follow us on Instagram">
                   <Instagram className="h-5 w-5" />
                 </a>
-                <a 
-                  href="https://twitter.com/kolab" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary"
-                  aria-label="Follow us on Twitter"
-                >
+                <a href="https://twitter.com/kolab" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary" aria-label="Follow us on Twitter">
                   <Twitter className="h-5 w-5" />
                 </a>
-                <a 
-                  href="https://facebook.com/kolab" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary"
-                  aria-label="Follow us on Facebook"
-                >
+                <a href="https://facebook.com/kolab" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary" aria-label="Follow us on Facebook">
                   <Facebook className="h-5 w-5" />
                 </a>
-                <a 
-                  href="https://linkedin.com/company/kolab" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary"
-                  aria-label="Follow us on LinkedIn"
-                >
+                <a href="https://linkedin.com/company/kolab" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary" aria-label="Follow us on LinkedIn">
                   <Linkedin className="h-5 w-5" />
                 </a>
               </div>
@@ -146,6 +106,5 @@ export function Footer() {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 }
