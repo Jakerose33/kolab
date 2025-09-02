@@ -9,11 +9,11 @@ import { useOfflineQueue } from '@/hooks/useOfflineQueue'
 
 interface OfflineAction {
   id: string
-  actionType: string
-  actionData: any
-  timestamp: number
+  action_type: string
+  action_data: any
+  created_at: string
+  retry_count: number
   status?: 'pending' | 'syncing' | 'completed' | 'failed'
-  retryCount?: number
 }
 
 export function OfflineManager() {
@@ -212,15 +212,9 @@ export function OfflineManager() {
                           {new Date(action.created_at).toLocaleString()}
                         </div>
                       </div>
-                      <Badge variant={
-                        (action.status || 'pending') === 'pending' ? 'secondary' :
-                        (action.status || 'pending') === 'syncing' ? 'default' :
-                        (action.status || 'pending') === 'completed' ? 'default' : 'destructive'
-                      }>
-                        {(action.status || 'pending') === 'pending' && <Clock className="h-3 w-3 mr-1" />}
-                        {(action.status || 'pending') === 'syncing' && <Upload className="h-3 w-3 mr-1" />}
-                        {(action.status || 'pending') === 'completed' && <CheckCircle className="h-3 w-3 mr-1" />}
-                        {action.status || 'pending'}
+                      <Badge variant="secondary">
+                        <Clock className="h-3 w-3 mr-1" />
+                        pending
                       </Badge>
                     </div>
                   ))}
