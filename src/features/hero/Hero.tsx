@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Flame, Eye } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useViewTransition } from "@/hooks/useViewTransition"
-const heroImage = "/lovable-uploads/c69de1d4-cbd3-477e-becf-97b0075b7e3a.png"
+const heroImage = "/assets/hero-boiler-room.jpg"
 
 interface HeroProps {
   className?: string
