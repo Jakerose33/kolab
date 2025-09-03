@@ -1,95 +1,43 @@
-import { Button } from "@/components/ui/button"
-import { Flame, Eye } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { useViewTransition } from "@/hooks/useViewTransition"
-const heroImage = "/lovable-uploads/06a2454d-1384-4786-ad03-7aa308f11152.png" // Your uploaded background image
+import React from 'react';
 
-interface HeroProps {
-  className?: string
-}
+/**
+ * Hero image source order:
+ * 1) VITE_HERO_IMAGE_URL (e.g., Supabase public URL or CDN)
+ * 2) /hero/kolab-hero.jpg (put this in /public/hero/)
+ * If the src fails at runtime, we fall back to a local placeholder.
+ */
 
-export default function Hero({ className }: HeroProps) {
-  const { navigateWithAnimation } = useViewTransition();
+const DEFAULT_HERO = '/hero/kolab-hero.jpg';
+const FALLBACK_PLACEHOLDER = '/images/placeholders/event.jpg';
 
-  const handleTonightClick = () => {
-    navigateWithAnimation('/search?filter=today');
-  };
+const HERO_SRC = import.meta.env.VITE_HERO_IMAGE_URL ?? DEFAULT_HERO;
 
-  const handleExploreVenuesClick = () => {
-    navigateWithAnimation('/venues');
-  };
-
+export default function Hero() {
   return (
-    <section className={cn(
-      "relative min-h-[80vh] md:min-h-[90vh] overflow-hidden bg-black",
-      className
-    )}>
-      {/* Background video/image container */}
-      <div className="absolute inset-0">
-        {/* Hero background image with scroll parallax */}
-        <img 
-          src={heroImage}
-          alt="Boiler Room underground electronic music event with red lighting and crowd"
-          className="w-full h-full object-cover opacity-70 scroll-parallax"
-        />
-        
-        {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/30" />
+    <section className="relative isolate overflow-hidden">
+      <img
+        src={HERO_SRC}
+        alt="Kolab — discover and book events"
+        className="absolute inset-0 h-full w-full object-cover"
+        width={1920}
+        height={1080}
+        loading="eager"
+        onError={(e) => {
+          (e.currentTarget as HTMLImageElement).src = FALLBACK_PLACEHOLDER;
+        }}
+      />
+
+      {/* Soft gradient to keep text readable on busy images */}
+      <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/40 to-transparent" />
+
+      <div className="relative z-10 mx-auto max-w-6xl px-6 py-20 md:py-28">
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
+          Where your city comes alive
+        </h1>
+        <p className="mt-4 max-w-xl text-base md:text-lg text-muted-foreground">
+          Discover, book, and grow your community with Kolab.
+        </p>
       </div>
-
-      {/* Content container */}
-      <div className="relative z-10 container mx-auto px-4 h-full min-h-[80vh] md:min-h-[90vh] flex items-center">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 w-full items-center">
-          {/* Left column - Text content */}
-          <div className="space-y-6 lg:space-y-8 text-center lg:text-left">
-            <div className="space-y-2">
-              <p className="kolab-accent-text text-white/70 mb-4">
-                Your backstage pass
-              </p>
-              <h1 className="kolab-hero-text text-white leading-[0.85] tracking-tighter">
-                Discover the city's{" "}
-                <span className="block kolab-display-text text-transparent bg-gradient-to-r from-white via-white/90 to-white/70 bg-clip-text">
-                  best-kept secrets
-                </span>
-              </h1>
-            </div>
-            
-            <p className="kolab-body-large text-white/80 max-w-xl mx-auto lg:mx-0">
-              Underground culture, exclusive events, and hidden venues await your discovery
-            </p>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
-              <Button 
-                size="lg"
-                onClick={handleTonightClick}
-                className="kolab-button-primary bg-white text-black hover:bg-white/90 hover:scale-105 transition-all duration-300 font-semibold px-10 py-4 h-auto text-base shadow-premium"
-              >
-                <Flame className="w-5 h-5 mr-2 text-red-500" />
-                Tonight
-              </Button>
-              
-              <Button 
-                variant="outline"
-                size="lg"
-                onClick={handleExploreVenuesClick}
-                className="kolab-glass border-white/20 bg-white/10 text-black hover:bg-white/20 hover:border-white/40 transition-all duration-300 font-semibold px-10 py-4 h-auto text-base backdrop-blur-md"
-              >
-                <Eye className="w-5 h-5 mr-2" />
-                Explore venues
-              </Button>
-            </div>
-          </div>
-
-          {/* Right column - On larger screens, video extends here */}
-          <div className="hidden lg:block">
-            {/* This space allows the video to breathe on larger screens */}
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom fade for seamless transition */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
     </section>
-  )
+  );
 }
