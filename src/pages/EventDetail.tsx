@@ -11,6 +11,8 @@ import { useRouteId } from "@/utils/routing"
 import { PageSkeleton, NotFound, InlineError } from "@/components/common/ErrorBits"
 import { useEvent } from "@/hooks/useEventsData"
 import { normalizeEventData } from "@/utils/eventHelpers"
+import { SafeErrorBoundary } from "@/components/SafeErrorBoundary"
+import { useNavigate } from "react-router-dom"
 
 // Extended event data for detail view
 const extendedEventData = {
@@ -129,13 +131,15 @@ const getEventProp = (event: any, mockProp: string, dbProp?: string) => {
 
 export default function EventDetail() {
   const [userRSVP, setUserRSVP] = useState<'going' | 'interested' | null>(null)
+  const navigate = useNavigate()
   
   // Use safe route param extraction
   const eventId = useRouteId('idOrSlug')
   
-  // Early return for invalid IDs - no exceptions thrown
+  // Early return for invalid IDs - redirect to events list
   if (!eventId) {
-    return <NotFound title="Event not found" subtitle="Invalid or missing event identifier." />
+    navigate('/events', { replace: true })
+    return null
   }
 
   // Use canonical event data hook
@@ -162,33 +166,34 @@ export default function EventDetail() {
     setUserRSVP(status)
   }
 
-  // Format dates for JSON-LD
-  const eventStartDate = normalizedEvent.start_at ? new Date(normalizedEvent.start_at) : new Date()
-  const eventEndDate = normalizedEvent.end_at ? new Date(normalizedEvent.end_at) : new Date(eventStartDate.getTime() + 4 * 60 * 60 * 1000)
+  // Format dates for JSON-LD with safe fallbacks
+  const eventStartDate = normalizedEvent?.start_at ? new Date(normalizedEvent.start_at) : new Date()
+  const eventEndDate = normalizedEvent?.end_at ? new Date(normalizedEvent.end_at) : new Date(eventStartDate.getTime() + 4 * 60 * 60 * 1000)
 
   const breadcrumbItems = [
     { name: "Home", url: "/" },
     { name: "Events", url: "/events" },
-    { name: normalizedEvent.title, url: `/events/${normalizedEvent.id}` }
+    { name: normalizedEvent?.title || 'Event', url: `/events/${normalizedEvent?.id || eventId}` }
   ]
 
   return (
-    <div>
-      {/* SEO JSON-LD structured data */}
-      <EventJsonLD 
+    <SafeErrorBoundary>
+      <div>
+        {/* SEO JSON-LD structured data */}
+        <EventJsonLD
         event={{
-          id: normalizedEvent.id,
-          title: normalizedEvent.title,
-          description: normalizedEvent.description || '',
+          id: normalizedEvent?.id || eventId,
+          title: normalizedEvent?.title || 'Event',
+          description: normalizedEvent?.description || '',
           startDate: eventStartDate.toISOString(),
           endDate: eventEndDate.toISOString(),
-          venue: normalizedEvent.venue_name || 'TBD',
-          venueAddress: normalizedEvent.venue_address || 'TBD',
-          image: normalizedEvent.image_url || '/placeholder.svg',
-          ticketUrl: normalizedEvent.ticket_url || '#',
-          organizer: normalizedEvent.organizer_name || 'Event Organizer',
-          capacity: normalizedEvent.capacity || 0,
-          tags: normalizedEvent.tags || [],
+          venue: normalizedEvent?.venue_name || 'TBD',
+          venueAddress: normalizedEvent?.venue_address || 'TBD',
+          image: normalizedEvent?.image_url || '/placeholder.svg',
+          ticketUrl: normalizedEvent?.ticket_url || '#',
+          organizer: normalizedEvent?.organizer_name || 'Event Organizer',
+          capacity: normalizedEvent?.capacity || 0,
+          tags: normalizedEvent?.tags || [],
           going: 0, // Would come from RSVP data
           interested: 0 // Would come from RSVP data
         }}
@@ -217,15 +222,17 @@ export default function EventDetail() {
             <div className="container mx-auto px-4 py-8 lg:px-0">
               <div className="space-y-12">
                 {/* Event header */}
-                <EventHeader
-                  title={normalizedEvent.title}
-                  date={normalizedEvent.start_at ? new Date(normalizedEvent.start_at).toLocaleDateString() : 'TBD'}
-                  time={normalizedEvent.start_at ? new Date(normalizedEvent.start_at).toLocaleTimeString() : 'TBD'}
-                  neighbourhood={normalizedEvent.city || 'Location TBD'}
-                  venue={normalizedEvent.venue_name || 'Venue TBD'}
-                  capacity={normalizedEvent.capacity || 0}
-                  going={0} // Would come from RSVP data
-                />
+                <SafeErrorBoundary inline>
+                  <EventHeader
+                    title={normalizedEvent?.title || 'Event'}
+                    date={normalizedEvent?.start_at ? new Date(normalizedEvent.start_at).toLocaleDateString() : 'TBD'}
+                    time={normalizedEvent?.start_at ? new Date(normalizedEvent.start_at).toLocaleTimeString() : 'TBD'}
+                    neighbourhood={normalizedEvent?.city || 'Location TBD'}
+                    venue={normalizedEvent?.venue_name || 'Venue TBD'}
+                    capacity={normalizedEvent?.capacity || 0}
+                    going={0} // Would come from RSVP data
+                  />
+                </SafeErrorBoundary>
 
                 {/* Booking CTA */}
                 <div className="mt-4">
@@ -233,10 +240,12 @@ export default function EventDetail() {
                 </div>
 
                 {/* Event gallery */}
-                <EventGallery
-                  images={normalizedEvent.image_url ? [normalizedEvent.image_url] : ['/placeholder.svg']}
-                  title={normalizedEvent.title}
-                />
+                <SafeErrorBoundary inline>
+                  <EventGallery
+                    images={normalizedEvent?.image_url ? [normalizedEvent.image_url] : ['/placeholder.svg']}
+                    title={normalizedEvent?.title || 'Event'}
+                  />
+                </SafeErrorBoundary>
 
                 {/* Event details */}
                 <div className="prose prose-lg max-w-none">
@@ -245,7 +254,7 @@ export default function EventDetail() {
                     <div>
                       <h2 className="text-2xl font-bold mb-4">About This Event</h2>
                       <div className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                        {normalizedEvent.description || 'No description available for this event.'}
+                        {normalizedEvent?.description || 'No description available for this event.'}
                       </div>
                     </div>
 
@@ -271,11 +280,11 @@ export default function EventDetail() {
                         <div className="flex items-center gap-3">
                           <MapPin className="w-5 h-5 text-muted-foreground" />
                           <div>
-                            <p className="font-semibold">{normalizedEvent.venue_name || 'Venue TBD'}</p>
-                            <p className="text-sm text-muted-foreground">{normalizedEvent.venue_address || 'Address TBD'}</p>
+                            <p className="font-semibold">{normalizedEvent?.venue_name || 'Venue TBD'}</p>
+                            <p className="text-sm text-muted-foreground">{normalizedEvent?.venue_address || 'Address TBD'}</p>
                           </div>
                         </div>
-                        {normalizedEvent.capacity && (
+                        {normalizedEvent?.capacity && (
                           <div className="flex items-center gap-3">
                             <Users className="w-5 h-5 text-muted-foreground" />
                             <span className="text-sm">Capacity: {normalizedEvent.capacity} people</span>
@@ -287,7 +296,7 @@ export default function EventDetail() {
                     {/* Organizer */}
                     <div>
                       <h2 className="text-2xl font-bold mb-4">Organizer</h2>
-                      <p className="text-muted-foreground">{normalizedEvent.organizer_name || 'Event Organizer'}</p>
+                      <p className="text-muted-foreground">{normalizedEvent?.organizer_name || 'Event Organizer'}</p>
                     </div>
                   </div>
                 </div>
@@ -300,17 +309,20 @@ export default function EventDetail() {
 
           {/* Sticky RSVP sidebar */}
           <div className="lg:w-80 lg:shrink-0">
-            <EventRSVPBar
-              eventId={normalizedEvent.id}
-              going={0} // Would come from RSVP data
-              interested={0} // Would come from RSVP data
-              userRSVP={userRSVP}
-              ticketUrl={normalizedEvent.ticket_url || '#'}
-              onRSVPChange={handleRSVPChange}
-            />
+            <SafeErrorBoundary inline>
+              <EventRSVPBar
+                eventId={normalizedEvent?.id || eventId}
+                going={0} // Would come from RSVP data
+                interested={0} // Would come from RSVP data
+                userRSVP={userRSVP}
+                ticketUrl={normalizedEvent?.ticket_url || '#'}
+                onRSVPChange={handleRSVPChange}
+              />
+            </SafeErrorBoundary>
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </SafeErrorBoundary>
   )
 }

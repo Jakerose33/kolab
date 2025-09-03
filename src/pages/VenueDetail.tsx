@@ -11,6 +11,8 @@ import { useRequiredParam, PageSkeleton, NotFound, InlineError } from "@/lib/saf
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import VenueMap from "@/components/VenueMap";
+import { SafeErrorBoundary } from "@/components/SafeErrorBoundary";
+import { useRouteId } from "@/utils/routing";
 
 // Mock venue data
 const mockVenues = {
@@ -46,15 +48,22 @@ const getVenueProp = (venue: any, mockProp: string, dbProp?: string) => {
 }
 
 export default function VenueDetail() {
-  const { value: id } = useRequiredParam('id');
+  const id = useRouteId('id');
   const navigate = useNavigate();
   const [showAuth, setShowAuth] = useState(false);
   const [showMessagesDialog, setShowMessagesDialog] = useState(false);
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
 
+  // Redirect to venues list if no valid ID
+  if (!id) {
+    navigate('/venues', { replace: true });
+    return null;
+  }
+
   const venueQuery = useQuery({
     queryKey: ['venue', id],
     enabled: !!id,
+    retry: 0,
     queryFn: async () => {
       // Try to get from Supabase first, fallback to mock data
       const { data, error } = await supabase
@@ -77,15 +86,6 @@ export default function VenueDetail() {
     },
   });
 
-  if (!id) {
-    return (
-      <AppLayout onOpenNotifications={() => setShowNotificationsDialog(true)} onOpenAuth={() => setShowAuth(true)}>
-        <main className="container px-4 py-8">
-          <NotFound title="Venue not found" subtitle="Missing venue ID." />
-        </main>
-      </AppLayout>
-    );
-  }
 
   if (venueQuery.isLoading) {
     return (
@@ -125,7 +125,8 @@ export default function VenueDetail() {
         onOpenNotifications={() => setShowNotificationsDialog(true)}
         onOpenAuth={() => setShowAuth(true)}
       >
-        <main className="container px-4 py-8">
+        <SafeErrorBoundary>
+          <main className="container px-4 py-8">
           {/* Back button */}
           <div className="mb-6">
             <Button
@@ -141,15 +142,15 @@ export default function VenueDetail() {
           <div className="space-y-8">
             {/* Venue Header */}
             <div>
-              <h1 className="text-3xl font-bold mb-2">{venue.name}</h1>
+              <h1 className="text-3xl font-bold mb-2">{venue?.name || 'Venue'}</h1>
               <div className="flex items-center gap-4 text-muted-foreground mb-4">
                 <div className="flex items-center gap-1">
                   <MapPin className="h-4 w-4" />
-                  {venue.address}
+                  {venue?.address || 'Address not available'}
                 </div>
                 <div className="flex items-center gap-1">
                   <Users className="h-4 w-4" />
-                  Capacity: {venue.capacity}
+                  Capacity: {venue?.capacity || 0}
                 </div>
                 {getVenueProp(venue, 'rating') && (
                   <div className="flex items-center gap-1">
@@ -158,7 +159,7 @@ export default function VenueDetail() {
                   </div>
                 )}
               </div>
-              <p className="text-lg text-muted-foreground">{venue.description}</p>
+              <p className="text-lg text-muted-foreground">{venue?.description || 'No description available'}</p>
             </div>
 
             {/* Booking CTA */}
@@ -172,7 +173,7 @@ export default function VenueDetail() {
                 <div key={index} className="aspect-video bg-muted rounded-lg overflow-hidden">
                   <img 
                     src={image} 
-                    alt={`${venue.name} ${index + 1}`}
+                    alt={`${venue?.name || 'Venue'} ${index + 1}`}
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       e.currentTarget.src = '/placeholder.svg';
@@ -201,8 +202,8 @@ export default function VenueDetail() {
                   <VenueMap 
                     latitude={getVenueProp(venue, 'latitude', 'latitude') ? Number(getVenueProp(venue, 'latitude', 'latitude')) : null}
                     longitude={getVenueProp(venue, 'longitude', 'longitude') ? Number(getVenueProp(venue, 'longitude', 'longitude')) : null}
-                    address={venue.address}
-                    venueName={venue.name}
+                    address={venue?.address || 'Address not available'}
+                    venueName={venue?.name || 'Venue'}
                     className="h-[300px] w-full rounded-lg border border-border overflow-hidden mb-6"
                   />
                 </div>
@@ -218,7 +219,7 @@ export default function VenueDetail() {
                     )}
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4 text-muted-foreground" />
-                      <span>Max Capacity: {venue.capacity} people</span>
+                      <span>Max Capacity: {venue?.capacity || 0} people</span>
                     </div>
                     {getVenueProp(venue, 'contact', 'contact_email') && (
                       <div>
@@ -230,7 +231,8 @@ export default function VenueDetail() {
                 </div>
             </div>
           </div>
-        </main>
+          </main>
+        </SafeErrorBoundary>
       </AppLayout>
       
       <MessagesDialog

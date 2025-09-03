@@ -32,15 +32,11 @@ const navigationItems = [
   { title: "Messages", url: "/messages", icon: MessageCircle },
   { title: "Profile", url: "/profile", icon: User },
   { title: "Settings", url: "/settings", icon: Settings },
-];
+] as const;
 
 export function AppSidebar() {
   const location = useLocation();
-  const currentPath = location.pathname;
-
-  const isActive = (path: string) => currentPath === path;
-  const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "bg-primary/10 text-primary font-medium border-r-2 border-primary" : "hover:bg-muted/50 text-muted-foreground hover:text-foreground";
+  const currentPath = location?.pathname || '/';
 
   return (
     <Sidebar className="w-64 border-r transition-all duration-300">
@@ -61,7 +57,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     onClick={() => window.location.href = item.url}
-                    className={`h-12 cursor-pointer ${location.pathname === item.url ? 'bg-primary text-primary-foreground' : ''}`}
+                    className={`h-12 cursor-pointer ${currentPath === item.url ? 'bg-primary text-primary-foreground' : ''}`}
                   >
                     <item.icon className="h-5 w-5 mr-3" />
                     <span className="text-sm font-medium">{item.title}</span>

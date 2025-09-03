@@ -217,7 +217,7 @@ export const useCreateEvent = () => {
           organizer_id: user.user.id
         })
         .select()
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
       return data;
@@ -280,7 +280,7 @@ export const useUpdateEvent = () => {
         .eq('id', id)
         .eq('organizer_id', user.user.id)
         .select()
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
       return data;
