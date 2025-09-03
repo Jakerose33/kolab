@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Flame, Eye } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useViewTransition } from "@/hooks/useViewTransition"
-const heroImage = "/assets/hero-boiler-room.jpg"
+const heroImage = "/lovable-uploads/06a2454d-1384-4786-ad03-7aa308f11152.png" // Your uploaded background image
 
 interface HeroProps {
   className?: string
