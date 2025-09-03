@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { OptimizedImage } from "@/components/OptimizedImage";
+import { UnifiedImage } from "@/components/UnifiedImage";
 import { MapPin, Calendar, Users, Clock, Heart, Share2, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -57,10 +57,12 @@ export function MobileEventCard({
           <div className="flex">
             {/* Image */}
             <div className="w-24 h-24 flex-shrink-0">
-              <OptimizedImage
+              <UnifiedImage
                 src={event.image_url || "/placeholder.svg"}
                 alt={event.title}
                 className="w-full h-full object-cover"
+                aspectRatio="1/1"
+                priority={false}
               />
             </div>
 
@@ -100,10 +102,12 @@ export function MobileEventCard({
       <CardContent className="p-0">
         {/* Event Image */}
         <div className="relative">
-          <OptimizedImage
+          <UnifiedImage
             src={event.image_url || "/placeholder.svg"}
             alt={event.title}
             className="w-full h-48 object-cover"
+            aspectRatio="4/3"
+            priority={false}
           />
           
           {/* Date Badge */}

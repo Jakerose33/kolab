@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { LockIcon, HeartIcon, ShareIcon, MapPinIcon, CalendarIcon, ClockIcon, UsersIcon } from 'lucide-react'
-import { OptimizedImage } from './OptimizedImage'
+import { UnifiedImage } from './UnifiedImage'
 import { cn } from '@/lib/utils'
 
 // Event interface based on Supabase schema
@@ -77,11 +77,13 @@ export function PreviewEventCard({
 
       {/* Event Image */}
       <div className="relative h-48 overflow-hidden">
-        <OptimizedImage
+        <UnifiedImage
           src={event.image_url || '/placeholder.svg'}
           alt={event.title}
           className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          aspectRatio="16/9"
+          priority={false}
         />
         
         {/* Event Type Badge */}

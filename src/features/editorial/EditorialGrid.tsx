@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { OptimizedImage } from "@/components/OptimizedImage"
+import { UnifiedImage } from "@/components/UnifiedImage"
 import { Flame, Eye, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getEvents } from "@/lib/supabase"
@@ -35,12 +35,13 @@ const EventCard = ({ event }: { event: Event }) => {
   const content = (
     <Card className="kolab-card group cursor-pointer overflow-hidden border-0 hover:scale-[1.02]">
         <div className="aspect-[4/5] relative overflow-hidden">
-          <OptimizedImage
+          <UnifiedImage
             src={event.image_url?.startsWith('/') ? event.image_url : `/${event.image_url}`}
             alt={event.title}
             aspectRatio="4/5"
             className="transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            priority={false}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
           

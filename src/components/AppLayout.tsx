@@ -7,6 +7,7 @@ import { useAuth } from "@/features/auth/AuthProvider";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ReportIssueButton } from "./ErrorReportDialog";
 import { GlobalErrorHandler } from "./GlobalErrorHandler";
+import { GlobalImageErrorHandler } from "./GlobalImageErrorHandler";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -103,6 +104,7 @@ export function AppLayout({
       {/* Error Reporting Components */}
       <ReportIssueButton />
       <GlobalErrorHandler />
+      <GlobalImageErrorHandler />
     </SidebarProvider>
   );
 }
