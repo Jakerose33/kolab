@@ -371,30 +371,22 @@ export default function Index() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredEvents.map((event) => {
-                    const link = getEventLinkSafe(event);
-                    if (!link) return null;
-
                     const normalizedEvent = normalizeEventData(event);
                     
                     if (session?.user) {
                       return (
-                        <div
+                        <EventCard 
                           key={String(normalizedEvent.id)}
-                          onClick={() => window.location.href = link}
-                          className="cursor-pointer block focus:outline-none focus:ring-2 focus:ring-ring"
-                        >
-                          <EventCard event={event} />
-                        </div>
+                          event={event} 
+                        />
                       );
                     } else {
                       return (
-                        <div
+                        <PreviewEventCard 
                           key={String(normalizedEvent.id)}
-                          className="cursor-pointer"
+                          event={event}
                           onClick={() => setShowAuth(true)}
-                        >
-                          <PreviewEventCard event={event} />
-                        </div>
+                        />
                       );
                     }
                   })}

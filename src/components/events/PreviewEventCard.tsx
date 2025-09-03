@@ -1,15 +1,19 @@
 import { Card } from '@/components/ui/card';
-import { normalizeEvent } from '@/lib/linking';
+import { normalizeEvent, getEventLink } from '@/lib/links';
 import { resolveEventImage } from '@/lib/media';
 
-type Props = { event: any; className?: string; 'data-testid'?: string };
+type Props = { event: any; className?: string; 'data-testid'?: string; onClick?: () => void };
 
-export default function PreviewEventCard({ event, className, ...rest }: Props) {
+export default function PreviewEventCard({ event, className, onClick, ...rest }: Props) {
   const n = normalizeEvent(event);
+  const link = getEventLink(event);
   
   return (
     <article className={`overflow-hidden ${className ?? ''}`} {...rest} data-testid="event-card">
-      <Card className="overflow-hidden">
+      <Card 
+        className={`overflow-hidden ${!link ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer hover:shadow-md transition-shadow'}`}
+        onClick={link ? onClick : undefined}
+      >
         <div className="relative">
           <img 
             src={resolveEventImage(event)} 
@@ -24,7 +28,7 @@ export default function PreviewEventCard({ event, className, ...rest }: Props) {
         <div className="p-3">
           <h3 className="text-base font-semibold line-clamp-1">{n.title}</h3>
           <div className="mt-2 text-sm text-muted-foreground">
-            Sign in to view details
+            {link ? 'Sign in to view details' : 'Event unavailable'}
           </div>
         </div>
       </Card>
