@@ -11,11 +11,22 @@ export default function PreviewEventCard({ event, className, ...rest }: Props) {
       <Card className="overflow-hidden">
         <div className="relative">
           {n.image ? (
-            // eslint-disable-next-line jsx-a11y/alt-text
-            <img src={n.image} alt={n.title} className="h-44 w-full object-cover" loading="lazy" />
-          ) : (
-            <div className="h-44 w-full bg-muted" />
-          )}
+            <img 
+              src={n.image} 
+              alt={n.title} 
+              className="h-44 w-full object-cover" 
+              loading="lazy"
+              onError={(e) => {
+                console.log('Preview image failed to load:', n.image);
+                e.currentTarget.style.display = 'none';
+                const nextEl = e.currentTarget.nextElementSibling as HTMLElement;
+                if (nextEl) nextEl.style.display = 'block';
+              }}
+            />
+          ) : null}
+          <div className="h-44 w-full bg-muted flex items-center justify-center text-muted-foreground" style={{ display: n.image ? 'none' : 'block' }}>
+            No image available
+          </div>
         </div>
         <div className="p-3">
           <h3 className="text-base font-semibold line-clamp-1">{n.title}</h3>
