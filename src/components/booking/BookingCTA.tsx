@@ -6,14 +6,16 @@ import { isValidRouteId } from '@/utils/routing'
 type Props = { 
   className?: string;
   eventId?: string;
+  venueId?: string;
 }
 
-export default function BookingCTA({ className, eventId }: Props) {
+export default function BookingCTA({ className, eventId, venueId }: Props) {
   const nav = useNavigate()
   const location = useLocation()
   
-  // Only use eventId if it's valid
+  // Only use eventId or venueId if they're valid
   const currentEventId = isValidRouteId(eventId) ? eventId : null
+  const currentVenueId = isValidRouteId(venueId) ? venueId : null
 
   const onClick = async () => {
     try {
@@ -29,6 +31,9 @@ export default function BookingCTA({ className, eventId }: Props) {
       // Navigate to event-specific booking flow if valid ID exists
       if (currentEventId) {
         window.location.href = `/events/${currentEventId}/book`
+      } else if (currentVenueId) {
+        // Navigate to venue-specific booking flow
+        window.location.href = `/venues/${currentVenueId}/book`
       } else {
         // Fallback to general bookings page
         window.location.href = '/bookings'
@@ -40,8 +45,8 @@ export default function BookingCTA({ className, eventId }: Props) {
     }
   }
 
-  // Disable button if no valid event ID
-  if (!currentEventId) {
+  // Disable button if no valid event or venue ID
+  if (!currentEventId && !currentVenueId) {
     return (
       <Button
         disabled

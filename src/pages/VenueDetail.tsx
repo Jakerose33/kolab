@@ -164,7 +164,7 @@ export default function VenueDetail() {
 
             {/* Booking CTA */}
             <div>
-              <BookingCTA className="w-full md:w-auto" />
+              <BookingCTA venueId={id} className="w-full md:w-auto" />
             </div>
 
             {/* Venue Images */}
