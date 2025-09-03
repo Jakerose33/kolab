@@ -26,15 +26,14 @@ export function ThemeProvider({
   storageKey = 'kolab-ui-theme',
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(defaultTheme)
-
-  // Initialize theme from localStorage after component mounts
-  useEffect(() => {
-    const stored = localStorage.getItem(storageKey) as Theme
-    if (stored && stored !== theme) {
-      setTheme(stored)
+  const [theme, setTheme] = useState<Theme>(() => {
+    // Initialize theme immediately from localStorage to prevent flash
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(storageKey) as Theme
+      return stored || defaultTheme
     }
-  }, [storageKey])
+    return defaultTheme
+  })
 
   useEffect(() => {
     const root = window.document.documentElement
@@ -48,17 +47,19 @@ export function ThemeProvider({
         : 'light'
 
       root.classList.add(systemTheme)
+      // Store the resolved system theme in localStorage
+      localStorage.setItem(storageKey, theme)
       return
     }
 
     root.classList.add(theme)
-  }, [theme])
+    localStorage.setItem(storageKey, theme)
+  }, [theme, storageKey])
 
   const value = {
     theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme)
-      setTheme(theme)
+    setTheme: (newTheme: Theme) => {
+      setTheme(newTheme)
     },
   }
 
