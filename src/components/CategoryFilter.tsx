@@ -1,13 +1,11 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   Music, 
   Palette, 
@@ -19,7 +17,6 @@ import {
   Utensils,
   Dumbbell,
   Briefcase,
-  ChevronDown,
   Filter
 } from "lucide-react";
 
@@ -58,85 +55,66 @@ export function CategoryFilter({
   const totalCount = categories.reduce((sum, cat) => sum + cat.count, 0);
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button 
-          variant="outline" 
-          className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-border/40 hover:bg-accent/50 transition-all duration-200"
-        >
-          <Filter className="h-4 w-4 mr-2" />
-          {selectedCategory ? (
-            <div className="flex items-center gap-2">
-              {categoryIcons[selectedCategory] || <span>📁</span>}
-              <span className="capitalize">{selectedCategoryData?.name}</span>
-              <Badge variant="secondary" className="ml-1">
-                {selectedCategoryData?.count}
-              </Badge>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <span>🌟</span>
-              <span>All Events</span>
-              <Badge variant="secondary" className="ml-1">
+    <div className="w-full max-w-xs">
+      <Select 
+        value={selectedCategory || "all"} 
+        onValueChange={(value) => onCategorySelect(value === "all" ? null : value)}
+      >
+        <SelectTrigger className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-border/40">
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4" />
+            <SelectValue>
+              {selectedCategory ? (
+                <div className="flex items-center gap-2">
+                  {categoryIcons[selectedCategory] || <span>📁</span>}
+                  <span className="capitalize">{selectedCategoryData?.name}</span>
+                  <Badge variant="secondary" className="ml-1">
+                    {selectedCategoryData?.count}
+                  </Badge>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span>🌟</span>
+                  <span>All Events</span>
+                  <Badge variant="secondary" className="ml-1">
+                    {totalCount}
+                  </Badge>
+                </div>
+              )}
+            </SelectValue>
+          </div>
+        </SelectTrigger>
+        
+        <SelectContent className="w-64 bg-background border-border shadow-xl z-50">
+          {/* All Events Option */}
+          <SelectItem value="all" className="flex items-center justify-between p-3">
+            <div className="flex items-center gap-3 w-full">
+              <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
+                <span className="text-sm">🌟</span>
+              </div>
+              <span className="font-medium">All Events</span>
+              <Badge variant="outline" className="ml-auto">
                 {totalCount}
               </Badge>
             </div>
-          )}
-          <ChevronDown className="h-4 w-4 ml-2" />
-        </Button>
-      </DropdownMenuTrigger>
-      
-      <DropdownMenuContent 
-        className="w-64 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80 border-border/40 shadow-xl"
-        align="start"
-        sideOffset={4}
-      >
-        {/* All Events Option */}
-        <DropdownMenuItem
-          onClick={() => onCategorySelect(null)}
-          className={cn(
-            "flex items-center justify-between p-3 cursor-pointer transition-colors",
-            !selectedCategory && "bg-primary text-primary-foreground"
-          )}
-        >
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
-              <span className="text-sm">🌟</span>
-            </div>
-            <span className="font-medium">All Events</span>
-          </div>
-          <Badge variant={!selectedCategory ? "secondary" : "outline"} className="ml-2">
-            {totalCount}
-          </Badge>
-        </DropdownMenuItem>
+          </SelectItem>
 
-        <DropdownMenuSeparator />
-
-        {/* Individual Categories */}
-        {categories.map((category) => (
-          <DropdownMenuItem
-            key={category.id}
-            onClick={() => onCategorySelect(category.id)}
-            className={cn(
-              "flex items-center justify-between p-3 cursor-pointer transition-colors",
-              selectedCategory === category.id && "bg-primary text-primary-foreground"
-            )}
-          >
-            <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
-                {categoryIcons[category.id] || <span className="text-sm">📁</span>}
+          {/* Individual Categories */}
+          {categories.map((category) => (
+            <SelectItem key={category.id} value={category.id} className="flex items-center justify-between p-3">
+              <div className="flex items-center gap-3 w-full">
+                <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
+                  {categoryIcons[category.id] || <span className="text-sm">📁</span>}
+                </div>
+                <span className="capitalize font-medium">{category.name}</span>
+                <Badge variant="outline" className="ml-auto">
+                  {category.count}
+                </Badge>
               </div>
-              <span className="capitalize font-medium">{category.name}</span>
-            </div>
-            <Badge 
-              variant={selectedCategory === category.id ? "secondary" : "outline"} 
-              className="ml-2"
-            >
-              {category.count}
-            </Badge>
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 }

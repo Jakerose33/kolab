@@ -57,7 +57,7 @@ import { useAuth } from "@/features/auth/AuthProvider";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useEventsFeed } from "@/hooks/useEventsData";
 import { normalizeEventData, getEventLinkSafe } from "@/utils/eventHelpers";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useRealtime } from "@/hooks/useRealtime";
 import { useOfflineQueue } from "@/hooks/useOfflineQueue";
 import { usePerformanceOptimizations } from "@/hooks/usePerformanceOptimizations";
@@ -65,6 +65,7 @@ import EventMap from "@/components/EventMap";
 import React from "react";
 
 export default function Index() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [filteredEvents, setFilteredEvents] = useState<any[]>([]);
   const [userRSVPs, setUserRSVPs] = useState<Record<string, string>>({});
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -73,10 +74,12 @@ export default function Index() {
   const [showAuth, setShowAuth] = useState(false);
   const [showSearchSheet, setShowSearchSheet] = useState(false);
   const [showFiltersSheet, setShowFiltersSheet] = useState(false);
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState("date");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("events");
+  
+  // Get category from URL params
+  const activeCategory = searchParams.get('category') || null;
   
   const { toast } = useToast();
   const { session } = useAuth();
@@ -135,6 +138,17 @@ export default function Index() {
     onRSVPCreated: handleNewRSVP,
     onRSVPUpdated: handleNewRSVP
   });
+
+  // Handle category selection with URL updates
+  const handleCategorySelect = (categoryId: string | null) => {
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (categoryId) {
+      newSearchParams.set('category', categoryId);
+    } else {
+      newSearchParams.delete('category');
+    }
+    setSearchParams(newSearchParams);
+  };
 
   // Filter and sort events
   useEffect(() => {
@@ -280,7 +294,7 @@ export default function Index() {
                       <CategoryFilter 
                         categories={categories}
                         selectedCategory={activeCategory}
-                        onCategorySelect={setActiveCategory}
+                        onCategorySelect={handleCategorySelect}
                       />
                     </div>
                   </SheetContent>
@@ -342,7 +356,7 @@ export default function Index() {
                 <CategoryFilter 
                   categories={categories}
                   selectedCategory={activeCategory}
-                  onCategorySelect={setActiveCategory}
+                  onCategorySelect={handleCategorySelect}
                 />
               </div>
             )}
