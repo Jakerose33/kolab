@@ -9,7 +9,7 @@ import {
 } from './SEOJsonLD';
 
 interface SEOOptimizerProps {
-  page: 'home' | 'events' | 'event-detail' | 'venues' | 'venue-detail' | 'careers' | 'social' | 'profile';
+  page: 'home' | 'events' | 'event-detail' | 'venues' | 'venue-detail' | 'careers' | 'social' | 'profile' | 'contact';
   title?: string;
   description?: string;
   image?: string;
@@ -39,15 +39,15 @@ export function SEOOptimizer({
   // Page-specific SEO configurations
   const seoConfigs = {
     home: {
-      title: "Kolab - Where Your City Comes Alive | Underground Events & Hidden Venues",
-      description: "Your backstage pass to the city's best-kept secrets. Discover underground culture, exclusive events, and hidden venues. Join the collaborative community.",
-      keywords: ["underground events", "hidden venues", "secret events", "exclusive parties", "cultural events", "nightlife", "art galleries", "music venues", "creative spaces", "underground culture"],
+      title: "Kolab - Where Melbourne Comes Alive | Underground Events & Hidden Venues",
+      description: "Your backstage pass to Melbourne's best-kept secrets. Discover underground culture, exclusive events, and hidden venues across Melbourne's vibrant cultural districts.",
+      keywords: ["melbourne events", "underground events melbourne", "hidden venues melbourne", "secret events", "exclusive parties", "cultural events melbourne", "melbourne nightlife", "art galleries melbourne", "music venues melbourne", "creative spaces melbourne", "underground culture"],
       type: 'website' as const
     },
     events: {
-      title: "Discover Underground Events | Exclusive Parties & Cultural Experiences",
-      description: "Find the best underground events, secret parties, and cultural experiences in your city. From intimate music venues to exclusive art galleries.",
-      keywords: ["events", "underground events", "secret parties", "music events", "art events", "cultural events", "nightlife", "live music", "art galleries", "creative events"],
+      title: "Discover Underground Events Melbourne | Exclusive Parties & Cultural Experiences",
+      description: "Find the best underground events, secret parties, and cultural experiences in Melbourne. From intimate music venues to exclusive art galleries.",
+      keywords: ["melbourne events", "underground events melbourne", "secret parties melbourne", "music events melbourne", "art events melbourne", "cultural events melbourne", "melbourne nightlife", "live music melbourne", "art galleries melbourne", "creative events melbourne"],
       type: 'website' as const
     },
     'event-detail': {
@@ -84,6 +84,12 @@ export function SEOOptimizer({
       title: title || "Profile | Kolab",
       description: description || "Creative profile showcasing interests, events, and connections in the underground culture scene.",
       keywords: ["profile", "creative profile", "artist profile", "culture enthusiast"],
+      type: 'website' as const
+    },
+    contact: {
+      title: "Contact Us - Kolab Melbourne | Get in Touch",
+      description: "Contact Kolab Melbourne for event support, venue partnerships, and technical assistance. We're here to help with your underground culture needs in Melbourne.",
+      keywords: ["contact kolab melbourne", "venue partnerships melbourne", "technical support", "customer service", "melbourne events contact", "event support melbourne"],
       type: 'website' as const
     }
   };

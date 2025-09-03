@@ -11,7 +11,7 @@ export function Footer() {
             <h3 className="text-lg font-semibold mb-4">Kolab</h3>
             <p className="text-muted-foreground mb-4 text-sm">
               Your backstage pass to underground culture. Connecting you to exclusive events, 
-              hidden venues, and creative communities across London.
+              hidden venues, and creative communities across Melbourne.
             </p>
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2 text-muted-foreground">
@@ -21,8 +21,8 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Mail className="h-4 w-4" />
-                <a href="mailto:hello@kolab.co.uk" className="hover:text-primary">
-                  hello@kolab.co.uk
+                <a href="mailto:hello@ko-lab.com.au" className="hover:text-primary">
+                  hello@ko-lab.com.au
                 </a>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
@@ -69,18 +69,22 @@ export function Footer() {
             <div>
               <h4 className="text-sm font-semibold mb-3">Follow Us</h4>
               <div className="flex gap-3">
-                <a href="https://instagram.com/kolab" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary" aria-label="Follow us on Instagram">
+                {/* Social icons hidden until real profiles are provided */}
+                {/* 
+                <a href="https://instagram.com/kolab_melbourne" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary" aria-label="Follow us on Instagram">
                   <Instagram className="h-5 w-5" />
                 </a>
-                <a href="https://twitter.com/kolab" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary" aria-label="Follow us on Twitter">
+                <a href="https://twitter.com/kolab_melb" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary" aria-label="Follow us on Twitter">
                   <Twitter className="h-5 w-5" />
                 </a>
-                <a href="https://facebook.com/kolab" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary" aria-label="Follow us on Facebook">
+                <a href="https://facebook.com/kolabmelbourne" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary" aria-label="Follow us on Facebook">
                   <Facebook className="h-5 w-5" />
                 </a>
-                <a href="https://linkedin.com/company/kolab" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary" aria-label="Follow us on LinkedIn">
+                <a href="https://linkedin.com/company/kolab-melbourne" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary" aria-label="Follow us on LinkedIn">
                   <Linkedin className="h-5 w-5" />
                 </a>
+                */}
+                <p className="text-sm text-muted-foreground">Follow us on social media - coming soon!</p>
               </div>
             </div>
           </div>

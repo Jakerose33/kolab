@@ -20,42 +20,42 @@ export default function Contact() {
     {
       icon: Mail,
       title: "General Inquiries",
-      contact: "hello@kolab.co.uk",
+      contact: "hello@ko-lab.com.au",
       description: "For general questions about our platform"
     },
     {
       icon: Building2,
       title: "Venue Partnerships",
-      contact: "venues@kolab.co.uk",
+      contact: "venues@ko-lab.com.au",
       description: "Ready to list your venue? Get in touch"
     },
     {
       icon: HeadphonesIcon,
       title: "Technical Support",
-      contact: "support@kolab.co.uk",
+      contact: "support@ko-lab.com.au",
       description: "Need help with bookings or technical issues?"
     },
     {
       icon: Users,
       title: "Press & Media",
-      contact: "press@kolab.co.uk",
+      contact: "press@ko-lab.com.au",
       description: "Media inquiries and press kit requests"
     }
   ];
 
   const supportHours = [
-    { day: "Monday - Friday", hours: "9:00 AM - 6:00 PM GMT" },
-    { day: "Saturday", hours: "10:00 AM - 4:00 PM GMT" },
+    { day: "Monday - Friday", hours: "9:00 AM - 6:00 PM AEST" },
+    { day: "Saturday", hours: "10:00 AM - 4:00 PM AEST" },
     { day: "Sunday", hours: "Closed" }
   ];
 
   return (
     <>
       <SEOOptimizer
-        page="profile"
-        title="Contact Support | Kolab - Underground Culture Platform"
-        description="Get in touch with Kolab's support team. Venue partnerships, technical support, and general inquiries welcome."
-        keywords={["contact kolab", "venue partnerships", "technical support", "customer service"]}
+        page="contact"
+        title="Contact Us - Kolab Melbourne | Get in Touch"
+        description="Contact Kolab Melbourne for event support, venue partnerships, and technical assistance. We're here to help with your underground culture needs."
+        keywords={["contact kolab melbourne", "venue partnerships melbourne", "technical support", "customer service", "melbourne events contact"]}
         breadcrumbs={[
           { name: 'Home', url: '/' },
           { name: 'Contact', url: '/contact' }
@@ -113,16 +113,16 @@ export default function Contact() {
                 <CardContent>
                   <div className="space-y-3 text-sm">
                     <div>
-                      <strong>Company:</strong> Kolab Ltd
+                      <strong>Company:</strong> Kolab Pty Ltd
                     </div>
                     <div>
-                      <strong>Registration:</strong> England & Wales No. 12345678
+                      <strong>Registration:</strong> Australia ACN 123 456 789
                     </div>
                     <div>
-                      <strong>Address:</strong> London, United Kingdom
+                      <strong>Address:</strong> Melbourne, Victoria, Australia
                     </div>
                     <div>
-                      <strong>Phone:</strong> +44 20 7123 4567
+                      <strong>Phone:</strong> +61 480 734 669
                     </div>
                   </div>
                 </CardContent>
@@ -219,10 +219,10 @@ export default function Contact() {
                     For urgent venue safety issues or platform emergencies:
                   </p>
                   <a 
-                    href="tel:+442071234567"
+                    href="tel:+61480734669"
                     className="text-sm font-medium text-destructive hover:underline"
                   >
-                    +44 20 7123 4567 (24/7 Emergency Line)
+                    +61 480 734 669 (24/7 Emergency Line)
                   </a>
                 </CardContent>
               </Card>
