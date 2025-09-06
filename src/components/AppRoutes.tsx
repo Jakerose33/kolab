@@ -130,7 +130,7 @@ export default function AppRoutes() {
           <Route path="/report" element={<LazyPages.AdvancedErrorReport />} />
 
           {/* ===== Legal routes ===== */}
-          <Route path="/about" element={<LazyPages.AboutUs />} />
+          <Route path="/about" element={<LazyPages.About />} />
           <Route path="/contact" element={<LazyPages.Contact />} />
           <Route path="/help" element={<LazyPages.Help />} />
           <Route path="/safety" element={<LazyPages.Safety />} />

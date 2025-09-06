@@ -54,12 +54,11 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
   };
 
   const navItems = [
-    { name: "Events", path: "/", icon: Calendar },
+    { name: "Home", path: "/", icon: Calendar },
+    { name: "Events", path: "/events", icon: Calendar },
     { name: "Venues", path: "/venues", icon: MapPin },
-    { name: "Journal", path: "/journal", icon: BookOpen },
-    { name: "Social", path: "/social", icon: Users },
-    { name: "Search", path: "/search", icon: Search },
-    { name: "Careers", path: "/careers", icon: Briefcase },
+    { name: "City Guide", path: "/city-guide", icon: BookOpen },
+    { name: "About", path: "/about", icon: Users },
   ];
 
   return (

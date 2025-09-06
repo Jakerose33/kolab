@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import Hero from "@/features/hero/Hero";
-import EditorialGrid from "@/features/editorial/EditorialGrid";
+import { HowItWorks } from "@/components/HowItWorks";
+import { AudienceSplit } from "@/components/AudienceSplit";
+import { FirstVisitTip } from "@/components/FirstVisitTip";
 import CityGuide from "@/features/city/CityGuide";
-import DiariesStrip from "@/features/diaries/DiariesStrip";
 import CollabsMarquee from "@/features/collabs/CollabsMarquee";
 import EventCard from "@/components/events/EventCard";
 import PreviewEventCard from "@/components/events/PreviewEventCard";
@@ -259,9 +260,11 @@ export default function Index() {
           <Hero />
         </header>
         
-        <section aria-label="Featured Content" className="featured-content">
-          <EditorialGrid />
-        </section>
+        {/* How it works section */}
+        <HowItWorks />
+        
+        {/* Audience split section */}
+        <AudienceSplit />
         
         <section aria-label="City Guide" className="city-guide">
           <CityGuide />
@@ -410,10 +413,10 @@ export default function Index() {
               <EmptyState
                 icon={Calendar}
                 title="No events found"
-                description="No events match your current filters. Try adjusting your search or category selection."
+                description="No events match your current filters. Try 'Tonight' or change the category."
                 action={{
-                  label: "Create Event",
-                  onClick: () => session?.user ? setShowCreateDialog(true) : setShowAuth(true)
+                  label: "Browse Tonight's Events",
+                  onClick: () => window.location.href = "/events?when=tonight"
                 }}
               />
             )}
@@ -484,11 +487,8 @@ export default function Index() {
 
         {/* Footer content */}
         <footer role="contentinfo" className="footer-content">
-        <CollabsMarquee />
-
-        {/* Kolab Diaries Strip */}
-        <DiariesStrip />
         </footer>
+        <FirstVisitTip />
         <Footer />
       </AppLayout>
 

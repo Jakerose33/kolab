@@ -7,6 +7,7 @@ import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { resolveImageUrl } from "@/lib/media"
 import { cityGuidesData, neighbourhoods, getGuidesByNeighbourhood, type CityGuide } from "@/data/city-guides"
+import { Link } from "react-router-dom"
 
 interface CityGuideProps {
   className?: string
@@ -71,13 +72,15 @@ export default function CityGuide({ className }: CityGuideProps) {
               City Guide
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl">
-              Curated by locals, for those who know where to look
+              Curated by locals for the places worth your time.
             </p>
           </div>
           
-          <Button variant="outline" className="self-start lg:self-end group">
-            All guides
-            <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+          <Button asChild variant="outline" className="self-start lg:self-end group">
+            <Link to="/city-guide">
+              View all guides
+              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </Button>
         </div>
 
@@ -104,9 +107,9 @@ export default function CityGuide({ className }: CityGuideProps) {
           </div>
         </div>
 
-        {/* Grid */}
+        {/* Grid - Limited to 8 cards on homepage */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
-          {filteredGuides.map((guide) => (
+          {filteredGuides.slice(0, 8).map((guide) => (
             <GuideCard key={guide.id} guide={guide} />
           ))}
         </div>
