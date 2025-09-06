@@ -1331,6 +1331,30 @@ export type Database = {
         }
         Relationships: []
       }
+      security_exclusions: {
+        Row: {
+          created_at: string | null
+          excluded_by: string | null
+          id: string
+          reason: string
+          warning_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          excluded_by?: string | null
+          id?: string
+          reason: string
+          warning_type: string
+        }
+        Update: {
+          created_at?: string | null
+          excluded_by?: string | null
+          id?: string
+          reason?: string
+          warning_type?: string
+        }
+        Relationships: []
+      }
       social_interactions: {
         Row: {
           created_at: string
