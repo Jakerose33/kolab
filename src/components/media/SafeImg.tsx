@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { logImageFallback } from '@/lib/media';
 
-const PLACEHOLDER = '/placeholder.svg';
+// Use a reliable base64 SVG that will always work
+const PLACEHOLDER = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMCAyMkw0NCA0NE0yMCA0NEw0NCAyMiIgc3Ryb2tlPSIjOTNBM0I4IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K';
 
 type Props = React.ImgHTMLAttributes<HTMLImageElement> & {
   src: string;

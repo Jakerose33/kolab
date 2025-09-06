@@ -13,6 +13,7 @@ import { AdvancedSEOSystem } from "@/components/AdvancedSEOSystem";
 import { AdvancedSitemapGenerator } from "@/components/AdvancedSitemapGenerator";
 import { AdvancedRobotsTxtManager } from "@/components/AdvancedRobotsTxtManager";
 import { SecurityMonitor } from "@/components/SecurityMonitor";
+import { GlobalImageErrorHandler } from "@/components/GlobalImageErrorHandler";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AppRoutes from "@/components/AppRoutes";
@@ -112,6 +113,7 @@ function App() {
             <TooltipProvider>
               <SecurityProvider>
                 <AuthProvider>
+                  <GlobalImageErrorHandler />
                   <Toaster />
                   <Sonner />
                   <OfflineIndicator />

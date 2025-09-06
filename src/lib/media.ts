@@ -4,8 +4,9 @@ type AnyRec = Record<string, any>;
 
 const DEFAULT_BUCKET =
   (import.meta.env.VITE_PUBLIC_MEDIA_BUCKET as string) || 'public';
-const PLACEHOLDER = '/placeholder.svg';
-const FALLBACK = '/images/placeholders/event.jpg';
+// Use a reliable fallback that should always work
+const PLACEHOLDER = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMCAyMkw0NCA0NE0yMCA0NEw0NCAyMiIgc3Ryb2tlPSIjOTNBM0I4IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K';
+const FALLBACK = PLACEHOLDER; // Use same reliable fallback
 
 const UPLOAD_HOSTS = [
   'https://lovable-uploads', // Lovable CDN
@@ -23,6 +24,8 @@ const isAbsoluteUrl = (s?: string | null) =>
 export function resolveImageUrl(raw?: string | null): string {
   if (!raw) return PLACEHOLDER;
   
+  console.log('[RESOLVE_IMAGE_DEBUG]', { input: raw });
+  
   // Already absolute
   if (ABSOLUTE.test(raw)) return raw;
   
@@ -39,6 +42,19 @@ export function resolveImageUrl(raw?: string | null): string {
     return data?.publicUrl || PLACEHOLDER;
   }
   
+  // Handle public folder images - these often 404 in production builds
+  if (raw.startsWith('/images/') || raw.startsWith('/public/')) {
+    console.warn('[RESOLVE_IMAGE] Public folder image may not exist in production:', raw);
+    // Try to fetch the image to check if it exists
+    const img = new Image();
+    img.onload = () => console.log('[RESOLVE_IMAGE] Public image exists:', raw);
+    img.onerror = () => {
+      console.error('[RESOLVE_IMAGE] Public image does not exist, will fallback:', raw);
+    };
+    img.src = raw;
+    return raw; // Still return the original path, SafeImg will handle fallback
+  }
+  
   // Site-relative paths (including /src/assets/) - these are valid and served by Vite
   if (raw.startsWith('/')) {
     return raw;
@@ -50,6 +66,7 @@ export function resolveImageUrl(raw?: string | null): string {
   }
   
   // Fallback: treat as invalid, use placeholder
+  console.warn('[RESOLVE_IMAGE] Using placeholder for invalid path:', raw);
   return PLACEHOLDER;
 }
 
