@@ -1970,6 +1970,24 @@ export type Database = {
           type: string
         }[]
       }
+      get_profile_with_masked_email: {
+        Args: { target_user_id: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          created_at: string
+          full_name: string
+          handle: string
+          id: string
+          interests: string[]
+          linkedin_url: string
+          location: string
+          masked_contact: string
+          skills: string[]
+          user_id: string
+          website: string
+        }[]
+      }
       get_profile_with_privacy: {
         Args: { target_user_id: string }
         Returns: {
@@ -2059,6 +2077,18 @@ export type Database = {
         }[]
       }
       get_public_profile: {
+        Args: { profile_user_id: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          created_at: string
+          full_name: string
+          handle: string
+          id: string
+          user_id: string
+        }[]
+      }
+      get_public_profile_safe: {
         Args: { profile_user_id: string }
         Returns: {
           avatar_url: string
