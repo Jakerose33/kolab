@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { SafeImg } from "@/components/media/SafeImg"
+import { resolveImageUrl } from "@/lib/media"
 import { cn } from "@/lib/utils"
 
 interface EventGalleryProps {
@@ -28,10 +30,11 @@ export default function EventGallery({ images, title, className }: EventGalleryP
     <div className={cn("space-y-6", className)}>
       {/* Main featured image */}
       <div className="relative w-full h-[60vh] sm:h-[70vh] lg:h-[80vh] overflow-hidden bg-black">
-        <img
-          src={currentImage}
+        <SafeImg
+          src={resolveImageUrl(currentImage)}
           alt={title}
           className="w-full h-full object-cover"
+          fallbackContext="event-gallery-main"
         />
         
         {/* Navigation arrows for multiple images */}
@@ -94,10 +97,11 @@ export default function EventGallery({ images, title, className }: EventGalleryP
                   : "border-transparent hover:border-border hover:scale-102"
               )}
             >
-              <img
-                src={image}
+              <SafeImg
+                src={resolveImageUrl(image)}
                 alt={`${title} - Image ${index + 1}`}
                 className="w-full h-full object-cover"
+                fallbackContext="event-gallery-thumbnail"
               />
             </button>
           ))}

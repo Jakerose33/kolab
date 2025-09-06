@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Calendar, MapPin, Users, CreditCard, Clock } from "lucide-react";
+import { SafeImg } from "@/components/media/SafeImg";
+import { resolveEventImage } from "@/lib/media";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -206,10 +208,11 @@ export default function EventBooking() {
             <Card>
               <CardHeader>
                 <div className="flex items-start gap-4">
-                  <img 
-                    src={event.image_url} 
+                  <SafeImg 
+                    src={resolveEventImage(event)} 
                     alt={event.title}
                     className="w-16 h-16 object-cover rounded-lg"
+                    fallbackContext="event-booking"
                   />
                   <div className="flex-1">
                     <CardTitle className="text-lg">{event.title}</CardTitle>

@@ -39,9 +39,14 @@ export function resolveImageUrl(raw?: string | null): string {
     return data?.publicUrl || PLACEHOLDER;
   }
   
-  // Site-relative paths (prefer placeholder to avoid blue ?)
+  // Site-relative paths (including /src/assets/) - these are valid and served by Vite
   if (raw.startsWith('/')) {
     return raw;
+  }
+  
+  // Handle relative paths that should be absolute
+  if (raw.startsWith('src/') || raw.startsWith('assets/')) {
+    return `/${raw}`;
   }
   
   // Fallback: treat as invalid, use placeholder

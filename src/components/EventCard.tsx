@@ -21,6 +21,8 @@ import { rsvpToEvent } from "@/lib/supabase";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { SafeImg } from "@/components/media/SafeImg";
+import { resolveEventImage } from "@/lib/media";
 
 import { getEventLink } from "@/lib/entities";
 
@@ -146,10 +148,11 @@ export function EventCard({
       {/* Event Image */}
       <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5">
       {event.image_url ? (
-        <img 
-          src={event.image_url.startsWith('/') ? event.image_url : `/${event.image_url}`} 
+        <SafeImg 
+          src={resolveEventImage(event)}
           alt={event.title}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          fallbackContext="event-card-main"
         />
       ) : (
         <div className="w-full h-full flex items-center justify-center">

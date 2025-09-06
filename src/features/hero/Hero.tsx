@@ -5,11 +5,11 @@ import { resolveImageUrl } from '@/lib/media';
 /**
  * Hero image source order:
  * 1) VITE_HERO_IMAGE_URL (e.g., Supabase public URL or CDN)
- * 2) /hero/kolab-hero.jpg (put this in /public/hero/)
+ * 2) /src/assets/hero-boiler-room.jpg (served by Vite dev server/build)
  * If the src fails at runtime, we fall back to a local placeholder.
  */
 
-const DEFAULT_HERO = '/hero/kolab-hero.jpg';
+const DEFAULT_HERO = '/src/assets/hero-boiler-room.jpg';
 const HERO_SRC = resolveImageUrl(import.meta.env.VITE_HERO_IMAGE_URL ?? DEFAULT_HERO);
 
 export default function Hero() {

@@ -21,7 +21,8 @@ export function SafeImg({ src, fallbackContext, ...rest }: Props) {
 
   const handleError = React.useCallback(() => {
     if (finalSrc !== PLACEHOLDER) {
-      // Log the fallback for observability
+      // Log the fallback for observability  
+      console.warn('[img-fallback]', finalSrc, fallbackContext);
       logImageFallback(finalSrc, fallbackContext);
       setFinalSrc(PLACEHOLDER);
       setHasErrored(true);
