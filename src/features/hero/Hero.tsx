@@ -77,10 +77,6 @@ export default function Hero() {
               <Link to="/auth?mode=organiser">List your event (free)</Link>
             </Button>
           </div>
-          
-          <p className="mt-4 text-sm text-white/70">
-            No spam. Just good events.
-          </p>
         </div>
       </div>
     </section>
