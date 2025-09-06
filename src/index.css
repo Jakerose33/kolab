@@ -667,6 +667,16 @@
   transform: scale(1.25);
 }
 
+/* Visual Edits improvements */
+[data-visual-edits] {
+  position: relative;
+}
+
+[data-visual-edits]:hover {
+  outline: 1px dashed hsl(var(--primary) / 0.3);
+  outline-offset: 2px;
+}
+
 /* Accessibility: Respect motion preferences for scroll snap */
 @media (prefers-reduced-motion: reduce) {
   .scroll-smooth {

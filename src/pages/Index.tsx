@@ -256,15 +256,19 @@ export default function Index() {
         onOpenAuth={() => setShowAuth(true)}
       >
         {/* Semantic HTML structure for SEO */}
-        <header role="banner">
+        <div data-visual-edits="hero-wrapper">
           <Hero />
-        </header>
+        </div>
         
         {/* How it works section */}
-        <HowItWorks />
+        <div data-visual-edits="how-it-works-wrapper">
+          <HowItWorks />
+        </div>
         
         {/* Audience split section */}
-        <AudienceSplit />
+        <div data-visual-edits="audience-split-wrapper">
+          <AudienceSplit />
+        </div>
         
         <section aria-label="City Guide" className="city-guide">
           <CityGuide />
