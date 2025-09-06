@@ -12,6 +12,18 @@ export function SafeImg({ src, fallbackContext, ...rest }: Props) {
   const [finalSrc, setFinalSrc] = React.useState(src || PLACEHOLDER);
   const [hasErrored, setHasErrored] = React.useState(false);
 
+  // Debug logging
+  React.useEffect(() => {
+    if (fallbackContext === 'hero') {
+      console.log('[HERO SAFEIMG DEBUG]', {
+        originalSrc: src,
+        finalSrc,
+        hasErrored,
+        placeholder: PLACEHOLDER
+      });
+    }
+  }, [src, finalSrc, hasErrored, fallbackContext]);
+
   // Update src when prop changes
   React.useEffect(() => {
     if (src !== finalSrc && !hasErrored) {
@@ -22,12 +34,17 @@ export function SafeImg({ src, fallbackContext, ...rest }: Props) {
   const handleError = React.useCallback(() => {
     if (finalSrc !== PLACEHOLDER) {
       // Log the fallback for observability  
-      console.warn('[img-fallback]', finalSrc, fallbackContext);
+      console.error('[img-fallback]', {
+        originalSrc: src,
+        finalSrc,
+        fallbackContext,
+        timestamp: new Date().toISOString()
+      });
       logImageFallback(finalSrc, fallbackContext);
       setFinalSrc(PLACEHOLDER);
       setHasErrored(true);
     }
-  }, [finalSrc, fallbackContext]);
+  }, [finalSrc, fallbackContext, src]);
 
   return (
     // eslint-disable-next-line jsx-a11y/alt-text
