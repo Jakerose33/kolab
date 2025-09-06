@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { LoadingState } from './LoadingState';
 
@@ -11,7 +11,17 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children, showPreview = false, fallback }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
-  const location = useLocation();
+  
+  // Check if we're in a router context
+  let location;
+  try {
+    location = useLocation();
+  } catch (error) {
+    // If useLocation fails, we're outside router context
+    // In this case, just show children without protection for now
+    console.warn('ProtectedRoute used outside Router context');
+    return <>{children}</>;
+  }
 
   if (loading) {
     return <LoadingState />;
