@@ -1960,6 +1960,38 @@ export type Database = {
           visibility: string
         }[]
       }
+      get_masked_user_info: {
+        Args: { target_user_id: string }
+        Returns: {
+          avatar_url: string
+          contact_status: string
+          created_at: string
+          full_name: string
+          handle: string
+          id: string
+          user_id: string
+        }[]
+      }
+      get_masked_venue_contact: {
+        Args: { venue_id: string }
+        Returns: {
+          address: string
+          amenities: string[]
+          capacity: number
+          contact_masked: string
+          created_at: string
+          description: string
+          hourly_rate: number
+          id: string
+          images: string[]
+          latitude: number
+          longitude: number
+          name: string
+          opening_hours: Json
+          status: string
+          tags: string[]
+        }[]
+      }
       get_payment_method_display_only: {
         Args: { p_payment_method_id: string }
         Returns: {
@@ -2148,6 +2180,14 @@ export type Database = {
           owner_name: string
           status: string
           tags: string[]
+        }[]
+      }
+      get_security_protection_status: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          description: string
+          protection_type: string
+          status: string
         }[]
       }
       get_user_analytics_masked: {
