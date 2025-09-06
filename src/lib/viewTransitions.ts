@@ -18,6 +18,13 @@ export function supportsViewTransitions(): boolean {
   // Check if API exists
   if (!('startViewTransition' in document)) return false;
   
+  // Disable view transitions on routes that cause DOM conflicts
+  const currentPath = window.location.pathname;
+  const problematicRoutes = ['/about', '/contact', '/help', '/safety', '/privacy', '/terms', '/cookies', '/refunds'];
+  if (problematicRoutes.includes(currentPath)) {
+    return false;
+  }
+  
   // Additional check for mobile browsers that might have partial support
   const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   if (isMobile) {
