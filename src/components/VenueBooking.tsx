@@ -66,17 +66,29 @@ export function VenueBooking() {
   const loadVenues = async () => {
     try {
       setLoading(true);
+      
+      // Use the safe database function to avoid policy recursion
       const { data, error } = await supabase
-        .from('venues')
-        .select('*')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
+        .rpc('get_venues_safe', {
+          venue_limit: 50,
+          search_query: null,
+          venue_tags: null,
+          min_capacity: null
+        });
 
       if (error) throw error;
 
       setVenues(data || []);
     } catch (error: any) {
       console.error('Error loading venues:', error);
+      
+      // Trigger automatic error reporting for database errors
+      if (typeof window !== 'undefined' && (window as any).__openErrorPrompt) {
+        import('@/components/reporting/ErrorPrompt').then(({ openErrorPromptFor }) => {
+          openErrorPromptFor(error, 'auto');
+        });
+      }
+      
       toast({
         title: "Error Loading Venues",
         description: "Failed to load venues. Please try again.",
