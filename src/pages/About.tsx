@@ -3,10 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Calendar, Heart, Users, Megaphone, Shield, DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
 import { SEOHead } from "@/components/SEOHead";
+import { SafeErrorBoundary } from "@/components/SafeErrorBoundary";
 
 export default function About() {
   return (
-    <>
+    <SafeErrorBoundary>
       <SEOHead 
         title="About Kolab - How It Works"
         description="Learn how Kolab helps locals discover great events and helps organisers grow their communities. Free event listing platform for the underground scene."
@@ -195,6 +196,6 @@ export default function About() {
           </Card>
         </section>
       </div>
-    </>
+    </SafeErrorBoundary>
   );
 }
