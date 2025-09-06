@@ -345,27 +345,22 @@ export function ErrorReportDialog({
 
 // Floating Report Button Component
 export function ReportIssueButton() {
-  const [showDialog, setShowDialog] = useState(false);
+  const handleClick = () => {
+    // Import dynamically to avoid circular dependencies
+    import('@/components/reporting/ErrorPrompt').then(({ openErrorPromptFor }) => {
+      openErrorPromptFor('User opened manual report', 'manual');
+    });
+  };
 
   return (
-    <>
-      <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="fixed bottom-4 right-4 z-50 bg-background/80 backdrop-blur-sm border-border hover:bg-muted/50 shadow-lg"
-          >
-            <Bug className="w-4 h-4 mr-2" />
-            Report Issue
-          </Button>
-        </DialogTrigger>
-      </Dialog>
-      
-      <ErrorReportDialog 
-        open={showDialog}
-        onOpenChange={setShowDialog}
-      />
-    </>
+    <Button
+      onClick={handleClick}
+      variant="outline"
+      size="sm"
+      className="fixed bottom-4 right-4 z-50 bg-background/80 backdrop-blur-sm border-border hover:bg-muted/50 shadow-lg"
+    >
+      <Bug className="w-4 h-4 mr-2" />
+      Report Issue
+    </Button>
   );
 }

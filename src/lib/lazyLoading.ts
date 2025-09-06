@@ -18,6 +18,7 @@ export const LazyPages = {
   Auth: lazy(() => import('@/pages/Auth')),
   Admin: lazy(() => import('@/pages/Admin')),
   Analytics: lazy(() => import('@/pages/Analytics')),
+  AdvancedErrorReport: lazy(() => import('@/pages/AdvancedErrorReport')),
   Search: lazy(() => import('@/pages/Search')),
   NotFound: lazy(() => import('@/pages/NotFound')),
   VenuePartners: lazy(() => import('@/pages/VenuePartners')),

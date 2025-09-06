@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -16,6 +16,8 @@ import { SecurityMonitor } from "@/components/SecurityMonitor";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AppRoutes from "@/components/AppRoutes";
+import { ErrorPrompt, openErrorPromptFor } from "@/components/reporting/ErrorPrompt";
+import type { ErrorPayload } from "@/lib/error-report";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -71,10 +73,38 @@ function AppErrorFallback({ error, resetErrorBoundary }: { error: Error; resetEr
 }
 
 function App() {
+  const [errorPrompt, setErrorPrompt] = useState<ErrorPayload | null>(null);
+
+  useEffect(() => {
+    // Set up global error prompt handler
+    (window as any).__openErrorPrompt = (payload: ErrorPayload) => setErrorPrompt(payload);
+    
+    // Handle unhandled JavaScript errors
+    const onError = (event: ErrorEvent) => {
+      openErrorPromptFor(event.error ?? event.message, 'auto');
+    };
+    
+    // Handle unhandled promise rejections
+    const onUnhandledRejection = (event: PromiseRejectionEvent) => {
+      openErrorPromptFor(event.reason ?? 'Unhandled promise rejection', 'auto');
+    };
+    
+    window.addEventListener('error', onError);
+    window.addEventListener('unhandledrejection', onUnhandledRejection);
+    
+    return () => {
+      window.removeEventListener('error', onError);
+      window.removeEventListener('unhandledrejection', onUnhandledRejection);
+    };
+  }, []);
+
   return (
     <ErrorBoundary
       FallbackComponent={AppErrorFallback}
-      onError={(error) => console.error('App-level error:', error)}
+      onError={(error) => {
+        console.error('App-level error:', error);
+        openErrorPromptFor(error, 'auto');
+      }}
     >
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
@@ -93,6 +123,13 @@ function App() {
                       <SecurityMonitor />
                     </Suspense>
                   </AdvancedSEOSystem>
+                  {errorPrompt && (
+                    <ErrorPrompt
+                      open={!!errorPrompt}
+                      payload={errorPrompt}
+                      onClose={() => setErrorPrompt(null)}
+                    />
+                  )}
                 </AuthProvider>
               </SecurityProvider>
             </TooltipProvider>
