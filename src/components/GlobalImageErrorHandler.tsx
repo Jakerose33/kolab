@@ -9,7 +9,10 @@ export function GlobalImageErrorHandler() {
   useEffect(() => {
     const handleImageError = (event: Event) => {
       const imgElement = event.target as HTMLImageElement;
-      const src = imgElement.src;
+      const src = imgElement?.src;
+      
+      // Only proceed if we have a valid src
+      if (!src || typeof src !== 'string') return;
       
       // Only report errors for user uploaded images
       if (src.includes('lovable-uploads') || src.includes('supabase')) {

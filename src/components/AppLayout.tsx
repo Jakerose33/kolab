@@ -5,7 +5,7 @@ import { Bell, Search, Menu } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ReportIssueButton } from "./ErrorReportDialog";
+import { SimpleReportButton } from "./SimpleReportButton";
 import { GlobalErrorHandler } from "./GlobalErrorHandler";
 import { GlobalImageErrorHandler } from "./GlobalImageErrorHandler";
 
@@ -102,7 +102,7 @@ export function AppLayout({
       </div>
       
       {/* Error Reporting Components */}
-      <ReportIssueButton />
+      <SimpleReportButton />
       <GlobalErrorHandler />
       <GlobalImageErrorHandler />
     </SidebarProvider>

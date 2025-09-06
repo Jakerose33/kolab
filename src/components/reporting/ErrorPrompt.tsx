@@ -15,7 +15,9 @@ export function ErrorPrompt({
 }) {
   const { toast } = useToast();
   const [sending, setSending] = useState(false);
-  const line = (payload.message || 'Unexpected error').slice(0, 140);
+  
+  // Get first line of error message, truncated to 140 chars
+  const errorLine = (payload.message || 'An error has occurred').split('\n')[0].slice(0, 140);
   
   const handleSend = async () => {
     if (sending) return;
@@ -32,15 +34,21 @@ export function ErrorPrompt({
     }
   };
 
+  const handleDontSend = () => {
+    onClose();
+  };
+
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
           <DialogTitle>Send error report?</DialogTitle>
         </DialogHeader>
-        <p className="text-sm text-muted-foreground mt-2">"{line}"</p>
-        <div className="mt-4 flex gap-2 justify-end">
-          <Button variant="outline" onClick={onClose} disabled={sending}>
+        <p className="text-sm text-muted-foreground mt-2 mb-4">
+          {errorLine}
+        </p>
+        <div className="flex gap-2 justify-end">
+          <Button variant="outline" onClick={handleDontSend} disabled={sending}>
             Don't send
           </Button>
           <Button onClick={handleSend} disabled={sending}>
