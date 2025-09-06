@@ -1,4 +1,6 @@
 import React from 'react';
+import { SafeImg } from '@/components/media/SafeImg';
+import { resolveImageUrl } from '@/lib/media';
 
 /**
  * Hero image source order:
@@ -8,23 +10,19 @@ import React from 'react';
  */
 
 const DEFAULT_HERO = '/hero/kolab-hero.jpg';
-const FALLBACK_PLACEHOLDER = '/images/placeholders/event.jpg';
-
-const HERO_SRC = import.meta.env.VITE_HERO_IMAGE_URL ?? DEFAULT_HERO;
+const HERO_SRC = resolveImageUrl(import.meta.env.VITE_HERO_IMAGE_URL ?? DEFAULT_HERO);
 
 export default function Hero() {
   return (
     <section className="relative isolate overflow-hidden">
-      <img
+      <SafeImg
         src={HERO_SRC}
         alt="Kolab — discover and book events"
         className="absolute inset-0 h-full w-full object-cover"
         width={1920}
         height={1080}
         loading="eager"
-        onError={(e) => {
-          (e.currentTarget as HTMLImageElement).src = FALLBACK_PLACEHOLDER;
-        }}
+        fallbackContext="hero"
       />
 
       {/* Soft gradient to keep text readable on busy images */}

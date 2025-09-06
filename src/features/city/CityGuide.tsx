@@ -2,9 +2,10 @@ import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { UnifiedImage } from "@/components/UnifiedImage"
+import { SafeImg } from "@/components/media/SafeImg"
 import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { resolveImageUrl } from "@/lib/media"
 import { cityGuidesData, neighbourhoods, getGuidesByNeighbourhood, type CityGuide } from "@/data/city-guides"
 
 interface CityGuideProps {
@@ -14,16 +15,11 @@ interface CityGuideProps {
 const GuideCard = ({ guide }: { guide: CityGuide }) => (
   <Card className="group cursor-pointer overflow-hidden border border-border/50 bg-card hover:bg-card-hover transition-all duration-500 hover:scale-[1.02] hover:shadow-lg">
     <div className="aspect-[4/5] relative overflow-hidden">
-      <img
-        src={guide.image}
+      <SafeImg
+        src={resolveImageUrl(guide.image)}
         alt={guide.imageAlt || guide.title}
         className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110"
-        loading="lazy"
-        decoding="async"
-        onError={(e) => {
-          const target = e.target as HTMLImageElement;
-          target.src = '/placeholder.svg';
-        }}
+        fallbackContext="city-guide"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-500" />
       

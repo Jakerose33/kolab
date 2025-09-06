@@ -1,6 +1,7 @@
 import { Card } from '@/components/ui/card';
 import { normalizeEvent, getEventLink } from '@/lib/links';
 import { resolveEventImage } from '@/lib/media';
+import { SafeImg } from '@/components/media/SafeImg';
 
 type Props = { event: any; className?: string; 'data-testid'?: string; onClick?: () => void };
 
@@ -15,14 +16,11 @@ export default function PreviewEventCard({ event, className, onClick, ...rest }:
         onClick={link ? onClick : undefined}
       >
         <div className="relative">
-          <img 
+          <SafeImg 
             src={resolveEventImage(event)} 
             alt={n.title} 
             className="h-44 w-full object-cover" 
-            loading="lazy"
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).src = '/images/placeholders/event.jpg';
-            }}
+            fallbackContext="preview-event-card"
           />
         </div>
         <div className="p-3">

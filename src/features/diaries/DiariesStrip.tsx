@@ -3,8 +3,10 @@ import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { UnifiedImage } from "@/components/UnifiedImage"
+import { SafeImg } from "@/components/media/SafeImg"
 import { ChevronLeft, ChevronRight, X, Camera } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { resolveImageUrl } from "@/lib/media"
 import { diariesData, type DiaryEntry } from "@/data/diaries"
 
 interface DiariesStripProps {
@@ -88,10 +90,11 @@ const Lightbox = ({ isOpen, onClose, currentIndex, entries, onNavigate }: Lightb
 
           {/* Main image */}
           <div className="w-full h-full flex items-center justify-center p-8">
-            <img
-              src={currentEntry.image}
+            <SafeImg
+              src={resolveImageUrl(currentEntry.image)}
               alt={currentEntry.caption || 'Diary entry'}
               className="max-w-full max-h-full object-contain"
+              fallbackContext="diary-lightbox"
             />
           </div>
 
