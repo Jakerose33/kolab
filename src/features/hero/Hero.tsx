@@ -5,12 +5,11 @@ import { resolveImageUrl } from '@/lib/media';
 
 export default function Hero() {
   const heroImageUrl = '/hero/hero section-2.webp';
-  const resolvedHeroImage = resolveImageUrl(heroImageUrl);
 
   return (
     <section className="relative isolate overflow-hidden">
       <img
-        src={resolvedHeroImage}
+        src={heroImageUrl}
         alt="Kolab — discover and book events"
         className="absolute inset-0 h-full w-full object-cover object-center"
         loading="eager"
