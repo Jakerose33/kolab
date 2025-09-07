@@ -44,7 +44,7 @@ export default function Events() {
 
   // Apply filters to events
   const filteredEvents = useMemo(() => {
-    return events.map(normalizeEventData);
+    return (events || []).map(normalizeEventData);
   }, [events]);
 
   // Clear all filters
@@ -93,18 +93,18 @@ export default function Events() {
 
   // Convert map events to EventMap format
   const validMapEvents = useMemo(() => {
-    return mapEvents
+    return (mapEvents || [])
       .filter(hasValidCoordinates)
       .map(event => ({
-        id: event.id,
-        title: event.title,
+        id: event?.id || '',
+        title: event?.title || 'Untitled Event',
         description: '',
         date: new Date().toLocaleDateString(),
         time: new Date().toLocaleTimeString(),
-        location: event.venue_name || 'Unknown location',
-        category: event.categories?.[0] || 'general',
-        coordinates: [event.longitude!, event.latitude!] as [number, number],
-        price: event.price_min,
+        location: event?.venue_name || 'Unknown location',
+        category: event?.categories?.[0] || 'general',
+        coordinates: [event?.longitude || 0, event?.latitude || 0] as [number, number],
+        price: event?.price_min || 0,
         attendees: 0,
         capacity: 100
       }));
@@ -185,18 +185,18 @@ export default function Events() {
                             ? "space-y-4" 
                             : "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
                           }>
-                            {filteredEvents.map((event) => {
+                            {(filteredEvents || []).map((event) => {
                               const eventLink = getEventLinkSafe(event);
                               const EventComponent = user ? EventCard : PreviewEventCard;
                               
                               if (eventLink) {
                                 return (
-                                  <Link key={event.id} to={eventLink}>
+                                  <Link key={event?.id || Math.random()} to={eventLink}>
                                     <EventComponent event={event} />
                                   </Link>
                                 );
                               } else {
-                                return <EventComponent key={event.id} event={event} />;
+                                return <EventComponent key={event?.id || Math.random()} event={event} />;
                               }
                             })}
                           </div>

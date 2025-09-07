@@ -169,10 +169,10 @@ export default function VenueDetail() {
 
             {/* Venue Images */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {(getVenueProp(venue, 'images') || ['/placeholder.svg']).map((image: string, index: number) => (
+              {(Array.isArray(getVenueProp(venue, 'images')) ? getVenueProp(venue, 'images') : ['/placeholder.svg']).map((image: string, index: number) => (
                 <div key={index} className="aspect-video bg-muted rounded-lg overflow-hidden">
                   <img 
-                    src={image} 
+                    src={image || '/placeholder.svg'} 
                     alt={`${venue?.name || 'Venue'} ${index + 1}`}
                     className="w-full h-full object-cover"
                     onError={(e) => {
@@ -188,12 +188,15 @@ export default function VenueDetail() {
               <div>
                 <h2 className="text-xl font-semibold mb-4">Amenities</h2>
                 <div className="space-y-2">
-                  {(getVenueProp(venue, 'amenities') || []).map((amenity: string, index: number) => (
+                  {(Array.isArray(getVenueProp(venue, 'amenities')) ? getVenueProp(venue, 'amenities') : []).map((amenity: string, index: number) => (
                     <div key={index} className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-primary rounded-full" />
-                      <span>{amenity}</span>
+                      <span>{amenity || 'Amenity'}</span>
                     </div>
                   ))}
+                  {(!Array.isArray(getVenueProp(venue, 'amenities')) || getVenueProp(venue, 'amenities').length === 0) && (
+                    <p className="text-muted-foreground text-sm">No amenities listed</p>
+                  )}
                 </div>
               </div>
 

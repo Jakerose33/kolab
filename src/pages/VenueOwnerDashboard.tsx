@@ -277,18 +277,18 @@ export default function VenueOwnerDashboard() {
                 <CardTitle>Recent Bookings</CardTitle>
               </CardHeader>
               <CardContent>
-                {bookings.slice(0, 5).length > 0 ? (
+                {(bookings || []).slice(0, 5).length > 0 ? (
                   <div className="space-y-4">
-                    {bookings.slice(0, 5).map((booking) => (
-                      <div key={booking.id} className="flex justify-between items-center p-3 bg-muted/50 rounded">
+                    {(bookings || []).slice(0, 5).map((booking) => (
+                      <div key={booking?.id || Math.random()} className="flex justify-between items-center p-3 bg-muted/50 rounded">
                         <div>
-                          <p className="font-medium">{booking.venue.name}</p>
+                          <p className="font-medium">{booking?.venue?.name || 'Unknown Venue'}</p>
                           <p className="text-sm text-muted-foreground">
-                            {format(new Date(booking.start_date), 'MMM dd, yyyy')}
+                            {booking?.start_date ? format(new Date(booking.start_date), 'MMM dd, yyyy') : 'Date TBD'}
                           </p>
                         </div>
                         <div className="text-right">
-                          {getStatusBadge(booking.status)}
+                          {getStatusBadge(booking?.status || 'pending')}
                         </div>
                       </div>
                     ))}
@@ -305,20 +305,20 @@ export default function VenueOwnerDashboard() {
                 <CardTitle>Venue Performance</CardTitle>
               </CardHeader>
               <CardContent>
-                {venues.length > 0 ? (
+                {(venues || []).length > 0 ? (
                   <div className="space-y-4">
-                    {venues.slice(0, 3).map((venue) => {
-                      const venueBookings = bookings.filter(b => b.venue_id === venue.id && b.status === 'confirmed');
+                    {(venues || []).slice(0, 3).map((venue) => {
+                      const venueBookings = (bookings || []).filter(b => b?.venue_id === venue?.id && b?.status === 'confirmed');
                       return (
-                        <div key={venue.id} className="flex justify-between items-center p-3 bg-muted/50 rounded">
+                        <div key={venue?.id || Math.random()} className="flex justify-between items-center p-3 bg-muted/50 rounded">
                           <div>
-                            <p className="font-medium">{venue.name}</p>
+                            <p className="font-medium">{venue?.name || 'Unknown Venue'}</p>
                             <p className="text-sm text-muted-foreground">
                               {venueBookings.length} bookings
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className="font-medium">${venue.hourly_rate}/hr</p>
+                            <p className="font-medium">${venue?.hourly_rate || 0}/hr</p>
                           </div>
                         </div>
                       );
@@ -333,26 +333,26 @@ export default function VenueOwnerDashboard() {
         </TabsContent>
 
         <TabsContent value="venues" className="space-y-6">
-          {venues.length > 0 ? (
+          {(venues || []).length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {venues.map((venue) => (
-                <Card key={venue.id}>
+              {(venues || []).map((venue) => (
+                <Card key={venue?.id || Math.random()}>
                   <CardHeader>
                     <CardTitle className="flex justify-between items-start">
-                      <span>{venue.name}</span>
-                      <Badge variant={venue.status === 'active' ? 'default' : 'secondary'}>
-                        {venue.status}
+                      <span>{venue?.name || 'Unknown Venue'}</span>
+                      <Badge variant={venue?.status === 'active' ? 'default' : 'secondary'}>
+                        {venue?.status || 'inactive'}
                       </Badge>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <p className="text-sm text-muted-foreground line-clamp-2">
-                      {venue.description}
+                      {venue?.description || 'No description available'}
                     </p>
                     
                     <div className="flex justify-between text-sm">
-                      <span>Capacity: {venue.capacity} people</span>
-                      <span className="font-medium">${venue.hourly_rate}/hr</span>
+                      <span>Capacity: {venue?.capacity || 0} people</span>
+                      <span className="font-medium">${venue?.hourly_rate || 0}/hr</span>
                     </div>
 
                     <div className="flex gap-2">
@@ -383,21 +383,21 @@ export default function VenueOwnerDashboard() {
         </TabsContent>
 
         <TabsContent value="bookings" className="space-y-6">
-          {bookings.length > 0 ? (
+          {(bookings || []).length > 0 ? (
             <div className="space-y-4">
-              {bookings.map((booking) => (
-                <Card key={booking.id}>
+              {(bookings || []).map((booking) => (
+                <Card key={booking?.id || Math.random()}>
                   <CardContent className="p-6">
                     <div className="flex justify-between items-start mb-4">
                       <div>
-                        <h3 className="font-semibold">{booking.venue.name}</h3>
+                        <h3 className="font-semibold">{booking?.venue?.name || 'Unknown Venue'}</h3>
                         <p className="text-sm text-muted-foreground">
-                          {booking.user_profile?.full_name || 'Unknown User'}
+                          {booking?.user_profile?.full_name || 'Unknown User'}
                         </p>
                       </div>
                       <div className="flex gap-2">
-                        {getStatusBadge(booking.status)}
-                        {getPaymentStatusBadge(booking.payment_status)}
+                        {getStatusBadge(booking?.status || 'pending')}
+                        {getPaymentStatusBadge(booking?.payment_status || 'unpaid')}
                       </div>
                     </div>
 
@@ -405,32 +405,32 @@ export default function VenueOwnerDashboard() {
                       <div>
                         <p className="text-sm font-medium">Date & Time</p>
                         <p className="text-sm text-muted-foreground">
-                          {format(new Date(booking.start_date), 'MMM dd, yyyy HH:mm')} - 
-                          {format(new Date(booking.end_date), 'HH:mm')}
+                          {booking?.start_date ? format(new Date(booking.start_date), 'MMM dd, yyyy HH:mm') : 'Date TBD'} - 
+                          {booking?.end_date ? format(new Date(booking.end_date), 'HH:mm') : 'Time TBD'}
                         </p>
                       </div>
                       <div>
                         <p className="text-sm font-medium">Guest Count</p>
-                        <p className="text-sm text-muted-foreground">{booking.guest_count} people</p>
+                        <p className="text-sm text-muted-foreground">{booking?.guest_count || 0} people</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium">Event Type</p>
-                        <p className="text-sm text-muted-foreground">{booking.event_type}</p>
+                        <p className="text-sm text-muted-foreground">{booking?.event_type || 'Event'}</p>
                       </div>
                     </div>
 
-                    {booking.message && (
+                    {booking?.message && (
                       <div className="mb-4">
                         <p className="text-sm font-medium">Message</p>
                         <p className="text-sm text-muted-foreground">{booking.message}</p>
                       </div>
                     )}
 
-                    {booking.status === 'pending' && (
+                    {booking?.status === 'pending' && (
                       <div className="flex gap-2">
                         <Button 
                           size="sm" 
-                          onClick={() => handleBookingAction(booking.id, 'approve')}
+                          onClick={() => handleBookingAction(booking?.id || '', 'approve')}
                           className="bg-green-600 hover:bg-green-700"
                         >
                           <CheckCircle className="h-4 w-4 mr-1" />
@@ -439,7 +439,7 @@ export default function VenueOwnerDashboard() {
                         <Button 
                           size="sm" 
                           variant="outline"
-                          onClick={() => handleBookingAction(booking.id, 'decline')}
+                          onClick={() => handleBookingAction(booking?.id || '', 'decline')}
                         >
                           <XCircle className="h-4 w-4 mr-1" />
                           Decline

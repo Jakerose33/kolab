@@ -217,9 +217,9 @@ export default function EventBooking() {
                   <div className="flex-1">
                     <CardTitle className="text-lg">{event.title}</CardTitle>
                     <div className="flex flex-wrap gap-1 mt-2">
-                      {event.tags.map((tag: string) => (
+                      {(event?.tags || []).map((tag: string) => (
                         <Badge key={tag} variant="secondary" className="text-xs">
-                          {tag}
+                          {tag || 'Tag'}
                         </Badge>
                       ))}
                     </div>
@@ -229,19 +229,19 @@ export default function EventBooking() {
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <Calendar className="w-4 h-4" />
-                  <span>{format(new Date(event.start_at), "PPP 'at' p")}</span>
+                  <span>{event?.start_at ? format(new Date(event.start_at), "PPP 'at' p") : 'Date TBD'}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <MapPin className="w-4 h-4" />
-                  <span>{event.venue_name}, {event.venue_address}</span>
+                  <span>{event?.venue_name || 'Venue TBD'}, {event?.venue_address || 'Address TBD'}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <Users className="w-4 h-4" />
-                  <span>Capacity: {event.capacity} people</span>
+                  <span>Capacity: {event?.capacity || 0} people</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <Clock className="w-4 h-4" />
-                  <span>Organized by {event.organizer.name}</span>
+                  <span>Organized by {event?.organizer?.name || 'Event Organizer'}</span>
                 </div>
               </CardContent>
             </Card>

@@ -259,14 +259,14 @@ export default function EventDetail() {
                     </div>
 
                     {/* Lineup */}
-                    {getEventProp(event, 'lineup') && (
+                    {Array.isArray(getEventProp(event, 'lineup')) && getEventProp(event, 'lineup').length > 0 && (
                       <div>
                         <h2 className="text-2xl font-bold mb-4">Lineup</h2>
                         <div className="space-y-2">
-                          {getEventProp(event, 'lineup').map((item: string, index: number) => (
+                          {(getEventProp(event, 'lineup') || []).map((item: string, index: number) => (
                             <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
                               <Clock className="w-4 h-4 text-muted-foreground" />
-                              <span className="font-medium">{item}</span>
+                              <span className="font-medium">{item || 'TBD'}</span>
                             </div>
                           ))}
                         </div>
