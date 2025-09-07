@@ -8,7 +8,7 @@ export default function Hero() {
   
   // Integrate environment variable with resolver for better image handling
   const heroImageUrl = resolveImageUrl(
-    import.meta.env.VITE_HERO_IMAGE_URL ?? '/hero/hero section-2.webp'
+    import.meta.env.VITE_HERO_IMAGE_URL ?? '/images/hero section-2.jpg'
   );
 
   // Get user's approximate location for personalization
