@@ -10,7 +10,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
   Calendar,
@@ -36,6 +36,7 @@ const navigationItems = [
 
 export function AppSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location?.pathname || '/';
 
   return (
@@ -56,7 +57,7 @@ export function AppSidebar() {
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
-                    onClick={() => window.location.href = item.url}
+                    onClick={() => navigate(item.url)}
                     className={`h-12 cursor-pointer ${currentPath === item.url ? 'bg-primary text-primary-foreground' : ''}`}
                   >
                     <item.icon className="h-5 w-5 mr-3" />

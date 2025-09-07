@@ -1,6 +1,8 @@
 import React from 'react';
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin, Shield, FileText, HelpCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 export function Footer() {
+  const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
   return <footer className="bg-card border-t mt-auto">
       <div className="container mx-auto px-4 py-12">
@@ -36,11 +38,11 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Platform</h3>
             <ul className="space-y-2 text-sm">
-              <li><span onClick={() => window.location.href = "/events"} className="text-muted-foreground hover:text-primary cursor-pointer">Events</span></li>
-              <li><span onClick={() => window.location.href = "/venues"} className="text-muted-foreground hover:text-primary cursor-pointer">Venues</span></li>
-              <li><span onClick={() => window.location.href = "/careers"} className="text-muted-foreground hover:text-primary cursor-pointer">Careers</span></li>
-              <li><span onClick={() => window.location.href = "/social"} className="text-muted-foreground hover:text-primary cursor-pointer">Community</span></li>
-              <li><span onClick={() => window.location.href = "/venue-partners"} className="text-muted-foreground hover:text-primary cursor-pointer">Partner with Us</span></li>
+              <li><span onClick={() => navigate("/events")} className="text-muted-foreground hover:text-primary cursor-pointer">Events</span></li>
+              <li><span onClick={() => navigate("/venues")} className="text-muted-foreground hover:text-primary cursor-pointer">Venues</span></li>
+              <li><span onClick={() => navigate("/careers")} className="text-muted-foreground hover:text-primary cursor-pointer">Careers</span></li>
+              <li><span onClick={() => navigate("/social")} className="text-muted-foreground hover:text-primary cursor-pointer">Community</span></li>
+              <li><span onClick={() => navigate("/venue-partners")} className="text-muted-foreground hover:text-primary cursor-pointer">Partner with Us</span></li>
             </ul>
           </div>
 
@@ -48,11 +50,11 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Support</h3>
             <ul className="space-y-2 text-sm">
-              <li><span onClick={() => window.location.href = "/help"} className="text-muted-foreground hover:text-primary cursor-pointer">Help Center</span></li>
-              <li><span onClick={() => window.location.href = "/contact"} className="text-muted-foreground hover:text-primary cursor-pointer">Contact Support</span></li>
-              <li><span onClick={() => window.location.href = "/safety"} className="text-muted-foreground hover:text-primary cursor-pointer">Safety Guidelines</span></li>
-              <li><span onClick={() => window.location.href = "/community-guidelines"} className="text-muted-foreground hover:text-primary cursor-pointer">Community Guidelines</span></li>
-              <li><span onClick={() => window.location.href = "/accessibility"} className="text-muted-foreground hover:text-primary cursor-pointer">Accessibility</span></li>
+              <li><span onClick={() => navigate("/help")} className="text-muted-foreground hover:text-primary cursor-pointer">Help Center</span></li>
+              <li><span onClick={() => navigate("/contact")} className="text-muted-foreground hover:text-primary cursor-pointer">Contact Support</span></li>
+              <li><span onClick={() => navigate("/safety")} className="text-muted-foreground hover:text-primary cursor-pointer">Safety Guidelines</span></li>
+              <li><span onClick={() => navigate("/community-guidelines")} className="text-muted-foreground hover:text-primary cursor-pointer">Community Guidelines</span></li>
+              <li><span onClick={() => navigate("/accessibility")} className="text-muted-foreground hover:text-primary cursor-pointer">Accessibility</span></li>
             </ul>
           </div>
 
@@ -60,10 +62,10 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Legal</h3>
             <ul className="space-y-2 text-sm mb-6">
-              <li><span onClick={() => window.location.href = "/privacy"} className="text-muted-foreground hover:text-primary cursor-pointer">Privacy Policy</span></li>
-              <li><span onClick={() => window.location.href = "/terms"} className="text-muted-foreground hover:text-primary cursor-pointer">Terms of Service</span></li>
-              <li><span onClick={() => window.location.href = "/cookies"} className="text-muted-foreground hover:text-primary cursor-pointer">Cookie Policy</span></li>
-              <li><span onClick={() => window.location.href = "/about"} className="text-muted-foreground hover:text-primary cursor-pointer">About Us</span></li>
+              <li><span onClick={() => navigate("/privacy")} className="text-muted-foreground hover:text-primary cursor-pointer">Privacy Policy</span></li>
+              <li><span onClick={() => navigate("/terms")} className="text-muted-foreground hover:text-primary cursor-pointer">Terms of Service</span></li>
+              <li><span onClick={() => navigate("/cookies")} className="text-muted-foreground hover:text-primary cursor-pointer">Cookie Policy</span></li>
+              <li><span onClick={() => navigate("/about")} className="text-muted-foreground hover:text-primary cursor-pointer">About Us</span></li>
             </ul>
 
             <div>

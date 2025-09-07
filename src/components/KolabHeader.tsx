@@ -66,7 +66,7 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
       <div className="container flex h-16 items-center justify-between px-4">
         {/* Logo & Branding */}
         <div className="flex items-center space-x-8">
-          <div onClick={() => window.location.href = "/"} className="flex items-center space-x-2 cursor-pointer">
+          <div onClick={() => navigate("/")} className="flex items-center space-x-2 cursor-pointer">
             <div className="h-8 w-8 rounded-sm bg-gradient-primary flex items-center justify-center">
               <span className="text-white font-bold text-lg">K</span>
             </div>
@@ -81,7 +81,7 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
               return (
                 <div
                   key={item.name}
-                  onClick={() => window.location.href = item.path}
+                  onClick={() => navigate(item.path)}
                   className={`flex items-center gap-2 px-3 py-2 rounded-sm text-sm font-medium transition-colors cursor-pointer ${
                     isActive 
                       ? "bg-primary text-primary-foreground" 
@@ -132,7 +132,7 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
                 className="relative"
                 aria-label="View messages (3 unread)"
               >
-                <div onClick={() => window.location.href = "/messages"} className="cursor-pointer">
+                <div onClick={() => navigate("/messages")} className="cursor-pointer">
                   <MessageSquare className="h-5 w-5" aria-hidden="true" />
                   <Badge 
                     className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-primary"
@@ -186,25 +186,25 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => window.location.href = "/profile"}>
+                  <DropdownMenuItem onClick={() => navigate("/profile")}>
                     <div className="flex items-center">
                       <User className="mr-2 h-4 w-4" />
                       Profile
                     </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = "/bookings"}>
+                  <DropdownMenuItem onClick={() => navigate("/bookings")}>
                     <div className="flex items-center">
                       <Calendar className="mr-2 h-4 w-4" />
                       My Bookings
                     </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = "/analytics"}>
+                  <DropdownMenuItem onClick={() => navigate("/analytics")}>
                     <div className="flex items-center">
                       <Calendar className="mr-2 h-4 w-4" />
                       Analytics
                     </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = "/settings"}>
+                  <DropdownMenuItem onClick={() => navigate("/settings")}>
                     <div className="flex items-center">
                       <Settings className="mr-2 h-4 w-4" />
                       Settings
@@ -249,7 +249,7 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   return (
-                    <DropdownMenuItem key={item.name} onClick={() => window.location.href = item.path}>
+                    <DropdownMenuItem key={item.name} onClick={() => navigate(item.path)}>
                       <div className="flex items-center">
                         <Icon className="mr-2 h-4 w-4" />
                         {item.name}
@@ -258,7 +258,7 @@ export function KolabHeader({ onCreateEvent, onOpenMessages, onOpenNotifications
                   );
                 })}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => window.location.href = "/search"}>
+                <DropdownMenuItem onClick={() => navigate("/search")}>
                   <div className="flex items-center">
                     <Search className="mr-2 h-4 w-4" />
                     Search
