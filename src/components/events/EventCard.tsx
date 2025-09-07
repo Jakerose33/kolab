@@ -7,6 +7,19 @@ import { SafeImg } from '@/components/media/SafeImg';
 type Props = { event: any; className?: string; 'data-testid'?: string };
 
 export default function EventCard({ event, className, ...rest }: Props) {
+  const safeId = event?.id ?? '';
+  if (!safeId) {
+    return (
+      <article className={`overflow-hidden ${className ?? ''}`} {...rest} data-testid="event-card">
+        <Card className="opacity-60 cursor-not-allowed overflow-hidden">
+          <div className="p-6 text-center">
+            <div className="text-muted-foreground">No event ID</div>
+          </div>
+        </Card>
+      </article>
+    );
+  }
+
   const n = normalizeEvent(event);
   const link = getEventLink(event);
   

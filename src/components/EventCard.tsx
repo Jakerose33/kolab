@@ -62,6 +62,19 @@ export function EventCard({
   onMessage,
   userRSVP
 }: EventCardProps) {
+  const safeId = event?.id ?? '';
+  if (!safeId) {
+    return (
+      <div data-testid="event-card" className={cn("opacity-60", className)}>
+        <Card className="overflow-hidden">
+          <div className="p-6 text-center">
+            <div className="text-muted-foreground">No event ID</div>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   const [currentRSVP, setCurrentRSVP] = useState<'going' | 'interested' | null>(userRSVP || null);
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -85,7 +98,7 @@ export function EventCard({
       const newStatus = currentRSVP === status ? null : status;
       
       if (newStatus) {
-        await rsvpToEvent(event.id, newStatus);
+        await rsvpToEvent(safeId, newStatus);
         setCurrentRSVP(newStatus);
         toast({
           title: "RSVP updated!",
@@ -120,7 +133,7 @@ export function EventCard({
 
   const handleShare = () => {
     if (onShare) {
-      onShare(event.id);
+      onShare(safeId);
     } else {
       navigator.clipboard.writeText(window.location.href);
       toast({
