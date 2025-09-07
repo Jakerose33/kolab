@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom';
 import { resolveImageUrl } from '@/lib/media';
 
 export default function Hero() {
-  // Support VITE_HERO_IMAGE_URL environment variable with fallback
-  const heroImageUrl = import.meta.env.VITE_HERO_IMAGE_URL || '/hero/hero%20section-2.webp';
+  const heroImageUrl = '/hero/hero section-2.webp';
   const resolvedHeroImage = resolveImageUrl(heroImageUrl);
 
   return (
