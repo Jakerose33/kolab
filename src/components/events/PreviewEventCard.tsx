@@ -2,6 +2,7 @@ import { Card } from '@/components/ui/card';
 import { normalizeEvent, getEventLink } from '@/lib/links';
 import { resolveEventImage } from '@/lib/media';
 import { SafeImg } from '@/components/media/SafeImg';
+import { ErrorBoundary } from "react-error-boundary";
 
 type Props = { event: any; className?: string; 'data-testid'?: string; onClick?: () => void };
 
@@ -29,12 +30,14 @@ export default function PreviewEventCard({ event, className, onClick, ...rest }:
         onClick={link ? onClick : undefined}
       >
         <div className="relative">
-          <SafeImg 
-            src={resolveEventImage(event)} 
-            alt={n.title} 
-            className="h-44 w-full object-cover" 
-            fallbackContext="preview-event-card"
-          />
+          <ErrorBoundary fallback={<div className="h-44 w-full bg-muted flex items-center justify-center text-muted-foreground">Image unavailable</div>}>
+            <SafeImg 
+              src={resolveEventImage(event)} 
+              alt={n.title} 
+              className="h-44 w-full object-cover" 
+              fallbackContext="preview-event-card"
+            />
+          </ErrorBoundary>
         </div>
         <div className="p-3">
           <h3 className="text-base font-semibold line-clamp-1">{n.title}</h3>

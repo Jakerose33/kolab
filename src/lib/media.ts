@@ -5,7 +5,7 @@ type AnyRec = Record<string, any>;
 const DEFAULT_BUCKET =
   (import.meta.env.VITE_PUBLIC_MEDIA_BUCKET as string) || 'public';
 const PLACEHOLDER = '/placeholder.svg';
-const FALLBACK = '/images/placeholders/event.jpg';
+const FALLBACK = '/placeholder.svg';
 
 const UPLOAD_HOSTS = [
   'lovable-uploads',

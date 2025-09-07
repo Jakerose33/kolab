@@ -94,7 +94,7 @@ export default function AppRoutes() {
       >
         <Routes>
           <Route path="/" element={<LazyPages.Index />} />
-          <Route path="/events" element={<LazyPages.Events />} />
+          <Route path="/events" element={<LazyPages.SafeEventsPage />} />
           <Route path="/events/:idOrSlug" element={<LazyPages.EventDetail />} />
           <Route path="/events/:idOrSlug/book" element={<LazyPages.EventBooking />} />
           <Route path="/payment" element={<LazyPages.Payment />} />

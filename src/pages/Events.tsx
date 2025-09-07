@@ -12,7 +12,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { LoadingState } from "@/components/LoadingState";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -20,6 +20,7 @@ import { useAuth } from "@/features/auth/AuthProvider";
 import { useEventsFeed, useMapEvents, useCreateEvent, EventFilters } from "@/hooks/useEventsData";
 import { normalizeEventData, getEventLinkSafe, hasValidCoordinates } from "@/utils/eventHelpers";
 import { Calendar, Plus, Map, Grid3X3 } from "lucide-react";
+import { useRouteQuery } from "@/utils/routing";
 
 export default function Events() {
   const [filters, setFilters] = useState<EventFilters>({});
@@ -28,6 +29,29 @@ export default function Events() {
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [activeTab, setActiveTab] = useState("grid");
+
+  // Handle query parameters from hero buttons
+  const whenQuery = useRouteQuery('when');
+  const categoryQuery = useRouteQuery('category');
+  
+  // Apply query params to filters on mount
+  useEffect(() => {
+    const queryFilters: EventFilters = {};
+    
+    if (whenQuery === 'tonight') {
+      const today = new Date();
+      queryFilters.startDate = today.toISOString().split('T')[0];
+      queryFilters.endDate = today.toISOString().split('T')[0];
+    }
+    
+    if (categoryQuery) {
+      queryFilters.categories = [categoryQuery];
+    }
+    
+    if (Object.keys(queryFilters).length > 0) {
+      setFilters(prev => ({ ...prev, ...queryFilters }));
+    }
+  }, [whenQuery, categoryQuery]);
 
   const { toast } = useToast();
   const isMobile = useIsMobile();

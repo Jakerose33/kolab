@@ -14,7 +14,7 @@ export function AdvancedSEOSystem({ children }: AdvancedSEOSystemProps) {
     const criticalResources = [
       { href: 'https://fonts.googleapis.com', rel: 'preconnect' },
       { href: 'https://fonts.gstatic.com', rel: 'preconnect', crossorigin: 'anonymous' },
-      { href: '/src/assets/hero-boiler-room.jpg', rel: 'preload', as: 'image' },
+      { href: '/images/og-kolab.jpg', rel: 'preload', as: 'image' },
     ];
 
     criticalResources.forEach(resource => {
