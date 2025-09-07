@@ -5,11 +5,19 @@ import { resolveImageUrl, logImageFallback } from '@/lib/media';
 
 export default function Hero() {
   const [userLocation, setUserLocation] = useState<string | null>(null);
+  const isMountedRef = React.useRef(true);
   
   // Integrate environment variable with resolver for better image handling
   const heroImageUrl = resolveImageUrl(
     import.meta.env.VITE_HERO_IMAGE_URL ?? '/images/hero section-2.jpg'
   );
+
+  // Cleanup on unmount to prevent state updates during navigation
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Get user's approximate location for personalization
   useEffect(() => {
@@ -17,9 +25,11 @@ export default function Hero() {
       try {
         // Try to get user's location via IP geolocation (lightweight approach)
         const response = await fetch('https://ipapi.co/json/');
-        if (response.ok) {
+        if (response.ok && isMountedRef.current) {
           const data = await response.json();
-          setUserLocation(data.city || data.region);
+          if (isMountedRef.current) {
+            setUserLocation(data.city || data.region);
+          }
         }
       } catch (error) {
         // Silent fail - location is optional enhancement
@@ -65,12 +75,12 @@ export default function Hero() {
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white drop-shadow-lg">
             Discover events. Grow your scene.
           </h1>
-          <p className="mt-4 max-w-2xl text-lg md:text-xl text-white/95 drop-shadow-md">
+          <div className="mt-4 max-w-2xl text-lg md:text-xl text-white/95 drop-shadow-md">
             {userLocation 
               ? `Kolab is your city guide and booking hub for events in ${userLocation} and beyond.`
               : 'Kolab is a city guide and booking hub for locals, venues, and organisers.'
             }
-          </p>
+          </div>
           
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
             <Button 
