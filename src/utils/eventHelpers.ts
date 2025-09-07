@@ -1,4 +1,4 @@
-import { getEventLink } from '@/lib/linking';
+import { getEventLink } from '@/lib/links';
 
 // Safe event link helper
 export function getEventLinkSafe(event: any): string | null {

@@ -1,3 +1,5 @@
+// Canonical linking and normalization utilities
+// This is the single source of truth for event/venue linking
 import { supabase } from '@/integrations/supabase/client';
 
 export type AnyRec = Record<string, any>;
@@ -13,7 +15,7 @@ export const isValidId = (v?: string | null): boolean => {
 export type EventLike = AnyRec;
 
 export function normalizeEvent(e: EventLike) {
-  const id = e?.id ?? e?.eventId ?? e?.uuid ?? null;
+  const id = e?.id ?? e?.eventId ?? e?.uuid ?? e?.slug ?? null; // Support all ID formats
   return {
     id,
     title: e?.title ?? e?.name ?? 'Untitled Event',
@@ -31,7 +33,7 @@ export function getEventLink(e: EventLike): string | null {
 export type VenueLike = AnyRec;
 
 export function normalizeVenue(v: VenueLike) {
-  const id = v?.id ?? v?.venueId ?? v?.uuid ?? null;
+  const id = v?.id ?? v?.venueId ?? v?.uuid ?? v?.slug ?? null; // Support all ID formats
   return {
     id,
     name: v?.name ?? v?.title ?? 'Untitled Venue',

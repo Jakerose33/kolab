@@ -24,7 +24,7 @@ import { format } from "date-fns";
 import { SafeImg } from "@/components/media/SafeImg";
 import { resolveEventImage } from "@/lib/media";
 
-import { getEventLink } from "@/lib/entities";
+import { getEventLink } from "@/lib/links";
 
 interface Event {
   id: string;

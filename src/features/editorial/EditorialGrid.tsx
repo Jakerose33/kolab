@@ -8,7 +8,7 @@ import { Flame, Eye, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { resolveImageUrl } from "@/lib/media"
 import { getEvents } from "@/lib/supabase"
-import { getEventLink } from "@/lib/entities"
+import { getEventLink } from "@/lib/links"
 
 interface Event {
   id: string;

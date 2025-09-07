@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar, MapPin, Users, Heart, Bookmark, Share2 } from 'lucide-react';
-import { normalizeEvent } from '@/lib/linking';
+import { normalizeEvent } from '@/lib/links';
 import { resolveImageUrl } from '@/lib/media';
 import { useToast } from '@/hooks/use-toast';
 
