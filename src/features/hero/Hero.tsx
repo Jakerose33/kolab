@@ -6,7 +6,7 @@ export default function Hero() {
   return (
     <section className="relative isolate overflow-hidden">
       <img
-        src="/hero/kolab-hero.jpg"
+        src="/hero/hero%20section-2.webp"
         alt="Kolab — discover and book events"
         className="absolute inset-0 h-full w-full object-cover"
         loading="eager"
