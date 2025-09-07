@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import { AppLayout } from "@/components/AppLayout";
 import Hero from "@/features/hero/Hero";
 import { HowItWorks } from "@/components/HowItWorks";
@@ -231,6 +232,38 @@ export default function Index() {
 
   return (
     <>
+      {/* SEO and Accessibility Optimization */}
+      <Helmet>
+        <title>Kolab | Discover Melbourne's Underground Events & Hidden Venues</title>
+        <meta 
+          name="description" 
+          content="Your backstage pass to Melbourne's best-kept secrets. Discover underground culture, exclusive events, and hidden venues across Melbourne's vibrant cultural districts." 
+        />
+        <meta 
+          name="keywords" 
+          content="melbourne events, underground events melbourne, hidden venues melbourne, secret events, exclusive parties, cultural events melbourne, melbourne nightlife" 
+        />
+        <link rel="canonical" href="https://ko-lab.com.au/" />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content="Kolab | Discover Melbourne's Underground Events & Hidden Venues" />
+        <meta property="og:description" content="Your backstage pass to Melbourne's best-kept secrets. Discover underground culture, exclusive events, and hidden venues." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://ko-lab.com.au/" />
+        <meta property="og:image" content="https://ko-lab.com.au/images/og-kolab.jpg" />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Kolab | Discover Melbourne's Underground Events & Hidden Venues" />
+        <meta name="twitter:description" content="Your backstage pass to Melbourne's best-kept secrets. Discover underground culture, exclusive events, and hidden venues." />
+        <meta name="twitter:image" content="https://ko-lab.com.au/images/og-kolab.jpg" />
+        
+        {/* Additional SEO */}
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Kolab" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+      </Helmet>
+
       {/* Performance and SEO optimizations */}
       <CriticalCSS />
       <PerformanceMonitor />
@@ -255,23 +288,27 @@ export default function Index() {
         onOpenSearch={() => setShowSearchSheet(true)}
         onOpenAuth={() => setShowAuth(true)}
       >
-        {/* Semantic HTML structure for SEO */}
-        <header role="banner">
+        {/* Semantic HTML structure for SEO and Accessibility */}
+        <header role="banner" aria-label="Site header and hero section">
           <Hero />
         </header>
         
         {/* How it works section */}
-        <HowItWorks />
+        <section aria-label="How Kolab works" className="how-it-works">
+          <HowItWorks />
+        </section>
         
         {/* Audience split section */}
-        <AudienceSplit />
+        <section aria-label="For event-goers and organizers" className="audience-split">
+          <AudienceSplit />
+        </section>
         
-        <section aria-label="City Guide" className="city-guide">
+        <section aria-label="Melbourne City Guide" className="city-guide">
           <CityGuide />
         </section>
         
-        <main role="main" className="container px-4 py-8" id="main-content">
-          <section aria-label="Events and Activities" className="events-section">
+        <main role="main" className="container px-4 py-8" id="main-content" aria-label="Events and Activities">
+          <section aria-label="Event discovery and filtering" className="events-section" role="region">
             {/* Search and Filters - Mobile First */}
             {isMobile ? (
               <div className="space-y-4">

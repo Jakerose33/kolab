@@ -1,4 +1,5 @@
 import { AppLayout } from "@/components/AppLayout";
+import { Helmet } from "react-helmet-async";
 import EventCard from "@/components/events/EventCard";
 import PreviewEventCard from "@/components/events/PreviewEventCard";
 import EventMap from "@/components/EventMap";
@@ -91,147 +92,170 @@ export default function Events() {
     });
   };
 
-  // Convert map events to EventMap format
+  // Use the existing map events without transformation
   const validMapEvents = useMemo(() => {
-    return (mapEvents || [])
-      .filter(hasValidCoordinates)
-      .map(event => ({
-        id: event?.id || '',
-        title: event?.title || 'Untitled Event',
-        description: '',
-        date: new Date().toLocaleDateString(),
-        time: new Date().toLocaleTimeString(),
-        location: event?.venue_name || 'Unknown location',
-        category: event?.categories?.[0] || 'general',
-        coordinates: [event?.longitude || 0, event?.latitude || 0] as [number, number],
-        price: event?.price_min || 0,
-        attendees: 0,
-        capacity: 100
-      }));
+    return (mapEvents || []).filter(hasValidCoordinates);
   }, [mapEvents]);
 
   return (
     <>
+      {/* SEO and Accessibility Optimization */}
+      <Helmet>
+        <title>Underground Events Melbourne | Discover Secret Parties & Cultural Experiences | Kolab</title>
+        <meta 
+          name="description" 
+          content="Find the best underground events, secret parties, and cultural experiences in Melbourne. From intimate music venues to exclusive art galleries. Discover events tonight." 
+        />
+        <meta 
+          name="keywords" 
+          content="melbourne events, underground events melbourne, secret parties melbourne, music events melbourne, art events melbourne, cultural events melbourne, melbourne nightlife" 
+        />
+        <link rel="canonical" href="https://ko-lab.com.au/events" />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content="Underground Events Melbourne | Discover Secret Parties & Cultural Experiences" />
+        <meta property="og:description" content="Find the best underground events, secret parties, and cultural experiences in Melbourne. From intimate music venues to exclusive art galleries." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://ko-lab.com.au/events" />
+        <meta property="og:image" content="https://ko-lab.com.au/images/og-kolab.jpg" />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Underground Events Melbourne | Discover Secret Parties & Cultural Experiences" />
+        <meta name="twitter:description" content="Find the best underground events, secret parties, and cultural experiences in Melbourne." />
+        <meta name="twitter:image" content="https://ko-lab.com.au/images/og-kolab.jpg" />
+        
+        {/* Event-specific structured data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "EventOrganization",
+            "name": "Kolab Events",
+            "description": "Underground events and cultural experiences in Melbourne",
+            "url": "https://ko-lab.com.au/events",
+            "location": {
+              "@type": "City",
+              "name": "Melbourne",
+              "addressCountry": "AU"
+            }
+          })}
+        </script>
+      </Helmet>
+
       <AppLayout 
         onOpenNotifications={() => setShowNotificationsDialog(true)}
         onOpenAuth={() => setShowAuth(true)}
       >
-        <main className="container px-4 py-8">
+        <main className="container px-4 py-8" role="main">
           <div className="space-y-8">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                  Events
-                </h1>
-                <p className="text-muted-foreground text-lg">
-                  Discover and create amazing events in your area
-                </p>
-              </div>
-              <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
-                <Plus className="h-4 w-4" />
-                Create Event
-              </Button>
-            </div>
+            {/* Page Header with proper heading hierarchy */}
+            <header className="text-center space-y-4" role="banner">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                Discover Events
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Find underground events, secret parties, and cultural experiences happening in Melbourne
+              </p>
+            </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-              {/* Advanced Filters Sidebar */}
-              <div className="lg:col-span-1">
-                <UnifiedEventFilters
-                  filters={filters}
-                  onFiltersChange={setFilters}
-                  onClearFilters={() => setFilters({})}
-                />
-              </div>
+            {/* Filters and Search Section */}
+            <section aria-label="Event search and filters" className="events-filters" role="search">
+              <UnifiedEventFilters 
+                filters={filters}
+                onFiltersChange={setFilters}
+                onClearFilters={clearFilters}
+                className="mb-6"
+              />
+            </section>
 
-              {/* Main Content Area */}
-              <div className="lg:col-span-3 space-y-6">
-                {/* View Mode Toggle */}
-                <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <div className="flex items-center justify-between">
-                    <TabsList className="grid w-fit grid-cols-2">
-                      <TabsTrigger value="grid" className="gap-2">
-                        <Grid3X3 className="h-4 w-4" />
-                        Grid View
-                      </TabsTrigger>
-                      <TabsTrigger value="map" className="gap-2">
-                        <Map className="h-4 w-4" />
-                        Map View
-                      </TabsTrigger>
-                    </TabsList>
-                    
-                    <div className="text-sm text-muted-foreground">
-                      {filteredEvents.length} event{filteredEvents.length !== 1 ? 's' : ''} found
-                    </div>
+            {/* Events Display Section */}
+            <section aria-label="Event listings and map view" className="events-content" role="main">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-6" role="tablist" aria-label="View options">
+                  <TabsTrigger value="grid" className="flex items-center gap-2" role="tab" aria-controls="grid-panel">
+                    <Grid3X3 className="w-4 h-4" aria-hidden="true" />
+                    <span className="hidden sm:inline">Grid View</span>
+                    <span className="sm:hidden">Grid</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="map" className="flex items-center gap-2" role="tab" aria-controls="map-panel">
+                    <Map className="w-4 h-4" aria-hidden="true" />
+                    <span className="hidden sm:inline">Map View</span>
+                    <span className="sm:hidden">Map</span>
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="grid" className="mt-0" role="tabpanel" id="grid-panel" aria-labelledby="grid-tab">
+                  {isLoading ? (
+                    <LoadingState />
+                  ) : (
+                    <>
+                      {filteredEvents.length > 0 ? (
+                        <div 
+                          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                          role="grid"
+                          aria-label={`${filteredEvents.length} events found`}
+                        >
+                          {filteredEvents.map((event) => {
+                            const link = getEventLinkSafe(event);
+                            
+                            if (user) {
+                              return (
+                                <EventCard 
+                                  key={String(event.id)}
+                                  event={event}
+                                />
+                              );
+                            } else {
+                              return (
+                                <PreviewEventCard 
+                                  key={String(event.id)}
+                                  event={event}
+                                  onClick={() => setShowAuth(true)}
+                                />
+                              );
+                            }
+                          })}
+                        </div>
+                      ) : (
+                        <EmptyState
+                          icon={Calendar}
+                          title="No events found"
+                          description="Try adjusting your filters or check back later for new events."
+                          action={{
+                            label: "Clear Filters",
+                            onClick: clearFilters
+                          }}
+                        />
+                      )}
+                    </>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="map" className="mt-0" role="tabpanel" id="map-panel" aria-labelledby="map-tab">
+                  <div className="w-full h-[600px] rounded-lg overflow-hidden border border-border">
+                    <EventMap />
                   </div>
-
-                  <TabsContent value="grid" className="mt-6">
-                    {isLoading ? (
-                      <LoadingState />
-                    ) : (
-                      <>
-                        {!isLoading && filteredEvents.length === 0 ? (
-                          <EmptyState
-                            icon={Calendar}
-                            title="No events found"
-                            description="No events match your current filters. Try adjusting your search or category selection."
-                            action={{
-                              label: "Create Event",
-                              onClick: () => setShowCreateDialog(true)
-                            }}
-                          />
-                        ) : (
-                          <div className={isMobile 
-                            ? "space-y-4" 
-                            : "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-                          }>
-                            {(filteredEvents || []).map((event) => {
-                              const eventLink = getEventLinkSafe(event);
-                              const EventComponent = user ? EventCard : PreviewEventCard;
-                              
-                              if (eventLink) {
-                                return (
-                                  <Link key={event?.id || Math.random()} to={eventLink}>
-                                    <EventComponent event={event} />
-                                  </Link>
-                                );
-                              } else {
-                                return <EventComponent key={event?.id || Math.random()} event={event} />;
-                              }
-                            })}
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </TabsContent>
-
-                  <TabsContent value="map" className="mt-6">
-                    <EventMap events={validMapEvents} />
-                  </TabsContent>
-                </Tabs>
-              </div>
-            </div>
+                  {validMapEvents.length === 0 && (
+                    <p className="text-center text-muted-foreground mt-4">
+                      No events with location data available for map view.
+                    </p>
+                  )}
+                </TabsContent>
+              </Tabs>
+            </section>
           </div>
         </main>
+        
+        {/* Create Event Dialog */}
+        <CreateEventWizard
+          open={showCreateDialog}
+          onClose={() => setShowCreateDialog(false)}
+        />
+
+        <MessagesDialog open={showMessagesDialog} onOpenChange={setShowMessagesDialog} />
+        <NotificationsDrawer open={showNotificationsDialog} onOpenChange={setShowNotificationsDialog} />
+        <AuthDialog open={showAuth} onOpenChange={setShowAuth} />
       </AppLayout>
-      
-      <CreateEventWizard
-        open={showCreateDialog}
-        onOpenChange={setShowCreateDialog}
-        onCreateEvent={handleCreateEvent}
-      />
-      <MessagesDialog
-        open={showMessagesDialog}
-        onOpenChange={setShowMessagesDialog}
-      />
-      <NotificationsDrawer
-        open={showNotificationsDialog}
-        onOpenChange={setShowNotificationsDialog}
-      />
-      <AuthDialog
-        open={showAuth}
-        onOpenChange={setShowAuth}
-      />
     </>
   );
 }

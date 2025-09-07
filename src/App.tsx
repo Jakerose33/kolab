@@ -5,6 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { ErrorBoundary } from "react-error-boundary";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { SecurityProvider } from "@/components/SecurityProvider";
@@ -100,6 +101,7 @@ function App() {
   }, []);
 
   return (
+    <HelmetProvider>
     <ErrorBoundary
       FallbackComponent={AppErrorFallback}
       onError={(error) => {
@@ -139,6 +141,7 @@ function App() {
         </BrowserRouter>
       </QueryClientProvider>
     </ErrorBoundary>
+    </HelmetProvider>
   );
 }
 
