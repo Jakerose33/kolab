@@ -9,7 +9,7 @@ export default function Hero() {
   
   // Integrate environment variable with resolver for better image handling
   const heroImageUrl = resolveImageUrl(
-    import.meta.env.VITE_HERO_IMAGE_URL ?? '/images/hero section-2.jpg'
+    import.meta.env.VITE_HERO_IMAGE_URL ?? '/src/assets/hero-boiler-room.jpg'
   );
 
   // Cleanup on unmount to prevent state updates during navigation
