@@ -11,6 +11,14 @@ type Props = React.ImgHTMLAttributes<HTMLImageElement> & {
 export function SafeImg({ src, fallbackContext, ...rest }: Props) {
   const [finalSrc, setFinalSrc] = React.useState(src || PLACEHOLDER);
   const [hasErrored, setHasErrored] = React.useState(false);
+  const isMountedRef = React.useRef(true);
+
+  // Cleanup on unmount to prevent state updates
+  React.useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Only debug in development
   React.useEffect(() => {
@@ -26,19 +34,19 @@ export function SafeImg({ src, fallbackContext, ...rest }: Props) {
 
   // Update src when prop changes
   React.useEffect(() => {
-    if (src !== finalSrc && !hasErrored) {
+    if (isMountedRef.current && src !== finalSrc && !hasErrored) {
       setFinalSrc(src || PLACEHOLDER);
     }
   }, [src, finalSrc, hasErrored]);
 
   const handleError = React.useCallback(() => {
-    if (finalSrc !== PLACEHOLDER) {
+    if (isMountedRef.current && finalSrc !== PLACEHOLDER) {
       // Log the fallback for observability (without console.error to reduce noise)
       logImageFallback(finalSrc, fallbackContext);
       setFinalSrc(PLACEHOLDER);
       setHasErrored(true);
     }
-  }, [finalSrc, fallbackContext, src]);
+  }, [finalSrc, fallbackContext]);
 
   return (
     // eslint-disable-next-line jsx-a11y/alt-text

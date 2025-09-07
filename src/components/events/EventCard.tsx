@@ -3,7 +3,6 @@ import { Card } from '@/components/ui/card';
 import { normalizeEvent, getEventLink } from '@/lib/links';
 import { resolveEventImage } from '@/lib/media';
 import { SafeImg } from '@/components/media/SafeImg';
-import { ErrorBoundary } from "react-error-boundary";
 
 type Props = { event: any; className?: string; 'data-testid'?: string };
 
@@ -27,14 +26,12 @@ export default function EventCard({ event, className, ...rest }: Props) {
   const cardContent = (
     <Card className={`overflow-hidden ${!link ? 'opacity-60 cursor-not-allowed' : ''}`}>
       <div className="relative">
-        <ErrorBoundary fallback={<div className="h-44 w-full bg-muted flex items-center justify-center text-muted-foreground">Image unavailable</div>}>
-          <SafeImg 
-            src={resolveEventImage(event)} 
-            alt={n.title} 
-            className="h-44 w-full object-cover" 
-            fallbackContext="event-card"
-          />
-        </ErrorBoundary>
+        <SafeImg 
+          src={resolveEventImage(event)} 
+          alt={n.title} 
+          className="h-44 w-full object-cover" 
+          fallbackContext="event-card"
+        />
       </div>
       <div className="p-3">
         <h3 className="text-base font-semibold line-clamp-1">{n.title}</h3>
