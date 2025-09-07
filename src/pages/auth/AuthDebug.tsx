@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '@/integrations/supabase/client'
+import { useAuth } from '@/features/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,8 +12,15 @@ import { CheckCircle, XCircle, Clock, AlertCircle } from 'lucide-react'
 import type { Session, User } from '@supabase/supabase-js'
 
 export default function AuthDebug() {
-  const [session, setSession] = useState<Session | null>(null)
-  const [user, setUser] = useState<User | null>(null)
+  const { 
+    session, 
+    user, 
+    signUpEmailPassword, 
+    signInEmailPassword, 
+    sendMagicLink, 
+    signOut 
+  } = useAuth()
+  
   const [loading, setLoading] = useState(false)
   const [lastError, setLastError] = useState<string | null>(null)
   const [testResults, setTestResults] = useState<Record<string, 'pending' | 'success' | 'error'>>({
@@ -49,54 +56,24 @@ export default function AuthDebug() {
     }
   }
 
-  useEffect(() => {
-    // Get current session
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session)
-      setUser(data.session?.user || null)
-    })
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Auth state change:', event, session)
-      setSession(session)
-      setUser(session?.user || null)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
+  // Auth state is managed by AuthProvider, no need for manual setup
 
   const testSignUp = () => handleAction(async () => {
     const testEmail = `test+${Date.now()}@example.com`
-    return supabase.auth.signUp({
-      email: testEmail,
-      password: 'testpassword123',
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`
-      }
-    })
+    return signUpEmailPassword(testEmail, 'testpassword123')
   }, 'signUp')
 
   const testSignIn = () => handleAction(async () => {
-    return supabase.auth.signInWithPassword({
-      email: 'test@example.com',
-      password: 'testpassword123'
-    })
+    return signInEmailPassword('test@example.com', 'testpassword123')
   }, 'signIn')
 
   const testMagicLink = () => handleAction(async () => {
     const testEmail = `magic+${Date.now()}@example.com`
-    return supabase.auth.signInWithOtp({
-      email: testEmail,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-        shouldCreateUser: true
-      }
-    })
+    return sendMagicLink(testEmail)
   }, 'magicLink')
 
   const testSignOut = () => handleAction(async () => {
-    return supabase.auth.signOut()
+    return signOut()
   }, 'signOut')
 
   const getStatusIcon = (status: string) => {

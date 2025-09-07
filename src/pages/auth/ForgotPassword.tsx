@@ -1,6 +1,6 @@
 // src/pages/auth/ForgotPassword.tsx
 import { useEffect, useState } from 'react'
-import { supabase } from '@/integrations/supabase/client'
+import { useAuth } from '@/features/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast'
 import { ArrowLeft, CheckCircle } from 'lucide-react'
 
 export default function ForgotPassword() {
+  const { resetPassword } = useAuth()
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
@@ -24,10 +25,7 @@ export default function ForgotPassword() {
   }, [resendIn])
 
   const sendReset = async (targetEmail: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(targetEmail, {
-      // Keep your existing route; ensure this exact path is whitelisted in Supabase Redirect URLs
-      redirectTo: `${window.location.origin}/auth/reset-password`,
-    })
+    const { error } = await resetPassword(targetEmail)
     if (error) throw error
   }
 

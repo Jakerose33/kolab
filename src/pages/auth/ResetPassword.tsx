@@ -1,7 +1,7 @@
 // src/pages/auth/ResetPassword.tsx
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { supabase } from '@/integrations/supabase/client'
+import { useAuth } from '@/features/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast'
 import { Eye, EyeOff } from 'lucide-react'
 
 export default function ResetPassword() {
+  const { updatePassword, getCurrentSession } = useAuth()
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -36,8 +37,8 @@ export default function ResetPassword() {
       try {
         // If there is no token in URL, check if Supabase has already created a recovery session
         if (!hasRecoveryToken()) {
-          const { data } = await supabase.auth.getSession()
-          if (!data.session) {
+          const session = await getCurrentSession()
+          if (!session) {
             setError('This reset link is invalid or has expired. Please request a new one.')
           }
         }
@@ -66,7 +67,7 @@ export default function ResetPassword() {
 
     setLoading(true)
     try {
-      const { error } = await supabase.auth.updateUser({ password })
+      const { error } = await updatePassword(password)
       if (error) throw error
 
       toast({

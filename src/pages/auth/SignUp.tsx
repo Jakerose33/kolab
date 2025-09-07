@@ -1,6 +1,5 @@
 import { useState } from 'react'
-
-import { supabase } from '@/integrations/supabase/client'
+import { useAuth } from '@/features/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -9,6 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useToast } from '@/hooks/use-toast'
 
 export default function SignUp() {
+  const { signUpEmailPassword, sendMagicLink } = useAuth()
   const { toast } = useToast()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -25,11 +25,7 @@ export default function SignUp() {
 
     setLoading(true)
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
-      })
+      const { error } = await signUpEmailPassword(email, password)
       if (error) throw error
       setSent(true)
       toast({ title: 'Confirmation sent', description: `Check your inbox: ${email}` })
@@ -45,10 +41,7 @@ export default function SignUp() {
   const onMagicLink = async () => {
     setLoading(true); setError(null)
     try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: { emailRedirectTo: `${window.location.origin}/auth/callback`, shouldCreateUser: true },
-      })
+      const { error } = await sendMagicLink(email)
       if (error) throw error
       setSent(true)
       toast({ title: 'Magic link sent', description: `Check your inbox: ${email}` })

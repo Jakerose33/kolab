@@ -1,4 +1,5 @@
 // src/features/auth/AuthProvider.tsx
+// Single source of truth for auth; do not call supabase.auth directly
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,10 +11,14 @@ type Ctx = {
   user: any;
   loading: boolean;
   isAuthenticated: boolean;
-  // preferred names
+  // Auth methods
   signInEmailPassword: (email: string, password: string) => Promise<AuthResult>;
   signUpEmailPassword: (email: string, password: string) => Promise<AuthResult>;
   sendMagicLink: (email: string, redirectTo?: string) => Promise<AuthResult>;
+  resetPassword: (email: string, redirectTo?: string) => Promise<AuthResult>;
+  updatePassword: (password: string) => Promise<AuthResult>;
+  exchangeCodeForSession: (url: string) => Promise<AuthResult>;
+  getCurrentSession: () => Promise<Session | null>;
   signOut: () => Promise<AuthResult>;
   // backward-compatible aliases expected by older components
   signIn: (email: string, password: string) => Promise<AuthResult>;
@@ -61,19 +66,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     wrap(() => supabase.auth.signInWithPassword({ email, password }));
 
   const signUpEmailPassword = (email: string, password: string) =>
-    wrap(() => supabase.auth.signUp({ email, password }));
+    wrap(() => supabase.auth.signUp({ 
+      email, 
+      password,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` }
+    }));
 
   const sendMagicLink = (email: string, redirectTo?: string) =>
     wrap(() =>
       supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo:
-            redirectTo ?? `${window.location.origin}/auth/callback`,
-          shouldCreateUser: false,
+          emailRedirectTo: redirectTo ?? `${window.location.origin}/auth/callback`,
+          shouldCreateUser: true,
         },
       })
     );
+
+  const resetPassword = (email: string, redirectTo?: string) =>
+    wrap(() => supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectTo ?? `${window.location.origin}/auth/reset-password`
+    }));
+
+  const updatePassword = (password: string) =>
+    wrap(() => supabase.auth.updateUser({ password }));
+
+  const exchangeCodeForSession = (url: string) =>
+    wrap(() => supabase.auth.exchangeCodeForSession(url));
+
+  const getCurrentSession = async () => {
+    try {
+      const { data } = await supabase.auth.getSession();
+      return data.session;
+    } catch {
+      return null;
+    }
+  };
 
   const signOut = () => wrap(() => supabase.auth.signOut().then(() => ({ data: null, error: null })));
 
@@ -85,6 +113,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signInEmailPassword,
     signUpEmailPassword,
     sendMagicLink,
+    resetPassword,
+    updatePassword,
+    exchangeCodeForSession,
+    getCurrentSession,
     signOut,
     // aliases for legacy callers
     signIn: signInEmailPassword,

@@ -1,13 +1,14 @@
 // src/pages/auth/AuthCallback.tsx
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { supabase } from '@/integrations/supabase/client'
+import { useAuth } from '@/features/auth/AuthProvider'
 import { LoadingState } from '@/components/LoadingState'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { AlertCircle } from 'lucide-react'
 
 export default function AuthCallback() {
+  const { exchangeCodeForSession } = useAuth()
   const navigate = useNavigate()
   const [search] = useSearchParams()
   const [error, setError] = useState<string | null>(null)
@@ -31,13 +32,9 @@ export default function AuthCallback() {
         }
 
         // Complete the session from the magic-link / PKCE params in the URL
-        const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href)
+        const { error } = await exchangeCodeForSession(window.location.href)
         if (error) {
           throw error
-        }
-
-        if (!data?.session) {
-          throw new Error('No session was created after authentication.')
         }
 
         // Success — brief message, then home
