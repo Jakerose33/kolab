@@ -171,7 +171,7 @@ export function MobileEventsCarousel({
                 )}
                 
                 {/* Event category badge */}
-                {event.tags && event.tags[0] && (
+                {event?.tags?.[0] && (
                   <Badge 
                     variant="secondary" 
                     className="absolute top-3 left-3 bg-background/90 backdrop-blur-sm"
@@ -197,7 +197,7 @@ export function MobileEventsCarousel({
                 </h3>
                 
                 <div className="space-y-2 text-sm text-muted-foreground mb-4">
-                  {event.start_at && (
+                  {event?.start_at && (
                     <div className="flex items-center">
                       <Calendar className="h-4 w-4 mr-2" />
                       {new Date(event.start_at).toLocaleDateString('en-US', {
@@ -210,7 +210,7 @@ export function MobileEventsCarousel({
                     </div>
                   )}
                   
-                  {event.venue_name && (
+                  {event?.venue_name && (
                     <div className="flex items-center">
                       <MapPin className="h-4 w-4 mr-2" />
                       {event.venue_name}

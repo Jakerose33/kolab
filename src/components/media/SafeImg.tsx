@@ -12,9 +12,9 @@ export function SafeImg({ src, fallbackContext, ...rest }: Props) {
   const [finalSrc, setFinalSrc] = React.useState(src || PLACEHOLDER);
   const [hasErrored, setHasErrored] = React.useState(false);
 
-  // Debug logging
+  // Only debug in development
   React.useEffect(() => {
-    if (fallbackContext === 'hero') {
+    if (import.meta.env.DEV && fallbackContext === 'hero') {
       console.log('[HERO SAFEIMG DEBUG]', {
         originalSrc: src,
         finalSrc,
@@ -33,13 +33,7 @@ export function SafeImg({ src, fallbackContext, ...rest }: Props) {
 
   const handleError = React.useCallback(() => {
     if (finalSrc !== PLACEHOLDER) {
-      // Log the fallback for observability  
-      console.error('[img-fallback]', {
-        originalSrc: src,
-        finalSrc,
-        fallbackContext,
-        timestamp: new Date().toISOString()
-      });
+      // Log the fallback for observability (without console.error to reduce noise)
       logImageFallback(finalSrc, fallbackContext);
       setFinalSrc(PLACEHOLDER);
       setHasErrored(true);

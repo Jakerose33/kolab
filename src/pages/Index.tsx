@@ -95,11 +95,13 @@ export default function Index() {
   // Generate categories from events
   const categories = React.useMemo(() => {
     const categoryMap = new Map();
-    events.forEach(event => {
-      if (event.tags) {
+    events?.forEach(event => {
+      if (event?.tags && Array.isArray(event.tags)) {
         event.tags.forEach((tag: string) => {
-          const count = categoryMap.get(tag) || 0;
-          categoryMap.set(tag, count + 1);
+          if (tag && typeof tag === 'string') {
+            const count = categoryMap.get(tag) || 0;
+            categoryMap.set(tag, count + 1);
+          }
         });
       }
     });
@@ -156,22 +158,23 @@ export default function Index() {
   useEffect(() => {
     let filtered = [...events];
 
-    // Filter by category
+    // Filter by category - safe array access
     if (activeCategory) {
       filtered = filtered.filter(event => 
-        event.tags && event.tags.some((tag: string) => 
-          tag.toLowerCase() === activeCategory.toLowerCase()
-        )
+        event?.tags?.some?.((tag: string) => 
+          tag?.toLowerCase?.() === activeCategory.toLowerCase()
+        ) ?? false
       );
     }
 
-    // Filter by search query
+    // Filter by search query - safe string and array access
     if (searchQuery) {
+      const query = searchQuery.toLowerCase();
       filtered = filtered.filter(event =>
-        event.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.venue_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.tags?.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+        event?.title?.toLowerCase?.()?.includes?.(query) ||
+        event?.description?.toLowerCase?.()?.includes?.(query) ||
+        event?.venue_name?.toLowerCase?.()?.includes?.(query) ||
+        (event?.tags?.some?.((tag: string) => tag?.toLowerCase?.()?.includes?.(query)) ?? false)
       );
     }
 

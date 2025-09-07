@@ -29,8 +29,17 @@ interface EditorialGridProps {
 }
 
 const EventCard = ({ event }: { event: Event }) => {
-  const eventDate = new Date(event.start_at);
-  const isToday = eventDate.toDateString() === new Date().toDateString();
+  if (!event?.start_at) return null;
+  
+  let eventDate: Date;
+  let isToday = false;
+  
+  try {
+    eventDate = new Date(event.start_at);
+    isToday = eventDate.toDateString() === new Date().toDateString();
+  } catch (error) {
+    eventDate = new Date();
+  }
   
   const link = getEventLink(event);
   const content = (
@@ -107,9 +116,14 @@ export default function EditorialGrid({ className }: EditorialGridProps) {
   }, [])
   
   const tonightEvents = events.filter(event => {
-    const eventDate = new Date(event.start_at)
-    const today = new Date()
-    return eventDate.toDateString() === today.toDateString()
+    if (!event?.start_at) return false;
+    try {
+      const eventDate = new Date(event.start_at)
+      const today = new Date()
+      return eventDate.toDateString() === today.toDateString()
+    } catch (error) {
+      return false;
+    }
   })
   
   const weekEvents = events.slice(0, 6)
