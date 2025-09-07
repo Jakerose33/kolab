@@ -128,10 +128,13 @@ export function SEOOptimizer({
     document.head.appendChild(performanceScript);
 
     return () => {
-      // Cleanup
-      const existingScript = document.querySelector('script[type="application/ld+json"]');
-      if (existingScript && existingScript === performanceScript) {
-        document.head.removeChild(performanceScript);
+      try {
+        const existingScript = document.querySelector('script[type="application/ld+json"]');
+        if (existingScript && existingScript === performanceScript && document.head.contains(existingScript)) {
+          document.head.removeChild(performanceScript);
+        }
+      } catch (error) {
+        // Silently handle removal errors
       }
     };
   }, []);

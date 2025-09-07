@@ -85,9 +85,13 @@ export function CriticalCSS() {
     document.head.appendChild(style);
 
     return () => {
-      const existingStyle = document.getElementById('critical-css');
-      if (existingStyle) {
-        document.head.removeChild(existingStyle);
+      try {
+        const existingStyle = document.getElementById('critical-css');
+        if (existingStyle && document.head.contains(existingStyle)) {
+          document.head.removeChild(existingStyle);
+        }
+      } catch (error) {
+        // Silently handle removal errors
       }
     };
   }, []);

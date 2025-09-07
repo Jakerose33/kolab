@@ -144,8 +144,12 @@ export function AdvancedImageOptimizer({
       document.head.appendChild(link);
       
       return () => {
-        if (document.head.contains(link)) {
-          document.head.removeChild(link);
+        try {
+          if (document.head.contains(link)) {
+            document.head.removeChild(link);
+          }
+        } catch (error) {
+          // Silently handle removal errors
         }
       };
     }

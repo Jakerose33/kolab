@@ -175,7 +175,15 @@ export function AccessibilityOptimizer() {
       announcement.className = 'sr-only'
       announcement.textContent = message
       document.body.appendChild(announcement)
-      setTimeout(() => document.body.removeChild(announcement), 1000)
+      setTimeout(() => {
+        try {
+          if (document.body.contains(announcement)) {
+            document.body.removeChild(announcement);
+          }
+        } catch (error) {
+          // Silently handle removal errors
+        }
+      }, 1000)
     }
   }
 
