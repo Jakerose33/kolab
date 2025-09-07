@@ -1,6 +1,6 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, MapPin, Users, Clock } from "lucide-react"
+import { ArrowLeft, MapPin, Users, Clock, Share2 } from "lucide-react"
 import EventHeader from "@/features/events/EventHeader"
 import EventGallery from "@/features/events/EventGallery"
 import EventRSVPBar from "@/features/events/EventRSVPBar"
@@ -10,9 +10,12 @@ import BookingCTA from "@/components/booking/BookingCTA"
 import { useRouteId } from "@/utils/routing"
 import { PageSkeleton, NotFound, InlineError } from "@/components/common/ErrorBits"
 import { useEvent } from "@/hooks/useEventsData"
+import { useEventRSVPs } from "@/hooks/useEventRSVPs"
 import { normalizeEventData } from "@/utils/eventHelpers"
 import { SafeErrorBoundary } from "@/components/SafeErrorBoundary"
 import { useNavigate } from "react-router-dom"
+import EventMap from "@/components/EventMap"
+import SocialShare from "@/components/SocialShare"
 
 // Extended event data for detail view
 const extendedEventData = {
@@ -124,13 +127,17 @@ No phones policy in effect - this is about losing yourself in the music and conn
   }
 }
 
-// Helper function to safely access event properties
+// Helper function to safely access event properties with better type safety
 const getEventProp = (event: any, mockProp: string, dbProp?: string) => {
-  return event?.[mockProp] || event?.[dbProp || mockProp] || null
+  const value = event?.[mockProp] || event?.[dbProp || mockProp] || null
+  // Ensure arrays are actually arrays
+  if (mockProp === 'lineup' && value && !Array.isArray(value)) {
+    return null
+  }
+  return value
 }
 
 export default function EventDetail() {
-  const [userRSVP, setUserRSVP] = useState<'going' | 'interested' | null>(null)
   const navigate = useNavigate()
   
   // Use safe route param extraction
@@ -143,15 +150,17 @@ export default function EventDetail() {
   }
 
   // Use canonical event data hook
-  const { data: event, isLoading, error } = useEvent(eventId);
+  const { data: event, isLoading, error } = useEvent(eventId)
+  
+  // Fetch real RSVP data
+  const { data: rsvpData, isLoading: rsvpLoading } = useEventRSVPs(eventId)
 
   // Safe rendering with proper loading states
-  if (isLoading) {
+  if (isLoading || rsvpLoading) {
     return <PageSkeleton />
   }
 
   if (error) {
-    console.error('[EventDetail] query error:', error)
     return <InlineError message="We couldn't load this event. Please try again." />
   }
 
@@ -160,20 +169,36 @@ export default function EventDetail() {
   }
 
   // Normalize the event data for consistent access
-  const normalizedEvent = normalizeEventData(event);
-
-  const handleRSVPChange = (status: 'going' | 'interested' | null) => {
-    setUserRSVP(status)
+  const normalizedEvent = normalizeEventData(event)
+  
+  // Get mock data only for development if available
+  const mockData = extendedEventData[eventId] || {}
+  
+  // Safely merge with preference for real DB data
+  const enhancedEvent = {
+    ...mockData,
+    ...normalizedEvent,
+    // Preserve real data over mocks for critical fields
+    id: normalizedEvent.id,
+    title: normalizedEvent.title,
+    start_at: normalizedEvent.start_at,
+    end_at: normalizedEvent.end_at
   }
+  
+  // Cache lineup to prevent re-computation and ensure type safety
+  const lineup = useMemo(() => {
+    const lineupData = getEventProp(enhancedEvent, 'lineup')
+    return Array.isArray(lineupData) ? lineupData : []
+  }, [enhancedEvent])
 
   // Format dates for JSON-LD with safe fallbacks
-  const eventStartDate = normalizedEvent?.start_at ? new Date(normalizedEvent.start_at) : new Date()
-  const eventEndDate = normalizedEvent?.end_at ? new Date(normalizedEvent.end_at) : new Date(eventStartDate.getTime() + 4 * 60 * 60 * 1000)
+  const eventStartDate = enhancedEvent?.start_at ? new Date(enhancedEvent.start_at) : new Date()
+  const eventEndDate = enhancedEvent?.end_at ? new Date(enhancedEvent.end_at) : new Date(eventStartDate.getTime() + 4 * 60 * 60 * 1000)
 
   const breadcrumbItems = [
     { name: "Home", url: "/" },
     { name: "Events", url: "/events" },
-    { name: normalizedEvent?.title || 'Event', url: `/events/${normalizedEvent?.id || eventId}` }
+    { name: enhancedEvent?.title || 'Event', url: `/events/${enhancedEvent?.id || eventId}` }
   ]
 
   return (
@@ -182,20 +207,20 @@ export default function EventDetail() {
         {/* SEO JSON-LD structured data */}
         <EventJsonLD
         event={{
-          id: normalizedEvent?.id || eventId,
-          title: normalizedEvent?.title || 'Event',
-          description: normalizedEvent?.description || '',
+          id: enhancedEvent?.id || eventId,
+          title: enhancedEvent?.title || 'Event',
+          description: enhancedEvent?.description || '',
           startDate: eventStartDate.toISOString(),
           endDate: eventEndDate.toISOString(),
-          venue: normalizedEvent?.venue_name || 'TBD',
-          venueAddress: normalizedEvent?.venue_address || 'TBD',
-          image: normalizedEvent?.image_url || '/placeholder.svg',
-          ticketUrl: normalizedEvent?.ticket_url || '#',
-          organizer: normalizedEvent?.organizer_name || 'Event Organizer',
-          capacity: normalizedEvent?.capacity || 0,
-          tags: normalizedEvent?.tags || [],
-          going: 0, // Would come from RSVP data
-          interested: 0 // Would come from RSVP data
+          venue: enhancedEvent?.venue_name || 'TBD',
+          venueAddress: enhancedEvent?.venue_address || 'TBD',
+          image: enhancedEvent?.image_url || '/placeholder.svg',
+          ticketUrl: enhancedEvent?.ticket_url || '#',
+          organizer: enhancedEvent?.organizer_name || 'Event Organizer',
+          capacity: enhancedEvent?.capacity || 0,
+          tags: enhancedEvent?.tags || [],
+          going: rsvpData?.going || 0,
+          interested: rsvpData?.interested || 0
         }}
       />
       <BreadcrumbJsonLD items={breadcrumbItems} />
@@ -206,7 +231,7 @@ export default function EventDetail() {
           <div className="container mx-auto px-4 py-4">
             <Button
               variant="ghost"
-              onClick={() => window.location.href = '/'}
+              onClick={() => navigate(-1)}
               className="group"
             >
               <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
@@ -224,13 +249,13 @@ export default function EventDetail() {
                 {/* Event header */}
                 <SafeErrorBoundary inline>
                   <EventHeader
-                    title={normalizedEvent?.title || 'Event'}
-                    date={normalizedEvent?.start_at ? new Date(normalizedEvent.start_at).toLocaleDateString() : 'TBD'}
-                    time={normalizedEvent?.start_at ? new Date(normalizedEvent.start_at).toLocaleTimeString() : 'TBD'}
-                    neighbourhood={normalizedEvent?.city || 'Location TBD'}
-                    venue={normalizedEvent?.venue_name || 'Venue TBD'}
-                    capacity={normalizedEvent?.capacity || 0}
-                    going={0} // Would come from RSVP data
+                    title={enhancedEvent?.title || 'Event'}
+                    date={enhancedEvent?.start_at ? new Date(enhancedEvent.start_at).toLocaleDateString() : 'TBD'}
+                    time={enhancedEvent?.start_at ? new Date(enhancedEvent.start_at).toLocaleTimeString() : 'TBD'}
+                    neighbourhood={enhancedEvent?.city || 'Location TBD'}
+                    venue={enhancedEvent?.venue_name || 'Venue TBD'}
+                    capacity={enhancedEvent?.capacity || 0}
+                    going={rsvpData?.going || 0}
                   />
                 </SafeErrorBoundary>
 
@@ -242,8 +267,8 @@ export default function EventDetail() {
                 {/* Event gallery */}
                 <SafeErrorBoundary inline>
                   <EventGallery
-                    images={normalizedEvent?.image_url ? [normalizedEvent.image_url] : ['/placeholder.svg']}
-                    title={normalizedEvent?.title || 'Event'}
+                    images={enhancedEvent?.images || (enhancedEvent?.image_url ? [enhancedEvent.image_url] : ['/placeholder.svg'])}
+                    title={enhancedEvent?.title || 'Event'}
                   />
                 </SafeErrorBoundary>
 
@@ -254,16 +279,16 @@ export default function EventDetail() {
                     <div>
                       <h2 className="text-2xl font-bold mb-4">About This Event</h2>
                       <div className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                        {normalizedEvent?.description || 'No description available for this event.'}
+                        {enhancedEvent?.description || 'No description available for this event.'}
                       </div>
                     </div>
 
                     {/* Lineup */}
-                    {Array.isArray(getEventProp(event, 'lineup')) && getEventProp(event, 'lineup').length > 0 && (
+                    {lineup.length > 0 && (
                       <div>
                         <h2 className="text-2xl font-bold mb-4">Lineup</h2>
                         <div className="space-y-2">
-                          {(getEventProp(event, 'lineup') || []).map((item: string, index: number) => (
+                          {lineup.map((item: string, index: number) => (
                             <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
                               <Clock className="w-4 h-4 text-muted-foreground" />
                               <span className="font-medium">{item || 'TBD'}</span>
@@ -276,28 +301,47 @@ export default function EventDetail() {
                     {/* Venue information */}
                     <div>
                       <h2 className="text-2xl font-bold mb-4">Venue</h2>
-                      <div className="space-y-3 p-4 rounded-lg bg-muted/50">
+                      <div className="space-y-4 p-4 rounded-lg bg-muted/50">
                         <div className="flex items-center gap-3">
                           <MapPin className="w-5 h-5 text-muted-foreground" />
                           <div>
-                            <p className="font-semibold">{normalizedEvent?.venue_name || 'Venue TBD'}</p>
-                            <p className="text-sm text-muted-foreground">{normalizedEvent?.venue_address || 'Address TBD'}</p>
+                            <p className="font-semibold">{enhancedEvent?.venue_name || 'Venue TBD'}</p>
+                            <p className="text-sm text-muted-foreground">{enhancedEvent?.venue_address || 'Address TBD'}</p>
                           </div>
                         </div>
-                        {normalizedEvent?.capacity && (
+                        {enhancedEvent?.capacity && (
                           <div className="flex items-center gap-3">
                             <Users className="w-5 h-5 text-muted-foreground" />
-                            <span className="text-sm">Capacity: {normalizedEvent.capacity} people</span>
+                            <span className="text-sm">Capacity: {enhancedEvent.capacity} people</span>
                           </div>
                         )}
+                        
+                        {/* Interactive Map */}
+                        <SafeErrorBoundary inline>
+                          <EventMap
+                            latitude={enhancedEvent?.latitude}
+                            longitude={enhancedEvent?.longitude}
+                            address={enhancedEvent?.venue_address}
+                            venueName={enhancedEvent?.venue_name}
+                          />
+                        </SafeErrorBoundary>
                       </div>
                     </div>
 
                     {/* Organizer */}
                     <div>
                       <h2 className="text-2xl font-bold mb-4">Organizer</h2>
-                      <p className="text-muted-foreground">{normalizedEvent?.organizer_name || 'Event Organizer'}</p>
+                      <p className="text-muted-foreground">{enhancedEvent?.organizer_name || 'Event Organizer'}</p>
                     </div>
+
+                    {/* Social Sharing */}
+                    <SafeErrorBoundary inline>
+                      <SocialShare
+                        title={enhancedEvent?.title || 'Event'}
+                        description={enhancedEvent?.description?.slice(0, 160) + '...' || ''}
+                        url={window.location.href}
+                      />
+                    </SafeErrorBoundary>
                   </div>
                 </div>
 
@@ -311,12 +355,12 @@ export default function EventDetail() {
           <div className="lg:w-80 lg:shrink-0">
             <SafeErrorBoundary inline>
               <EventRSVPBar
-                eventId={normalizedEvent?.id || eventId}
-                going={0} // Would come from RSVP data
-                interested={0} // Would come from RSVP data
-                userRSVP={userRSVP}
-                ticketUrl={normalizedEvent?.ticket_url || '#'}
-                onRSVPChange={handleRSVPChange}
+                eventId={enhancedEvent?.id || eventId}
+                going={rsvpData?.going || 0}
+                interested={rsvpData?.interested || 0}
+                userRSVP={rsvpData?.userStatus || null}
+                ticketUrl={enhancedEvent?.ticket_url || '#'}
+                onRSVPChange={() => {}} // Real RSVP handled in EventRSVPBar component
               />
             </SafeErrorBoundary>
           </div>

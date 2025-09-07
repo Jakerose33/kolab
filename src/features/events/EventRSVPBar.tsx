@@ -1,10 +1,12 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Flame, Eye, ExternalLink, Share2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { useViewTransition } from "@/hooks/useViewTransition"
+import { useEventRSVP } from "@/hooks/useEventRSVPs"
+import { useAuth } from "@/hooks/useAuth"
 
 interface EventRSVPBarProps {
   eventId: string
@@ -33,8 +35,26 @@ export default function EventRSVPBar({
   const [optimisticUserRSVP, setOptimisticUserRSVP] = useState(userRSVP)
   const { toast } = useToast()
   const { rsvpWithAnimation } = useViewTransition()
+  const { user } = useAuth()
+  const rsvpMutation = useEventRSVP()
+  
+  // Update optimistic state when props change
+  useEffect(() => {
+    setOptimisticGoing(going)
+    setOptimisticInterested(interested)
+    setOptimisticUserRSVP(userRSVP)
+  }, [going, interested, userRSVP])
 
   const handleRSVP = async (status: 'going' | 'interested') => {
+    if (!user) {
+      toast({
+        title: "Please sign in",
+        description: "You need to be logged in to RSVP to events",
+        variant: "destructive"
+      })
+      return
+    }
+
     const isCurrentStatus = optimisticUserRSVP === status
     const newStatus = isCurrentStatus ? null : status
     
@@ -68,28 +88,19 @@ export default function EventRSVPBar({
     })
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-      onRSVPChange?.(newStatus)
-      
-      toast({
-        title: newStatus ? `You're ${newStatus}!` : "RSVP removed",
-        description: newStatus 
-          ? `Added to your ${newStatus} events` 
-          : "Removed from your events"
+      // Real API call using mutation
+      await rsvpMutation.mutateAsync({
+        eventId,
+        status: newStatus
       })
+      
+      onRSVPChange?.(newStatus)
     } catch (error) {
       // Revert optimistic updates on error
       await rsvpWithAnimation(async () => {
         setOptimisticGoing(going)
         setOptimisticInterested(interested)
         setOptimisticUserRSVP(userRSVP)
-      })
-      
-      toast({
-        title: "Something went wrong",
-        description: "Please try again",
-        variant: "destructive"
       })
     } finally {
       setLoading(null)
