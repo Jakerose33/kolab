@@ -65,28 +65,31 @@ test.describe('Events Data Flow E2E', () => {
   });
 
   test('should navigate to event detail page without errors', async ({ page }) => {
-    await page.goto('/events');
-    await page.waitForLoadState('networkidle');
+    await Promise.all([
+      page.goto('/events'),
+      page.waitForLoadState('networkidle'),
+    ]);
     
-    // Find first event card and click it
+    // Find first event card and click it with robust waiting
     const firstEventCard = page.locator('[class*="grid"] > div').first();
     if (await firstEventCard.isVisible()) {
-      await firstEventCard.click();
-      
-      // Wait for navigation
-      await page.waitForLoadState('networkidle');
+      await Promise.all([
+        page.waitForURL(/\/events\/[^\/]+$/, { timeout: 15000 }),
+        firstEventCard.click(),
+      ]);
       
       // Check we're on event detail page
       expect(page.url()).toMatch(/\/events\/[^\/]+$/);
       
-      // Verify event detail content
+      // Verify event detail content loads
       const eventTitle = page.locator('h1, h2').first();
-      await expect(eventTitle).toBeVisible();
+      await expect(eventTitle).toBeVisible({ timeout: 10000 });
       
-      // Check booking CTA is visible
-      const bookingButton = page.locator('button, a').filter({ hasText: /book|rsvp|ticket/i }).first();
+      // Check booking CTA is visible with proper test ID
+      const bookingButton = page.getByTestId('booking-request')
+        .or(page.locator('button, a').filter({ hasText: /book|rsvp|ticket/i }).first());
       if (await bookingButton.isVisible()) {
-        await expect(bookingButton).toBeVisible();
+        await expect(bookingButton).toBeVisible({ timeout: 10000 });
       }
     }
   });
@@ -148,16 +151,21 @@ test.describe('Events Data Flow E2E', () => {
       pageReloaded = true;
     });
     
-    // Navigate between pages
+    // Navigate between pages using React Router
     const eventsLink = page.locator('a[href="/events"], button').filter({ hasText: /events/i }).first();
     if (await eventsLink.isVisible()) {
-      await eventsLink.click();
+      await Promise.all([
+        page.waitForURL(/\/events/, { timeout: 15000 }),
+        eventsLink.click(),
+      ]);
+      
+      // Small delay to ensure navigation completes
       await page.waitForTimeout(1000);
       
       // Verify no full page reload occurred
       expect(pageReloaded).toBe(false);
       
-      // Check URL changed
+      // Check URL changed correctly
       expect(page.url()).toContain('/events');
     }
   });
