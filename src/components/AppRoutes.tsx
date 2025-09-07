@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { useQueryErrorResetBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
 import { LazyPages } from "@/lib/lazyLoading";
@@ -14,6 +14,7 @@ import SignUp from "@/pages/auth/SignUp";
 
 // Error fallback component
 function AppErrorFallback({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) {
+  const navigate = useNavigate();
   return (
     <div className="min-h-[400px] flex items-center justify-center p-8">
       <div className="text-center space-y-4 max-w-md">
@@ -31,7 +32,7 @@ function AppErrorFallback({ error, resetErrorBoundary }: { error: Error; resetEr
             <RefreshCw className="h-4 w-4" />
             Try Again
           </Button>
-          <Button variant="outline" onClick={() => window.location.href = '/'} className="gap-2">
+          <Button variant="outline" onClick={() => navigate('/')} className="gap-2">
             <Home className="h-4 w-4" />
             Go Home
           </Button>
