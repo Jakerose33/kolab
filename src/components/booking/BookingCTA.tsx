@@ -44,7 +44,7 @@ export default function BookingCTA({ className, eventId, venueId }: Props) {
   if (!currentEventId && !currentVenueId) {
     return (
       <Button
-        data-testid="booking-request"
+        data-testid="booking-cta"
         disabled
         className={className}
         aria-label="Booking unavailable"
@@ -60,7 +60,7 @@ export default function BookingCTA({ className, eventId, venueId }: Props) {
   return (
     <Link to={navigationTarget}>
       <Button
-        data-testid="booking-request"
+        data-testid="booking-cta"
         aria-label={isAuthenticated ? "Request booking" : "Sign in to book"}
         className={className}
       >

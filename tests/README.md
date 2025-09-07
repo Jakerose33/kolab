@@ -1,47 +1,70 @@
-# Kolab E2E Test Suite
+# Enhanced Kolab E2E Test Suite
 
-This comprehensive Playwright test suite ensures all critical flows on https://ko-lab.com.au work with zero error boundaries, no console/page errors, and all CTAs function properly on desktop & mobile.
+This comprehensive Playwright test suite ensures all critical flows work with zero error boundaries, no console/page errors, and all CTAs function properly on desktop & mobile, with enhanced features for authentication, payment testing, and accessibility.
 
 ## Test Structure
 
-### Hardening Fixtures (`tests/fixtures/hardening.ts`)
-All tests use hardened fixtures that automatically fail on:
-- React ErrorBoundary content (strings like "something went wrong", "retry")
-- Unhandled JavaScript errors
-- Console errors
-- Network request failures (excluding known analytics endpoints)
+### Enhanced Fixtures (`tests/fixtures/enhanced-hardening.ts`)
+Advanced test fixtures that provide:
+- Error monitoring and automatic failure on console/page errors
+- Authentication state management with real and mocked flows
+- Mobile device emulation for touch interactions
+- Accessibility testing integration with axe-core
+- Network request failure monitoring (excluding analytics endpoints)
 
-### Test Files
+### Core Test Files
 
-1. **`nav-smoke.spec.ts`** - Navigation smoke tests
+1. **`booking.spec.ts`** - Enhanced booking CTA and flow testing
+   - Guest user flow: auth redirect with next parameter
+   - Authenticated user flow: booking form and payment integration
+   - Event status handling: sold out, invalid events
+   - Mobile booking interactions
+   - Accessibility compliance testing
+   - Real authentication flow testing
+
+2. **`payment-flow.spec.ts`** - Payment processing and validation
+   - Payment form validation and error handling
+   - Stripe integration testing with mocked responses
+   - Security testing: data masking and SSL validation
+   - Mobile payment experience optimization
+   - Network timeout and error recovery
+
+3. **`nav-smoke.spec.ts`** - Navigation smoke tests
    - Verifies all main routes load without errors
    - Checks Report Issue button visibility on all pages
 
-2. **`events-linking.spec.ts`** - Event navigation and detail pages
+4. **`events-linking.spec.ts`** - Event navigation and detail pages
    - Event cards link to detail pages correctly
    - Booking CTA is visible on event detail pages
 
-3. **`booking-cta.spec.ts`** - Booking CTA behavior
-   - Guest users: redirected to sign-in with `next` parameter
-   - Authenticated users: navigate to booking flow
-
-4. **`error-reporting.spec.ts`** - Error reporting system
+5. **`error-reporting.spec.ts`** - Error reporting system
    - Report Issue button functionality
    - Form submission works correctly
    - Auto-capture functionality (when applicable)
 
-5. **`auth-flows.spec.ts`** - Authentication flows
+6. **`auth-flows.spec.ts`** - Authentication flows
    - Sign-in redirects to home page
    - Forgot password shows success state
    - Sign-up form accessibility
    - Sign-out functionality
 
-6. **`a11y.spec.ts`** - Accessibility testing
+7. **`a11y.spec.ts`** - Accessibility testing
    - Axe accessibility scans on all main routes
    - Keyboard navigation verification
    - Screen reader landmark presence
 
-7. **`events-flow.spec.ts`** - Complete event flow testing (existing, now hardened)
+8. **`events-flow.spec.ts`** - Complete event flow testing
+
+### Enhanced Support Files
+
+#### `fixtures/auth.ts` - Authentication Utilities
+- `mockAuthState()` - Quick auth mocking for tests
+- `signIn()` - Real authentication flow testing
+- `signUp()` - User registration testing
+- `clearAuthState()` - Cleanup between tests
+
+#### `constants/test-ids.ts` - Test ID Constants
+Centralized test identifiers to prevent string duplication and ensure consistency across booking, payment, and authentication flows.
 
 ## Environment Setup
 
