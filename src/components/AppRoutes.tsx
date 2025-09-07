@@ -58,8 +58,7 @@ function AppEffects() {
     // Optimise performance on mount
     optimizeImages();
     
-    // Add view transition styles for smooth page transitions
-    addViewTransitionStyles();
+    // Removed addViewTransitionStyles() to prevent DOM manipulation conflicts during navigation
 
     // Optimise images when DOM changes
     const observer = new MutationObserver(() => {

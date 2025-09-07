@@ -34,26 +34,22 @@ export default function Events() {
   const whenQuery = useRouteQuery('when');
   const categoryQuery = useRouteQuery('category');
   
-  // Apply query params to filters on mount
+  // Apply query params to filters on mount - synchronous to prevent race conditions
   useEffect(() => {
-    try {
-      const queryFilters: EventFilters = {};
-      
-      if (whenQuery === 'tonight') {
-        const today = new Date();
-        queryFilters.startDate = today.toISOString().split('T')[0];
-        queryFilters.endDate = today.toISOString().split('T')[0];
-      }
-      
-      if (categoryQuery && typeof categoryQuery === 'string') {
-        queryFilters.categories = [categoryQuery];
-      }
-      
-      if (Object.keys(queryFilters).length > 0) {
-        setFilters(prev => ({ ...prev, ...queryFilters }));
-      }
-    } catch (error) {
-      console.debug('Error applying query filters:', error);
+    const queryFilters: EventFilters = {};
+    
+    if (whenQuery === 'tonight') {
+      const today = new Date();
+      queryFilters.startDate = today.toISOString().split('T')[0];
+      queryFilters.endDate = today.toISOString().split('T')[0];
+    }
+    
+    if (categoryQuery && typeof categoryQuery === 'string') {
+      queryFilters.categories = [categoryQuery];
+    }
+    
+    if (Object.keys(queryFilters).length > 0) {
+      setFilters(prev => ({ ...prev, ...queryFilters }));
     }
   }, [whenQuery, categoryQuery]);
 

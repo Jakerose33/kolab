@@ -26,9 +26,10 @@ export function supportsViewTransitions(): boolean {
   }
   
   // Additional check for mobile browsers that might have partial support
-  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  if (isMobile) {
-    // For now, disable view transitions on mobile to prevent errors
+  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|Tablet/i.test(navigator.userAgent);
+  const isSmallViewport = window.innerWidth < 1024;
+  if (isMobile || isSmallViewport) {
+    // Disable view transitions on mobile and small viewports to prevent errors
     return false;
   }
   

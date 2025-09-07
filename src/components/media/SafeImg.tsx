@@ -34,12 +34,16 @@ export function SafeImg({ src, fallbackContext, ...rest }: Props) {
 
   // Update src when prop changes
   React.useEffect(() => {
-    if (isMountedRef.current && src !== finalSrc && !hasErrored) {
-      setFinalSrc(src || PLACEHOLDER);
+    if (isMountedRef.current && src && src !== finalSrc && !hasErrored) {
+      setFinalSrc(src);
     }
   }, [src, finalSrc, hasErrored]);
 
-  const handleError = React.useCallback(() => {
+  const handleError = React.useCallback((e: React.SyntheticEvent) => {
+    // Prevent error propagation during page transitions
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (isMountedRef.current && finalSrc !== PLACEHOLDER) {
       // Log the fallback for observability (without console.error to reduce noise)
       logImageFallback(finalSrc, fallbackContext);
