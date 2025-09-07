@@ -104,23 +104,70 @@ export const useEventsFeed = (filters: EventFilters = {}) => {
   return useQuery({
     queryKey: ['events', 'feed', filtersKey],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_public_events_enhanced', {
-        event_limit: 50,
-        search_query: filters.search || null,
-        category_filter: filters.categories || null,
-        min_price: filters.minPrice || null,
-        max_price: filters.maxPrice || null,
-        start_date: filters.startDate || null,
-        end_date: filters.endDate || null,
-        latitude_center: filters.latitude || null,
-        longitude_center: filters.longitude || null,
-        radius_km: filters.radius || null
-      });
-      
-      if (error) throw error;
-      return data || [];
+      try {
+        // Try the RPC function first
+        const { data, error } = await supabase.rpc('get_public_events_enhanced', {
+          event_limit: 50,
+          search_query: filters.search || null,
+          category_filter: filters.categories || null,
+          min_price: filters.minPrice || null,
+          max_price: filters.maxPrice || null,
+          start_date: filters.startDate || null,
+          end_date: filters.endDate || null,
+          latitude_center: filters.latitude || null,
+          longitude_center: filters.longitude || null,
+          radius_km: filters.radius || null
+        });
+        
+        if (error) throw error;
+        return data || [];
+      } catch (rpcError) {
+        console.warn('RPC failed, falling back to direct query:', rpcError);
+        
+        // Fallback to direct table query
+        let query = supabase
+          .from('events')
+          .select('*, profiles:organizer_id(full_name, handle, avatar_url)')
+          .eq('status', 'published')
+          .eq('visibility', 'public')
+          .order('start_at', { ascending: true })
+          .limit(50);
+
+        // Apply date filters
+        if (filters.startDate) {
+          query = query.gte('start_at', filters.startDate);
+        }
+        if (filters.endDate) {
+          const endDate = new Date(filters.endDate);
+          endDate.setHours(23, 59, 59, 999);
+          query = query.lte('start_at', endDate.toISOString());
+        }
+
+        // Apply search filter
+        if (filters.search) {
+          query = query.ilike('title', `%${filters.search}%`);
+        }
+
+        // Apply category filter
+        if (filters.categories && filters.categories.length > 0) {
+          query = query.overlaps('categories', filters.categories);
+        }
+
+        // Apply price filters
+        if (filters.minPrice !== undefined) {
+          query = query.gte('price_min', filters.minPrice);
+        }
+        if (filters.maxPrice !== undefined) {
+          query = query.lte('price_max', filters.maxPrice);
+        }
+
+        const { data: fallbackData, error: fallbackError } = await query;
+        
+        if (fallbackError) throw fallbackError;
+        return fallbackData || [];
+      }
     },
-    retry: 0,
+    retry: 1,
     refetchOnWindowFocus: false
   });
 };
@@ -133,44 +180,96 @@ export const useMapEvents = (bounds?: MapBounds, filters: EventFilters = {}) => 
   return useQuery({
     queryKey: ['events', 'map', boundsKey, filtersKey],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_public_events_enhanced', {
-        event_limit: 200,
-        search_query: filters.search || null,
-        category_filter: filters.categories || null,
-        min_price: filters.minPrice || null,
-        max_price: filters.maxPrice || null,
-        start_date: filters.startDate || null,
-        end_date: filters.endDate || null,
-        latitude_center: filters.latitude || null,
-        longitude_center: filters.longitude || null,
-        radius_km: filters.radius || null
-      });
-      
-      if (error) throw error;
-      
-      // Filter by bounds if provided and return only essential map data
-      let events = data || [];
-      if (bounds) {
-        events = events.filter((event: any) => 
-          event.latitude && event.longitude &&
-          event.latitude >= bounds.south &&
-          event.latitude <= bounds.north &&
-          event.longitude >= bounds.west &&
-          event.longitude <= bounds.east
-        );
+      try {
+        // Try the RPC function first
+        const { data, error } = await supabase.rpc('get_public_events_enhanced', {
+          event_limit: 200,
+          search_query: filters.search || null,
+          category_filter: filters.categories || null,
+          min_price: filters.minPrice || null,
+          max_price: filters.maxPrice || null,
+          start_date: filters.startDate || null,
+          end_date: filters.endDate || null,
+          latitude_center: filters.latitude || null,
+          longitude_center: filters.longitude || null,
+          radius_km: filters.radius || null
+        });
+        
+        if (error) throw error;
+        
+        // Filter by bounds if provided and return only essential map data
+        let events = data || [];
+        if (bounds) {
+          events = events.filter((event: any) => 
+            event.latitude && event.longitude &&
+            event.latitude >= bounds.south &&
+            event.latitude <= bounds.north &&
+            event.longitude >= bounds.west &&
+            event.longitude <= bounds.east
+          );
+        }
+        
+        return events.map((event: any) => ({
+          id: event.id,
+          title: event.title,
+          latitude: event.latitude,
+          longitude: event.longitude,
+          categories: event.categories,
+          price_min: event.price_min,
+          venue_name: event.venue_name
+        }));
+      } catch (rpcError) {
+        console.warn('Map RPC failed, falling back to direct query:', rpcError);
+        
+        // Fallback to direct table query
+        let query = supabase
+          .from('events')
+          .select('id, title, latitude, longitude, categories, price_min, venue_name, start_at')
+          .eq('status', 'published')
+          .eq('visibility', 'public')
+          .not('latitude', 'is', null)
+          .not('longitude', 'is', null)
+          .order('start_at', { ascending: true })
+          .limit(200);
+
+        // Apply date filters
+        if (filters.startDate) {
+          query = query.gte('start_at', filters.startDate);
+        }
+        if (filters.endDate) {
+          const endDate = new Date(filters.endDate);
+          endDate.setHours(23, 59, 59, 999);
+          query = query.lte('start_at', endDate.toISOString());
+        }
+
+        const { data: fallbackData, error: fallbackError } = await query;
+        
+        if (fallbackError) throw fallbackError;
+        
+        // Filter by bounds if provided
+        let events = fallbackData || [];
+        if (bounds) {
+          events = events.filter((event: any) => 
+            event.latitude && event.longitude &&
+            event.latitude >= bounds.south &&
+            event.latitude <= bounds.north &&
+            event.longitude >= bounds.west &&
+            event.longitude <= bounds.east
+          );
+        }
+        
+        return events.map((event: any) => ({
+          id: event.id,
+          title: event.title,
+          latitude: event.latitude,
+          longitude: event.longitude,
+          categories: event.categories,
+          price_min: event.price_min,
+          venue_name: event.venue_name
+        }));
       }
-      
-      return events.map((event: any) => ({
-        id: event.id,
-        title: event.title,
-        latitude: event.latitude,
-        longitude: event.longitude,
-        categories: event.categories,
-        price_min: event.price_min,
-        venue_name: event.venue_name
-      }));
     },
-    retry: 0,
+    retry: 1,
     refetchOnWindowFocus: false,
     enabled: true
   });
