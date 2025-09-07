@@ -1,15 +1,32 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { resolveImageUrl } from '@/lib/media';
 
 export default function Hero() {
+  // Support VITE_HERO_IMAGE_URL environment variable with fallback
+  const heroImageUrl = import.meta.env.VITE_HERO_IMAGE_URL || '/hero/hero%20section-2.webp';
+  const resolvedHeroImage = resolveImageUrl(heroImageUrl);
+
   return (
     <section className="relative isolate overflow-hidden">
       <img
-        src="/hero/hero%20section-2.webp"
+        src={resolvedHeroImage}
         alt="Kolab — discover and book events"
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full object-cover object-center"
         loading="eager"
+        width="1920"
+        height="1080"
+        onError={(e) => {
+          const target = e.currentTarget;
+          if (target.src !== '/placeholder.svg') {
+            target.src = '/placeholder.svg';
+          }
+        }}
+        sizes="100vw"
+        style={{
+          objectPosition: 'center center',
+        }}
       />
 
       {/* Soft gradient to keep text readable on busy images */}

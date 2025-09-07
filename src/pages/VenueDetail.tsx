@@ -168,15 +168,22 @@ export default function VenueDetail() {
             </div>
 
             {/* Venue Images */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {(Array.isArray(getVenueProp(venue, 'images')) ? getVenueProp(venue, 'images') : ['/placeholder.svg']).map((image: string, index: number) => (
                 <div key={index} className="aspect-video bg-muted rounded-lg overflow-hidden">
                   <img 
                     src={image || '/placeholder.svg'} 
                     alt={`${venue?.name || 'Venue'} ${index + 1}`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    width="400"
+                    height="225"
+                    loading="lazy"
+                    sizes="(max-width: 640px) 100vw, 50vw"
                     onError={(e) => {
-                      e.currentTarget.src = '/placeholder.svg';
+                      const target = e.currentTarget;
+                      if (target.src !== '/placeholder.svg') {
+                        target.src = '/placeholder.svg';
+                      }
                     }}
                   />
                 </div>

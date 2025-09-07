@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar, MapPin, Users, Heart, Bookmark, Share2 } from 'lucide-react';
 import { normalizeEvent } from '@/lib/linking';
+import { resolveImageUrl } from '@/lib/media';
 import { useToast } from '@/hooks/use-toast';
 
 interface MobileEventsCarouselProps {
@@ -144,13 +145,24 @@ export function MobileEventsCarousel({
               <div className="relative">
                 {n.image ? (
                   <img 
-                    src={n.image} 
+                    src={resolveImageUrl(n.image)} 
                     alt={n.title} 
-                    className="h-48 w-full object-cover rounded-t-lg" 
-                    loading="lazy" 
+                    className="h-40 sm:h-48 w-full object-cover rounded-t-lg hover:scale-105 transition-transform duration-300" 
+                    width="300"
+                    height="192"
+                    loading="lazy"
+                    sizes="(max-width: 640px) 90vw, 300px"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (target.src !== '/placeholder.svg') {
+                        target.src = '/placeholder.svg';
+                      }
+                    }}
                   />
                 ) : (
-                  <div className="h-48 w-full bg-muted rounded-t-lg" />
+                  <div className="h-40 sm:h-48 w-full bg-muted rounded-t-lg flex items-center justify-center">
+                    <span className="text-muted-foreground text-sm">No image</span>
+                  </div>
                 )}
                 
                 {/* Overlapping effect for side cards */}

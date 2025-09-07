@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageCircle, Users, UserPlus, Heart, Share, Calendar, Plus, Send } from "lucide-react";
+import { resolveImageUrl } from '@/lib/media';
 import { useToast } from "@/hooks/use-toast";
 import { CreateEventWizard } from "@/components/CreateEventWizard";
 import { EmptyState } from "@/components/EmptyState";
@@ -350,9 +351,19 @@ export function SocialHub() {
                             <p className="text-base leading-relaxed">{post.content}</p>
                             {post.image && (
                               <img
-                                src={post.image}
+                                src={resolveImageUrl(post.image)}
                                 alt="Post content"
-                                className="w-full rounded-lg object-cover max-h-96"
+                                className="w-full rounded-lg object-cover max-h-64 sm:max-h-96 hover:scale-105 transition-transform duration-300"
+                                width="600"
+                                height="400"
+                                loading="lazy"
+                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                onError={(e) => {
+                                  const target = e.currentTarget;
+                                  if (target.src !== '/placeholder.svg') {
+                                    target.src = '/placeholder.svg';
+                                  }
+                                }}
                               />
                             )}
                           </div>
@@ -457,9 +468,19 @@ export function SocialHub() {
                     <Card key={group.id} className="rounded-xl shadow-sm border bg-card hover:shadow-md transition-shadow overflow-hidden">
                       <div className="relative">
                         <img
-                          src={group.image}
+                          src={resolveImageUrl(group.image)}
                           alt={group.name}
-                          className="w-full h-32 object-cover"
+                          className="w-full h-24 sm:h-32 object-cover hover:scale-105 transition-transform duration-300"
+                          width="400"
+                          height="128"
+                          loading="lazy"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            if (target.src !== '/placeholder.svg') {
+                              target.src = '/placeholder.svg';
+                            }
+                          }}
                         />
                       </div>
                       <CardContent className="p-6">
