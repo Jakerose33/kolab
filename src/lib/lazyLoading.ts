@@ -4,7 +4,6 @@ import { lazy } from 'react';
 export const LazyPages = {
   Index: lazy(() => import('@/pages/Index')),
   Events: lazy(() => import('@/pages/Events')),
-  SafeEventsPage: lazy(() => import('@/components/SafeEventsPage')),
   EventDetail: lazy(() => import('@/pages/EventDetail')),
   EventBooking: lazy(() => import('@/pages/EventBooking')),
   Payment: lazy(() => import('@/pages/Payment')),

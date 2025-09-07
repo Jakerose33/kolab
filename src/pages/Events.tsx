@@ -36,20 +36,24 @@ export default function Events() {
   
   // Apply query params to filters on mount
   useEffect(() => {
-    const queryFilters: EventFilters = {};
-    
-    if (whenQuery === 'tonight') {
-      const today = new Date();
-      queryFilters.startDate = today.toISOString().split('T')[0];
-      queryFilters.endDate = today.toISOString().split('T')[0];
-    }
-    
-    if (categoryQuery) {
-      queryFilters.categories = [categoryQuery];
-    }
-    
-    if (Object.keys(queryFilters).length > 0) {
-      setFilters(prev => ({ ...prev, ...queryFilters }));
+    try {
+      const queryFilters: EventFilters = {};
+      
+      if (whenQuery === 'tonight') {
+        const today = new Date();
+        queryFilters.startDate = today.toISOString().split('T')[0];
+        queryFilters.endDate = today.toISOString().split('T')[0];
+      }
+      
+      if (categoryQuery && typeof categoryQuery === 'string') {
+        queryFilters.categories = [categoryQuery];
+      }
+      
+      if (Object.keys(queryFilters).length > 0) {
+        setFilters(prev => ({ ...prev, ...queryFilters }));
+      }
+    } catch (error) {
+      console.debug('Error applying query filters:', error);
     }
   }, [whenQuery, categoryQuery]);
 
@@ -220,25 +224,30 @@ export default function Events() {
                           aria-label={`${filteredEvents.length} events found`}
                         >
                           {filteredEvents.map((event) => {
-                            const link = getEventLinkSafe(event);
+                            if (!event?.id) return null;
                             
-                            if (user) {
-                              return (
-                                <EventCard 
-                                  key={String(event.id)}
-                                  event={event}
-                                />
-                              );
-                            } else {
-                              return (
-                                <PreviewEventCard 
-                                  key={String(event.id)}
-                                  event={event}
-                                  onClick={() => setShowAuth(true)}
-                                />
-                              );
+                            try {
+                              if (user) {
+                                return (
+                                  <EventCard 
+                                    key={String(event.id)}
+                                    event={event}
+                                  />
+                                );
+                              } else {
+                                return (
+                                  <PreviewEventCard 
+                                    key={String(event.id)}
+                                    event={event}
+                                    onClick={() => setShowAuth(true)}
+                                  />
+                                );
+                              }
+                            } catch (error) {
+                              console.debug('Error rendering event card:', error);
+                              return null;
                             }
-                          })}
+                          }).filter(Boolean)}
                         </div>
                       ) : (
                         <EmptyState
