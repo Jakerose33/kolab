@@ -22,6 +22,11 @@ interface LightboxProps {
 }
 
 const Lightbox = ({ isOpen, onClose, currentIndex, entries, onNavigate }: LightboxProps) => {
+  // Safety guard for entries
+  if (!entries || !Array.isArray(entries) || entries.length === 0) {
+    return null
+  }
+  
   const currentEntry = entries[currentIndex]
   
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -157,7 +162,9 @@ const Lightbox = ({ isOpen, onClose, currentIndex, entries, onNavigate }: Lightb
 
 export default function DiariesStrip({ className }: DiariesStripProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
-  const recentDiaries = diariesData.slice(0, 12)
+  
+  // Safety guard for diariesData
+  const recentDiaries = Array.isArray(diariesData) ? diariesData.slice(0, 12) : []
 
   const handleImageClick = (index: number) => {
     setSelectedIndex(index)
@@ -193,7 +200,7 @@ export default function DiariesStrip({ className }: DiariesStripProps) {
 
           {/* Contact sheet grid with scroll animation */}
           <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12 gap-2 lg:gap-3 scroll-strip">
-            {recentDiaries.map((entry, index) => (
+            {recentDiaries.length > 0 ? recentDiaries.map((entry, index) => (
               <div
                 key={entry.id}
                 className="group cursor-pointer aspect-square overflow-hidden bg-gray-900 hover:scale-105 transition-all duration-300 micro-bounce"
@@ -226,7 +233,11 @@ export default function DiariesStrip({ className }: DiariesStripProps) {
                   </div>
                 </div>
               </div>
-            ))}
+            )) : (
+              <div className="col-span-full text-center py-8">
+                <p className="text-white/60">No diary entries available</p>
+              </div>
+            )}
           </div>
 
           {/* View all link */}
@@ -242,13 +253,15 @@ export default function DiariesStrip({ className }: DiariesStripProps) {
       </section>
 
       {/* Lightbox */}
-      <Lightbox
-        isOpen={selectedIndex !== null}
-        onClose={handleClose}
-        currentIndex={selectedIndex || 0}
-        entries={recentDiaries}
-        onNavigate={handleNavigate}
-      />
+      {recentDiaries.length > 0 && (
+        <Lightbox
+          isOpen={selectedIndex !== null}
+          onClose={handleClose}
+          currentIndex={selectedIndex || 0}
+          entries={recentDiaries}
+          onNavigate={handleNavigate}
+        />
+      )}
     </>
   )
 }
