@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { AppLayout } from "@/components/AppLayout";
-import Hero from "@/features/hero/Hero";
+import EnhancedHero from "@/features/hero/EnhancedHero";
 import { HowItWorks } from "@/components/HowItWorks";
 import { AudienceSplit } from "@/components/AudienceSplit";
 import { FirstVisitTip } from "@/components/FirstVisitTip";
@@ -293,7 +293,7 @@ export default function Index() {
       >
         {/* Semantic HTML structure for SEO and Accessibility */}
         <header role="banner" aria-label="Site header and hero section">
-          <Hero />
+          <EnhancedHero />
         </header>
         
         {/* How it works section */}
