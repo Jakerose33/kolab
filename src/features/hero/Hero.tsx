@@ -1,18 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { resolveImageUrl, logImageFallback } from '@/lib/media';
-import { useSiteSettings } from '@/hooks/useSiteSettings';
+import { resolveHeroImageUrl, logHeroImageError } from '@/lib/heroMedia';
 
 export default function Hero() {
   const [userLocation, setUserLocation] = useState<string | null>(null);
+  const [heroSrc, setHeroSrc] = useState<string>(resolveHeroImageUrl());
   const isMountedRef = React.useRef(true);
-  const { getSetting, loading } = useSiteSettings();
-  
-  // Get hero image from database settings, fallback to default
-  const heroImageUrl = resolveImageUrl(
-    getSetting('hero_image_url', '/src/assets/hero-boiler-room.jpg')
-  );
 
   // Cleanup on unmount to prevent state updates during navigation
   useEffect(() => {
@@ -49,7 +43,7 @@ export default function Hero() {
       style={{ aspectRatio: '16/9', minHeight: '600px' }}
     >
       <img
-        src={heroImageUrl}
+        src={heroSrc}
         alt="Kolab — discover and book events in your city"
         className="absolute inset-0 h-full w-full object-cover object-center"
         loading="eager"
@@ -59,8 +53,9 @@ export default function Hero() {
         onError={(e) => {
           const target = e.currentTarget;
           if (target.src !== '/placeholder.svg') {
-            logImageFallback(heroImageUrl, 'hero_image_load_error');
+            logHeroImageError(heroSrc, 'image_load_failed');
             target.src = '/placeholder.svg';
+            setHeroSrc('/placeholder.svg');
           }
         }}
         sizes="100vw"
