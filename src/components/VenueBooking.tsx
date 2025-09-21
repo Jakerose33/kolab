@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MapPin, Star, Users, Wifi, Car, Coffee, Zap, DollarSign, Clock, Loader2, Building } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { bookVenue } from "@/lib/supabase";
-import VenueMap from "@/components/VenueMap";
+import SafeVenueMap from "@/components/SafeVenueMap";
 import { VenueBookingDialog } from "./VenueBookingDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthProvider";

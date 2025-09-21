@@ -10,7 +10,7 @@ import BookingCTA from "@/components/booking/BookingCTA";
 import { useRequiredParam, PageSkeleton, NotFound, InlineError } from "@/lib/safe";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import VenueMap from "@/components/VenueMap";
+import SafeVenueMap from "@/components/SafeVenueMap";
 import { SafeErrorBoundary } from "@/components/SafeErrorBoundary";
 import { useRouteId } from "@/utils/routing";
 
@@ -209,7 +209,7 @@ export default function VenueDetail() {
 
                 <div>
                   <h2 className="text-xl font-semibold mb-4">Location</h2>
-                  <VenueMap 
+                  <SafeVenueMap 
                     latitude={getVenueProp(venue, 'latitude', 'latitude') ? Number(getVenueProp(venue, 'latitude', 'latitude')) : null}
                     longitude={getVenueProp(venue, 'longitude', 'longitude') ? Number(getVenueProp(venue, 'longitude', 'longitude')) : null}
                     address={venue?.address || 'Address not available'}

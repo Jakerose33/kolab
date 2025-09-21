@@ -73,23 +73,39 @@ export default function VenueMap({
       }
     }
 
-    // Safe cleanup function
+    // Enhanced safe cleanup function
     return () => {
       if (mapInstanceRef.current) {
         try {
-          // Check if map container still exists in DOM
-          const container = mapInstanceRef.current.getContainer()
-          if (container && container.parentNode) {
+          // Add delay to allow React to finish DOM updates
+          requestAnimationFrame(() => {
+            if (mapInstanceRef.current) {
+              try {
+                // Double-check map container still exists in DOM
+                const container = mapInstanceRef.current.getContainer()
+                if (container && container.parentNode && document.contains(container)) {
+                  mapInstanceRef.current.remove()
+                } else {
+                  // Container already removed, just clear the reference
+                  console.warn('[VenueMap] Map container already removed from DOM')
+                }
+              } catch (cleanupError: any) {
+                // Silently handle cleanup errors to prevent crashes
+                console.warn('[VenueMap] Error during delayed cleanup (safe to ignore):', cleanupError?.message || cleanupError)
+              } finally {
+                mapInstanceRef.current = null
+              }
+            }
+          })
+        } catch (error: any) {
+          // Immediate cleanup failed, try without delay
+          try {
             mapInstanceRef.current.remove()
-          } else {
-            // Container already removed, just clear the reference
-            console.warn('[VenueMap] Map container already removed from DOM')
+          } catch (fallbackError: any) {
+            console.warn('[VenueMap] All cleanup attempts failed (safe to ignore):', fallbackError?.message || fallbackError)
+          } finally {
+            mapInstanceRef.current = null
           }
-        } catch (error) {
-          // Silently handle cleanup errors to prevent crashes
-          console.warn('[VenueMap] Error during cleanup (safe to ignore):', error.message)
-        } finally {
-          mapInstanceRef.current = null
         }
       }
     }
