@@ -71,6 +71,21 @@ export default function EnhancedHero() {
   const [timeOfDay, setTimeOfDay] = useState<'late' | 'day' | 'weekend'>('day');
   const isMountedRef = React.useRef(true);
 
+  // Debug image imports
+  React.useEffect(() => {
+    console.log('[HERO DEBUG] Image imports:', {
+      heroDiscoverImage,
+      heroBookImage,
+      heroNightImage,
+      heroAfterglowImage,
+      heroImagesArray: heroImages.map(img => ({ 
+        src: img.src, 
+        type: typeof img.src,
+        length: img.src?.length 
+      }))
+    });
+  }, []);
+
   // Determine time-based messaging
   useEffect(() => {
     const hour = new Date().getHours();
