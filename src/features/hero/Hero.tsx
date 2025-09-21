@@ -52,6 +52,7 @@ export default function Hero() {
         height="1080"
         onError={(e) => {
           const target = e.currentTarget;
+          console.log('[HERO] Image failed to load:', heroSrc);
           if (target.src !== '/placeholder.svg') {
             logHeroImageError(heroSrc, 'image_load_failed');
             target.src = '/placeholder.svg';

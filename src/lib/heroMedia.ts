@@ -40,9 +40,13 @@ function cleanUrl(raw?: string | null): string | null {
 export function resolveHeroImageUrl(): string {
   // 1. Try environment variable (must be HTTPS for security)
   const envUrl = import.meta.env.VITE_HERO_IMAGE_URL as string | undefined;
+  console.log('[HERO] Environment URL:', envUrl);
+  
   if (envUrl) {
     const cleaned = cleanUrl(envUrl);
+    console.log('[HERO] Cleaned URL:', cleaned);
     if (cleaned && isValidHttpsUrl(cleaned)) {
+      console.log('[HERO] Using environment URL:', cleaned);
       return cleaned;
     }
     
@@ -53,7 +57,9 @@ export function resolveHeroImageUrl(): string {
   }
   
   // 2. Fallback to local public asset (shipped with the app)
-  return '/images/hero-boiler-room.jpg';
+  const fallback = '/images/hero-boiler-room.jpg';
+  console.log('[HERO] Using fallback URL:', fallback);
+  return fallback;
 }
 
 /**
