@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, Users, Zap } from 'lucide-react';
+import { Calendar, MapPin, Users } from 'lucide-react';
 
 interface HeroImage {
   src: string;
@@ -37,7 +37,6 @@ const timeBasedMessages = {
 export default function EnhancedHero() {
   const [userLocation, setUserLocation] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [liveActivity, setLiveActivity] = useState(Math.floor(Math.random() * 50) + 20);
   const [timeOfDay, setTimeOfDay] = useState<'late' | 'day' | 'weekend'>('day');
   const isMountedRef = React.useRef(true);
 
@@ -83,14 +82,6 @@ export default function EnhancedHero() {
     getUserLocation();
   }, []);
 
-  // Simulate live activity updates
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setLiveActivity(prev => Math.max(10, prev + Math.floor(Math.random() * 3) - 1));
-    }, 15000);
-    
-    return () => clearInterval(interval);
-  }, []);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -142,26 +133,18 @@ export default function EnhancedHero() {
 
       <div className="relative z-10 mx-auto max-w-6xl px-6 py-20 md:py-28">
         <div className="max-w-4xl">
-          {/* Activity Indicator */}
-          <div className="mb-6 flex items-center gap-4">
-            <Badge 
-              variant="secondary" 
-              className="bg-white/10 text-white border-white/20 backdrop-blur-sm animate-fade-in"
-            >
-              <Zap className="w-3 h-3 mr-1 text-yellow-400" />
-              {liveActivity} locals active now
-            </Badge>
-            
-            {userLocation && (
+          {/* Location Badge */}
+          {userLocation && (
+            <div className="mb-6">
               <Badge 
                 variant="outline" 
-                className="bg-black/20 text-white border-white/30 backdrop-blur-sm"
+                className="bg-black/20 text-white border-white/30 backdrop-blur-sm animate-fade-in"
               >
                 <MapPin className="w-3 h-3 mr-1" />
                 {userLocation}
               </Badge>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Main Headline */}
           <h1 className="kolab-hero-text text-white drop-shadow-2xl mb-6 animate-slide-up">
@@ -211,38 +194,6 @@ export default function EnhancedHero() {
             </Button>
           </div>
 
-          {/* Quick Discovery Widget */}
-          <div className="bg-black/30 backdrop-blur-md border border-white/20 rounded-2xl p-6 max-w-lg animate-fade-in delay-1000">
-            <div className="kolab-caption text-white/70 mb-3 uppercase tracking-wider">
-              Quick Discovery
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              <Link 
-                to="/events?when=tonight"
-                className="bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg p-3 text-center transition-all duration-300 hover:scale-105 group"
-              >
-                <div className="text-white text-sm font-medium group-hover:text-yellow-400 transition-colors">
-                  Tonight
-                </div>
-              </Link>
-              <Link 
-                to="/events?when=weekend"
-                className="bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg p-3 text-center transition-all duration-300 hover:scale-105 group"
-              >
-                <div className="text-white text-sm font-medium group-hover:text-blue-400 transition-colors">
-                  Weekend
-                </div>
-              </Link>
-              <Link 
-                to="/venues"
-                className="bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg p-3 text-center transition-all duration-300 hover:scale-105 group"
-              >
-                <div className="text-white text-sm font-medium group-hover:text-purple-400 transition-colors">
-                  Venues
-                </div>
-              </Link>
-            </div>
-          </div>
         </div>
       </div>
 
