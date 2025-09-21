@@ -37,49 +37,82 @@ export default function EventMap({
     const lat = latitude!
     const lng = longitude!
 
-    // Initialize map
+    // Initialize map with error handling
     if (!mapInstanceRef.current) {
-      const map = L.map(mapRef.current).setView([lat, lng], 15)
-      
-      // Add OpenStreetMap tiles
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(map)
+      try {
+        // Verify container still exists
+        if (!mapRef.current.parentNode) {
+          console.warn('[EventMap] Container removed before map initialization')
+          return
+        }
 
-      mapInstanceRef.current = map
+        const map = L.map(mapRef.current).setView([lat, lng], 15)
+        
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map)
+
+        mapInstanceRef.current = map
+      } catch (error) {
+        console.error('[EventMap] Failed to initialize map:', error)
+        return
+      }
     } else {
       // Update existing map
-      mapInstanceRef.current.setView([lat, lng], 15)
-    }
-
-    // Add marker
-    if (mapInstanceRef.current) {
-      // Clear existing markers
-      mapInstanceRef.current.eachLayer((layer) => {
-        if (layer instanceof L.Marker) {
-          mapInstanceRef.current?.removeLayer(layer)
-        }
-      })
-
-      // Add new marker
-      const marker = L.marker([lat, lng]).addTo(mapInstanceRef.current)
-      
-      if (address || venueName) {
-        const popupContent = `
-          <div class="text-sm">
-            ${venueName ? `<strong>${venueName}</strong><br>` : ''}
-            ${address || 'Event venue location'}
-          </div>
-        `
-        marker.bindPopup(popupContent)
+      try {
+        mapInstanceRef.current.setView([lat, lng], 15)
+      } catch (error) {
+        console.error('[EventMap] Failed to update map view:', error)
+        return
       }
     }
 
-    // Cleanup on unmount
+    // Add marker with error handling
+    if (mapInstanceRef.current) {
+      try {
+        // Clear existing markers
+        mapInstanceRef.current.eachLayer((layer) => {
+          if (layer instanceof L.Marker) {
+            mapInstanceRef.current?.removeLayer(layer)
+          }
+        })
+
+        // Add new marker
+        const marker = L.marker([lat, lng]).addTo(mapInstanceRef.current)
+        
+        if (address || venueName) {
+          const popupContent = `
+            <div class="text-sm">
+              ${venueName ? `<strong>${venueName}</strong><br>` : ''}
+              ${address || 'Event venue location'}
+            </div>
+          `
+          marker.bindPopup(popupContent)
+        }
+      } catch (error) {
+        console.error('[EventMap] Failed to add marker:', error)
+      }
+    }
+
+    // Safe cleanup function
     return () => {
       if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove()
-        mapInstanceRef.current = null
+        try {
+          // Check if map container still exists in DOM
+          const container = mapInstanceRef.current.getContainer()
+          if (container && container.parentNode) {
+            mapInstanceRef.current.remove()
+          } else {
+            // Container already removed, just clear the reference
+            console.warn('[EventMap] Map container already removed from DOM')
+          }
+        } catch (error) {
+          // Silently handle cleanup errors to prevent crashes
+          console.warn('[EventMap] Error during cleanup (safe to ignore):', error.message)
+        } finally {
+          mapInstanceRef.current = null
+        }
       }
     }
   }, [latitude, longitude, address, venueName, hasValidCoords])

@@ -2,7 +2,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { Helmet } from "react-helmet-async";
 import EventCard from "@/components/events/EventCard";
 import PreviewEventCard from "@/components/events/PreviewEventCard";
-import EventMap from "@/components/EventMap";
+import SafeEventMap from "@/components/SafeEventMap";
 import UnifiedEventFilters from "@/components/UnifiedEventFilters";
 import { MessagesDialog } from "@/components/MessagesDialog";
 import { NotificationsDrawer } from "@/components/NotificationsDrawer";
@@ -262,7 +262,7 @@ export default function Events() {
 
                 <TabsContent value="map" className="mt-0" role="tabpanel" id="map-panel" aria-labelledby="map-tab">
                   <div className="w-full h-[600px] rounded-lg overflow-hidden border border-border">
-                    <EventMap />
+                    <SafeEventMap />
                   </div>
                   {validMapEvents.length === 0 && (
                     <p className="text-center text-muted-foreground mt-4">

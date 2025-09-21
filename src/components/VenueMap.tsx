@@ -73,11 +73,24 @@ export default function VenueMap({
       }
     }
 
-    // Cleanup on unmount
+    // Safe cleanup function
     return () => {
       if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove()
-        mapInstanceRef.current = null
+        try {
+          // Check if map container still exists in DOM
+          const container = mapInstanceRef.current.getContainer()
+          if (container && container.parentNode) {
+            mapInstanceRef.current.remove()
+          } else {
+            // Container already removed, just clear the reference
+            console.warn('[VenueMap] Map container already removed from DOM')
+          }
+        } catch (error) {
+          // Silently handle cleanup errors to prevent crashes
+          console.warn('[VenueMap] Error during cleanup (safe to ignore):', error.message)
+        } finally {
+          mapInstanceRef.current = null
+        }
       }
     }
   }, [latitude, longitude, address, venueName])

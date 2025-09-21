@@ -14,7 +14,7 @@ import { useEventRSVPs } from "@/hooks/useEventRSVPs"
 import { normalizeEventData } from "@/utils/eventHelpers"
 import { SafeErrorBoundary } from "@/components/SafeErrorBoundary"
 import { useNavigate } from "react-router-dom"
-import EventMap from "@/components/EventMap"
+import SafeEventMap from "@/components/SafeEventMap"
 import SocialShare from "@/components/SocialShare"
 
 // Extended event data for detail view
@@ -318,7 +318,7 @@ export default function EventDetail() {
                         
                         {/* Interactive Map */}
                         <SafeErrorBoundary inline>
-                          <EventMap
+                          <SafeEventMap
                             latitude={enhancedEvent?.latitude}
                             longitude={enhancedEvent?.longitude}
                             address={enhancedEvent?.venue_address}

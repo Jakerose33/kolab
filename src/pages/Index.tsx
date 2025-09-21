@@ -63,7 +63,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useRealtime } from "@/hooks/useRealtime";
 import { useOfflineQueue } from "@/hooks/useOfflineQueue";
 import { usePerformanceOptimizations } from "@/hooks/usePerformanceOptimizations";
-import EventMap from "@/components/EventMap";
+import SafeEventMap from "@/components/SafeEventMap";
 import React from "react";
 
 export default function Index() {
