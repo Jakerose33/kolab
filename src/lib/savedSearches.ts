@@ -52,7 +52,7 @@ export const savedSearchService = {
           alert_frequency: searchData.alert_frequency || 'daily',
         })
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return { data, error: null };
@@ -73,7 +73,7 @@ export const savedSearchService = {
         .update(updates)
         .eq('id', searchId)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return { data, error: null };
@@ -107,7 +107,7 @@ export const savedSearchService = {
         .from('saved_searches')
         .select('*')
         .eq('id', searchId)
-        .single();
+        .maybeSingle();
 
       if (searchError) throw searchError;
 

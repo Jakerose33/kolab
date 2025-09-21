@@ -218,7 +218,7 @@ export function RealtimeMessaging({ className }: RealtimeMessagingProps) {
           message_type: 'text'
         })
         .select()
-        .single()
+        .maybeSingle()
 
       if (error) throw error
 

@@ -48,7 +48,7 @@ export const getUserProfile = async (userId?: string) => {
       .from('profiles')
       .select('*')
       .eq('user_id', targetUserId)
-      .single();
+      .maybeSingle();
     
     return { data, error };
   }
@@ -71,7 +71,7 @@ export const updateUserProfile = async (updates: any) => {
     .update(updates)
     .eq('user_id', user.id)
     .select()
-    .single();
+    .maybeSingle();
   
   return { data, error };
 };
@@ -88,7 +88,7 @@ export const createEvent = async (eventData: any) => {
       organizer_id: user.id
     })
     .select()
-    .single();
+    .maybeSingle();
   
   return { data, error };
 };
@@ -155,7 +155,7 @@ export const rsvpToEvent = async (eventId: string, status: 'going' | 'interested
       status
     })
     .select()
-    .single();
+    .maybeSingle();
   
   return { data, error };
 };

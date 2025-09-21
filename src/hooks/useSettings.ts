@@ -36,7 +36,7 @@ export function useSettings() {
         .from('notification_preferences')
         .select('*')
         .eq('user_id', session.user.id)
-        .single();
+        .maybeSingle();
       
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching notification preferences:', error);
@@ -58,7 +58,7 @@ export function useSettings() {
         .from('privacy_settings')
         .select('*')
         .eq('user_id', session.user.id)
-        .single();
+        .maybeSingle();
       
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching privacy settings:', error);
@@ -85,7 +85,7 @@ export function useSettings() {
           onConflict: 'user_id'
         })
         .select()
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
       return data;
@@ -116,7 +116,7 @@ export function useSettings() {
           onConflict: 'user_id'
         })
         .select()
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
       return data;

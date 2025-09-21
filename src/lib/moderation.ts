@@ -66,7 +66,7 @@ export const createContentReport = async (data: {
         ...data,
       })
       .select()
-      .single();
+      .maybeSingle();
 
     return { data: report as ContentReport, error };
   } catch (error) {

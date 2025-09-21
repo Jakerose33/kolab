@@ -1,6 +1,6 @@
 // src/pages/auth/SignIn.tsx
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -43,6 +43,7 @@ const isValidEmail = (email: string): boolean => {
 
 export default function SignIn() {
   const nav = useNavigate()
+  const [searchParams] = useSearchParams()
   const { toast } = useToast()
   const { signInEmailPassword, sendMagicLink, loading: authLoading } = useAuth()
   const [email, setEmail] = useState('')
@@ -95,7 +96,9 @@ export default function SignIn() {
         toast({ title: 'Sign-in failed', description: friendlyMessage, variant: 'destructive' });
       } else {
         toast({ title: 'Welcome back!' });
-        nav('/', { replace: true }); // tests expect landing on "/"
+        // Redirect to 'next' parameter or home
+        const next = searchParams.get('next');
+        nav(next && next.startsWith('/') ? next : '/', { replace: true });
       }
     } catch (err: any) {
       const friendlyMessage = mapError(err);

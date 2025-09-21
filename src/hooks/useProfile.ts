@@ -32,7 +32,7 @@ export function useProfile() {
         .from('profiles')
         .select('*')
         .eq('user_id', session.user.id)
-        .single();
+        .maybeSingle();
       
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching profile:', error);
@@ -59,7 +59,7 @@ export function useProfile() {
           onConflict: 'user_id'
         })
         .select()
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
       return data;
