@@ -3,17 +3,48 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin, Users } from 'lucide-react';
+import heroDiscoverImage from '@/assets/hero-discover-tram.jpg';
+import heroBookImage from '@/assets/hero-book-laptop.jpg';
+import heroNightImage from '@/assets/hero-night-crowd.jpg';
+import heroAfterglowImage from '@/assets/hero-afterglow-friends.jpg';
 
 interface HeroImage {
   src: string;
   alt: string;
+  storyBeat: string;
+  headline: string;
+  subtext: string;
 }
 
 const heroImages: HeroImage[] = [
-  { src: '/images/hero-boiler-room.jpg', alt: 'Underground warehouse event' },
-  { src: '/images/events/warehouse-rave.jpg', alt: 'Warehouse rave atmosphere' },
-  { src: '/images/events/midnight-jazz.jpg', alt: 'Late night jazz session' },
-  { src: '/images/events/street-art-opening.jpg', alt: 'Street art gallery opening' },
+  { 
+    src: heroDiscoverImage, 
+    alt: 'Person on a tram discovering local events on their phone at dusk',
+    storyBeat: 'Discover',
+    headline: 'Find your scene',
+    subtext: 'Curated events waiting to be discovered'
+  },
+  { 
+    src: heroBookImage, 
+    alt: 'Laptop and phone showing a simple event booking page with a clear call to action',
+    storyBeat: 'Book',
+    headline: 'Secure your spot',
+    subtext: 'Simple booking, no surprises'
+  },
+  { 
+    src: heroNightImage, 
+    alt: 'Crowd celebrating at a live event with vibrant lights and confetti',
+    storyBeat: 'The Night',
+    headline: 'Experience the magic',
+    subtext: 'Where memories are made'
+  },
+  { 
+    src: heroAfterglowImage, 
+    alt: 'Friends sharing last night\'s event photos with subtle hints of chat and recommendations',
+    storyBeat: 'Afterglow',
+    headline: 'Share the story',
+    subtext: 'Connect and plan your next adventure'
+  },
 ];
 
 const timeBasedMessages = {
@@ -58,7 +89,7 @@ export default function EnhancedHero() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
-    }, 8000);
+    }, 6000); // Slightly faster to keep narrative moving
     
     return () => clearInterval(interval);
   }, []);
@@ -92,6 +123,7 @@ export default function EnhancedHero() {
 
   const currentMessage = timeBasedMessages[timeOfDay];
   const currentImage = heroImages[currentImageIndex];
+  const showStoryOverlay = currentImageIndex > 0; // Show story overlay for narrative beats
 
   return (
     <section 
@@ -146,15 +178,27 @@ export default function EnhancedHero() {
             </div>
           )}
 
-          {/* Main Headline */}
+          {/* Dynamic Headline - Story or Time-based */}
           <h1 className="kolab-hero-text text-white drop-shadow-2xl mb-6 animate-slide-up">
-            {currentMessage.headline}
+            {showStoryOverlay ? currentImage.headline : currentMessage.headline}
           </h1>
           
           {/* Enhanced Subtext */}
           <div className="kolab-body-large text-white/95 drop-shadow-lg mb-4 animate-fade-in delay-300">
-            {currentMessage.subtext}
+            {showStoryOverlay ? currentImage.subtext : currentMessage.subtext}
           </div>
+          
+          {/* Story Beat Indicator */}
+          {showStoryOverlay && (
+            <div className="mb-4">
+              <Badge 
+                variant="secondary" 
+                className="bg-primary/20 text-white border-primary/30 backdrop-blur-sm animate-fade-in"
+              >
+                {currentImage.storyBeat}
+              </Badge>
+            </div>
+          )}
           
           {userLocation && (
             <div className="kolab-caption text-white/80 mb-8 animate-fade-in delay-500">
