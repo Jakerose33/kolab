@@ -265,7 +265,7 @@ export const bookVenue = async (bookingData: {
       venues(name, address),
       profiles!venue_bookings_user_id_fkey(full_name, handle)
     `)
-    .single();
+    .maybeSingle();
   
   return { data, error };
 };
@@ -309,7 +309,7 @@ export const sendMessage = async (recipientId: string, content: string) => {
         participant_two_id: recipientId
       })
       .select()
-      .single();
+      .maybeSingle();
 
     if (newConvError) throw newConvError;
     conversationId = newConv.id;
@@ -328,7 +328,7 @@ export const sendMessage = async (recipientId: string, content: string) => {
       sender:profiles!messages_sender_id_fkey(full_name, handle, avatar_url),
       recipient:profiles!messages_recipient_id_fkey(full_name, handle, avatar_url)
     `)
-    .single();
+    .maybeSingle();
 
   if (error) throw error;
 
@@ -382,7 +382,7 @@ export const markMessageAsRead = async (messageId: string) => {
     .eq('id', messageId)
     .eq('read_at', null)
     .select()
-    .single();
+    .maybeSingle();
 
   return { data, error };
 };
@@ -407,7 +407,7 @@ export const markNotificationAsRead = async (notificationId: string) => {
     .update({ read_at: new Date().toISOString() })
     .eq('id', notificationId)
     .select()
-    .single();
+    .maybeSingle();
   
   return { data, error };
 };
@@ -451,7 +451,7 @@ export const createNotification = async (
       related_id: relatedId
     })
     .select()
-    .single();
+    .maybeSingle();
   
   return { data, error };
 };
@@ -487,7 +487,7 @@ export const updateBookingStatus = async (
     })
     .eq('id', bookingId)
     .select()
-    .single();
+    .maybeSingle();
   
   return { data, error };
 };

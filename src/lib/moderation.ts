@@ -127,7 +127,7 @@ export const updateContentReport = async (
       })
       .eq('id', reportId)
       .select()
-      .single();
+      .maybeSingle();
 
     return { data: report as ContentReport, error };
   } catch (error) {
@@ -152,7 +152,7 @@ export const blockUser = async (
         reason,
       })
       .select()
-      .single();
+      .maybeSingle();
 
     return { data: block, error };
   } catch (error) {
@@ -229,7 +229,7 @@ export const suspendUser = async (data: {
         moderator_id: user.user?.id,
       })
       .select()
-      .single();
+      .maybeSingle();
 
     // Log the moderation action
     if (suspension) {
@@ -281,7 +281,7 @@ export const logModerationAction = async (data: {
         moderator_id: user.user?.id,
       })
       .select()
-      .single();
+      .maybeSingle();
 
     return { data: log as ModerationLog, error };
   } catch (error) {

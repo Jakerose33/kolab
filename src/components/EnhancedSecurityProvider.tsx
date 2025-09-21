@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { SecurityManager } from '@/lib/security';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/features/auth/AuthProvider';
 import { useToast } from '@/hooks/use-toast';
 
 interface SecurityContextType {

@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useSecurityFeatures } from '@/hooks/useSecurityFeatures';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/features/auth/AuthProvider';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import { toast } from 'sonner';
 

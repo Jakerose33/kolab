@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { useViewTransition } from "@/hooks/useViewTransition"
 import { useEventRSVP } from "@/hooks/useEventRSVPs"
-import { useAuth } from "@/hooks/useAuth"
+import { useAuth } from "@/features/auth/AuthProvider"
 
 interface EventRSVPBarProps {
   eventId: string
