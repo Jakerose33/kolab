@@ -2,14 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { resolveImageUrl, logImageFallback } from '@/lib/media';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 export default function Hero() {
   const [userLocation, setUserLocation] = useState<string | null>(null);
   const isMountedRef = React.useRef(true);
+  const { getSetting, loading } = useSiteSettings();
   
-  // Integrate environment variable with resolver for better image handling
+  // Get hero image from database settings, fallback to default
   const heroImageUrl = resolveImageUrl(
-    import.meta.env.VITE_HERO_IMAGE_URL ?? '/src/assets/hero-boiler-room.jpg'
+    getSetting('hero_image_url', '/src/assets/hero-boiler-room.jpg')
   );
 
   // Cleanup on unmount to prevent state updates during navigation
