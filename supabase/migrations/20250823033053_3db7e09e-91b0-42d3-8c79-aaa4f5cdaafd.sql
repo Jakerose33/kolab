@@ -1,3 +1,0 @@
--- Insert events one by one to debug the issue
-INSERT INTO public.events (title, description, start_at, end_at, venue_name, venue_address, organizer_id, image_url, tags, status, visibility) VALUES 
-  ('Underground Jazz Night', 'Intimate jazz session in a hidden basement venue', NOW() + INTERVAL '1 day', NOW() + INTERVAL '1 day' + INTERVAL '4 hours', 'Secret Basement', 'Downtown District', '550e8400-e29b-41d4-a716-446655440000', '/images/events/midnight-jazz.jpg', ARRAY['music', 'jazz'], 'published', 'public');
