@@ -34,23 +34,9 @@ jobs:
         run: npm run lint --if-present
 
       - name: Typecheck (if present)
-        run: |
-          # Run tsc only when there are TypeScript files or tsconfig.json
-          if git ls-files --cached --others --exclude-standard | grep -E '\.ts$|\.tsx$' -q || [ -f tsconfig.json ]; then
-            echo "TypeScript sources found — running typecheck"
-            npm run typecheck --if-present || npx tsc --noEmit || true
-          else
-            echo "No TypeScript sources found — skipping typecheck"
-          fi
+        run: npm run typecheck --if-present || npx tsc --noEmit || true
 
       - name: Build (fallback to vite)
-        run: |
-          # Only run build when an index.html or src/ exists
-          if [ -f index.html ] || [ -d src ]; then
-            echo "Frontend entry found — running build"
-            npm run build --if-present || npx vite build
-          else
-            echo "No index.html or src/ found — skipping build"
-          fi
+        run: npm run build --if-present || npx vite build
         env:
           CI: true
