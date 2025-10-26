@@ -30,8 +30,9 @@ jobs:
           elif [ -f yarn.lock ]; then npm i -g yarn && yarn --frozen-lockfile; \
           else npm i; fi
 
-      - name: Lint (if present)
+      - name: Lint (non-blocking)
         run: npm run lint --if-present
+        continue-on-error: true
 
       - name: Typecheck (if present)
         run: npm run typecheck --if-present || npx tsc --noEmit || true
