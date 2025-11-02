@@ -22,7 +22,10 @@ export default [
       parser: tseslint.parser,
       ecmaVersion: 'latest',
       sourceType: 'module',
-      globals: { browser: true, node: true },
+      globals: {
+        browser: true,
+        node: true,
+      },
     },
     rules: {
       'no-unused-vars': 'warn',
