@@ -254,7 +254,11 @@
   }
 
   .kolab-button-primary {
-    @apply bg-gradient-primary text-primary-foreground font-semibold py-3 px-8 rounded-xl transition-all duration-300 hover:opacity-90 hover:shadow-glow hover:scale-[1.02] active:scale-[0.98];
+    @apply bg-gradient-primary text-primary-foreground font-semibold py-3 px-8 rounded-xl transition-all duration-300 hover:shadow-glow hover:scale-[1.02] active:scale-[0.98];
+  }
+  
+  .kolab-button-primary:hover {
+    opacity: 0.9;
   }
 
   .kolab-button-secondary {
