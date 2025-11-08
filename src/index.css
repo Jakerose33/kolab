@@ -233,11 +233,24 @@
 @layer components {
   /* Enhanced Component Utility Classes */
   .kolab-card {
-    @apply bg-card/80 border border-border/30 rounded-xl backdrop-blur-md shadow-soft transition-all duration-500 hover:shadow-elegant hover:border-primary/30 hover:bg-card/90;
+    @apply rounded-xl backdrop-blur-md shadow-soft transition-all duration-500 hover:shadow-elegant;
+    background-color: hsl(var(--card) / 0.8);
+    border: 1px solid hsl(var(--border) / 0.3);
+  }
+  
+  .kolab-card:hover {
+    background-color: hsl(var(--card) / 0.9);
+    border-color: hsl(var(--primary) / 0.3);
   }
 
   .kolab-card-premium {
-    @apply bg-gradient-to-br from-card/90 to-card/60 border border-border/20 rounded-2xl backdrop-blur-lg shadow-premium transition-all duration-700 hover:shadow-glow hover:border-primary/40;
+    @apply rounded-2xl backdrop-blur-lg shadow-premium transition-all duration-700 hover:shadow-glow;
+    background: linear-gradient(to bottom right, hsl(var(--card) / 0.9), hsl(var(--card) / 0.6));
+    border: 1px solid hsl(var(--border) / 0.2);
+  }
+  
+  .kolab-card-premium:hover {
+    border-color: hsl(var(--primary) / 0.4);
   }
 
   .kolab-button-primary {
@@ -245,11 +258,23 @@
   }
 
   .kolab-button-secondary {
-    @apply bg-secondary/80 border border-border/40 text-secondary-foreground font-medium py-3 px-8 rounded-xl transition-all duration-300 hover:bg-secondary/90 hover:border-primary/30 hover:shadow-soft;
+    @apply text-secondary-foreground font-medium py-3 px-8 rounded-xl transition-all duration-300 hover:shadow-soft;
+    background-color: hsl(var(--secondary) / 0.8);
+    border: 1px solid hsl(var(--border) / 0.4);
+  }
+  
+  .kolab-button-secondary:hover {
+    background-color: hsl(var(--secondary) / 0.9);
+    border-color: hsl(var(--primary) / 0.3);
   }
 
   .kolab-button-ghost {
-    @apply bg-transparent border border-transparent text-foreground/80 font-medium py-3 px-6 rounded-lg transition-all duration-300 hover:bg-muted/50 hover:text-foreground;
+    @apply bg-transparent border border-transparent font-medium py-3 px-6 rounded-lg transition-all duration-300 hover:text-foreground;
+    color: hsl(var(--foreground) / 0.8);
+  }
+  
+  .kolab-button-ghost:hover {
+    background-color: hsl(var(--muted) / 0.5);
   }
 
   /* Typography Classes - Magazine-style with optical sizing */
