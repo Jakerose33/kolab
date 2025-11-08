@@ -1,1 +1,19 @@
 project_id = "vjdcstouchofifbdanjx"
+
+[functions.send-booking-confirmation]
+verify_jwt = false
+
+[functions.create-notification]
+verify_jwt = false
+
+[functions.send-notification-email]
+verify_jwt = false
+
+[functions.save-push-subscription]
+verify_jwt = false
+
+[functions.send-push-notification]
+verify_jwt = false
+
+[functions.remove-push-subscription]
+verify_jwt = false

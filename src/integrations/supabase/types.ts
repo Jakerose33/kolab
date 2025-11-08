@@ -1,0 +1,2560 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "13.0.4"
+  }
+  public: {
+    Tables: {
+      activity_feed: {
+        Row: {
+          action_type: string
+          actor_id: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          target_id: string | null
+          target_type: string
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          actor_id: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          target_id?: string | null
+          target_type: string
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          actor_id?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          target_id?: string | null
+          target_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      admin_metrics: {
+        Row: {
+          created_at: string
+          date_recorded: string
+          id: string
+          metric_name: string
+          metric_value: Json
+        }
+        Insert: {
+          created_at?: string
+          date_recorded?: string
+          id?: string
+          metric_name: string
+          metric_value: Json
+        }
+        Update: {
+          created_at?: string
+          date_recorded?: string
+          id?: string
+          metric_name?: string
+          metric_value?: Json
+        }
+        Relationships: []
+      }
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_name: string
+          event_properties: Json | null
+          id: string
+          ip_address: unknown | null
+          page_url: string | null
+          session_id: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_name: string
+          event_properties?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          page_url?: string | null
+          session_id: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_name?: string
+          event_properties?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          page_url?: string | null
+          session_id?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      audit_logs: {
+        Row: {
+          action_type: string
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          new_data: Json | null
+          old_data: Json | null
+          record_id: string | null
+          table_name: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string | null
+          table_name: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string | null
+          table_name?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      content_reports: {
+        Row: {
+          content_type: string
+          created_at: string
+          description: string | null
+          id: string
+          moderator_id: string | null
+          moderator_notes: string | null
+          reason: string
+          reported_content_id: string | null
+          reported_user_id: string | null
+          reporter_id: string
+          resolution_action: string | null
+          resolved_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          content_type: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          moderator_id?: string | null
+          moderator_notes?: string | null
+          reason: string
+          reported_content_id?: string | null
+          reported_user_id?: string | null
+          reporter_id: string
+          resolution_action?: string | null
+          resolved_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          moderator_id?: string | null
+          moderator_notes?: string | null
+          reason?: string
+          reported_content_id?: string | null
+          reported_user_id?: string | null
+          reporter_id?: string
+          resolution_action?: string | null
+          resolved_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          last_message_at: string | null
+          last_message_id: string | null
+          participant_one_id: string
+          participant_two_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          last_message_id?: string | null
+          participant_one_id: string
+          participant_two_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          last_message_id?: string | null
+          participant_one_id?: string
+          participant_two_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_last_message_id_fkey"
+            columns: ["last_message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      error_reports: {
+        Row: {
+          browser_info: Json | null
+          contact_email: string | null
+          created_at: string
+          description: string | null
+          error_details: Json | null
+          error_type: string
+          id: string
+          screenshot_url: string | null
+          severity: string
+          stack_trace: string | null
+          status: string
+          steps_to_reproduce: string | null
+          title: string
+          updated_at: string
+          url: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          browser_info?: Json | null
+          contact_email?: string | null
+          created_at?: string
+          description?: string | null
+          error_details?: Json | null
+          error_type?: string
+          id?: string
+          screenshot_url?: string | null
+          severity?: string
+          stack_trace?: string | null
+          status?: string
+          steps_to_reproduce?: string | null
+          title: string
+          updated_at?: string
+          url: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          browser_info?: Json | null
+          contact_email?: string | null
+          created_at?: string
+          description?: string | null
+          error_details?: Json | null
+          error_type?: string
+          id?: string
+          screenshot_url?: string | null
+          severity?: string
+          stack_trace?: string | null
+          status?: string
+          steps_to_reproduce?: string | null
+          title?: string
+          updated_at?: string
+          url?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      event_analytics: {
+        Row: {
+          created_at: string
+          date: string
+          engagement_score: number
+          event_id: string
+          id: string
+          organizer_id: string
+          revenue: number
+          rsvp_conversions: number
+          shares: number
+          unique_views: number
+          updated_at: string
+          views: number
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          engagement_score?: number
+          event_id: string
+          id?: string
+          organizer_id: string
+          revenue?: number
+          rsvp_conversions?: number
+          shares?: number
+          unique_views?: number
+          updated_at?: string
+          views?: number
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          engagement_score?: number
+          event_id?: string
+          id?: string
+          organizer_id?: string
+          revenue?: number
+          rsvp_conversions?: number
+          shares?: number
+          unique_views?: number
+          updated_at?: string
+          views?: number
+        }
+        Relationships: []
+      }
+      event_rsvps: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          status: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_rsvps_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          address_full: string | null
+          capacity: number | null
+          categories: string[] | null
+          city: string | null
+          country: string | null
+          created_at: string
+          currency: string | null
+          description: string | null
+          end_at: string | null
+          geocoded: boolean | null
+          id: string
+          image_url: string | null
+          latitude: number | null
+          longitude: number | null
+          organizer_id: string
+          price_max: number | null
+          price_min: number | null
+          published: boolean | null
+          region: string | null
+          search_vector: unknown | null
+          start_at: string
+          status: string
+          tags: string[] | null
+          ticket_url: string | null
+          title: string
+          updated_at: string
+          venue_address: string | null
+          venue_name: string | null
+          visibility: string
+        }
+        Insert: {
+          address_full?: string | null
+          capacity?: number | null
+          categories?: string[] | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          end_at?: string | null
+          geocoded?: boolean | null
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          organizer_id: string
+          price_max?: number | null
+          price_min?: number | null
+          published?: boolean | null
+          region?: string | null
+          search_vector?: unknown | null
+          start_at: string
+          status?: string
+          tags?: string[] | null
+          ticket_url?: string | null
+          title: string
+          updated_at?: string
+          venue_address?: string | null
+          venue_name?: string | null
+          visibility?: string
+        }
+        Update: {
+          address_full?: string | null
+          capacity?: number | null
+          categories?: string[] | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          end_at?: string | null
+          geocoded?: boolean | null
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          organizer_id?: string
+          price_max?: number | null
+          price_min?: number | null
+          published?: boolean | null
+          region?: string | null
+          search_vector?: unknown | null
+          start_at?: string
+          status?: string
+          tags?: string[] | null
+          ticket_url?: string | null
+          title?: string
+          updated_at?: string
+          venue_address?: string | null
+          venue_name?: string | null
+          visibility?: string
+        }
+        Relationships: []
+      }
+      job_applications: {
+        Row: {
+          applicant_id: string
+          applied_at: string
+          cover_letter: string | null
+          id: string
+          job_id: string
+          resume_url: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          applicant_id: string
+          applied_at?: string
+          cover_letter?: string | null
+          id?: string
+          job_id: string
+          resume_url?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          applicant_id?: string
+          applied_at?: string
+          cover_letter?: string | null
+          id?: string
+          job_id?: string
+          resume_url?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jobs: {
+        Row: {
+          application_count: number | null
+          application_deadline: string | null
+          benefits: string[] | null
+          company: string
+          created_at: string
+          currency: string | null
+          description: string
+          id: string
+          is_active: boolean | null
+          is_remote: boolean | null
+          job_type: string
+          location: string
+          posted_by: string | null
+          requirements: string[] | null
+          salary_max: number | null
+          salary_min: number | null
+          title: string
+          updated_at: string
+          view_count: number | null
+        }
+        Insert: {
+          application_count?: number | null
+          application_deadline?: string | null
+          benefits?: string[] | null
+          company: string
+          created_at?: string
+          currency?: string | null
+          description: string
+          id?: string
+          is_active?: boolean | null
+          is_remote?: boolean | null
+          job_type: string
+          location: string
+          posted_by?: string | null
+          requirements?: string[] | null
+          salary_max?: number | null
+          salary_min?: number | null
+          title: string
+          updated_at?: string
+          view_count?: number | null
+        }
+        Update: {
+          application_count?: number | null
+          application_deadline?: string | null
+          benefits?: string[] | null
+          company?: string
+          created_at?: string
+          currency?: string | null
+          description?: string
+          id?: string
+          is_active?: boolean | null
+          is_remote?: boolean | null
+          job_type?: string
+          location?: string
+          posted_by?: string | null
+          requirements?: string[] | null
+          salary_max?: number | null
+          salary_min?: number | null
+          title?: string
+          updated_at?: string
+          view_count?: number | null
+        }
+        Relationships: []
+      }
+      mentor_requests: {
+        Row: {
+          id: string
+          mentee_id: string
+          mentor_id: string
+          message: string | null
+          requested_at: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          mentee_id: string
+          mentor_id: string
+          message?: string | null
+          requested_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          mentee_id?: string
+          mentor_id?: string
+          message?: string | null
+          requested_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          attachment_url: string | null
+          content: string
+          created_at: string
+          id: string
+          message_type: string
+          read_at: string | null
+          recipient_id: string
+          sender_id: string
+          updated_at: string
+        }
+        Insert: {
+          attachment_url?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          message_type?: string
+          read_at?: string | null
+          recipient_id: string
+          sender_id: string
+          updated_at?: string
+        }
+        Update: {
+          attachment_url?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          message_type?: string
+          read_at?: string | null
+          recipient_id?: string
+          sender_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      moderation_log: {
+        Row: {
+          action_type: string
+          content_type: string | null
+          created_at: string
+          id: string
+          moderator_id: string
+          notes: string | null
+          reason: string | null
+          target_content_id: string | null
+          target_user_id: string | null
+        }
+        Insert: {
+          action_type: string
+          content_type?: string | null
+          created_at?: string
+          id?: string
+          moderator_id: string
+          notes?: string | null
+          reason?: string | null
+          target_content_id?: string | null
+          target_user_id?: string | null
+        }
+        Update: {
+          action_type?: string
+          content_type?: string | null
+          created_at?: string
+          id?: string
+          moderator_id?: string
+          notes?: string | null
+          reason?: string | null
+          target_content_id?: string | null
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
+      notification_preferences: {
+        Row: {
+          booking_confirmations: boolean
+          created_at: string
+          email_enabled: boolean
+          event_reminders: boolean
+          event_updates: boolean
+          id: string
+          moderation_updates: boolean
+          new_messages: boolean
+          push_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          booking_confirmations?: boolean
+          created_at?: string
+          email_enabled?: boolean
+          event_reminders?: boolean
+          event_updates?: boolean
+          id?: string
+          moderation_updates?: boolean
+          new_messages?: boolean
+          push_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          booking_confirmations?: boolean
+          created_at?: string
+          email_enabled?: boolean
+          event_reminders?: boolean
+          event_updates?: boolean
+          id?: string
+          moderation_updates?: boolean
+          new_messages?: boolean
+          push_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          read_at: string | null
+          related_id: string | null
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          read_at?: string | null
+          related_id?: string | null
+          title: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          read_at?: string | null
+          related_id?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      offline_queue: {
+        Row: {
+          action_data: Json
+          action_type: string
+          created_at: string
+          error_message: string | null
+          id: string
+          max_retries: number
+          processed_at: string | null
+          retry_count: number
+          user_id: string
+        }
+        Insert: {
+          action_data: Json
+          action_type: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          max_retries?: number
+          processed_at?: string | null
+          retry_count?: number
+          user_id: string
+        }
+        Update: {
+          action_data?: Json
+          action_type?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          max_retries?: number
+          processed_at?: string | null
+          retry_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          amount: number
+          booking_fee: number | null
+          created_at: string
+          currency: string | null
+          id: string
+          payment_intent_id: string | null
+          status: string | null
+          stripe_customer_id: string | null
+          stripe_session_id: string | null
+          updated_at: string
+          user_id: string | null
+          venue_booking_id: string | null
+          venue_owner_amount: number | null
+        }
+        Insert: {
+          amount: number
+          booking_fee?: number | null
+          created_at?: string
+          currency?: string | null
+          id?: string
+          payment_intent_id?: string | null
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+          venue_booking_id?: string | null
+          venue_owner_amount?: number | null
+        }
+        Update: {
+          amount?: number
+          booking_fee?: number | null
+          created_at?: string
+          currency?: string | null
+          id?: string
+          payment_intent_id?: string | null
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+          venue_booking_id?: string | null
+          venue_owner_amount?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_venue_booking_id_fkey"
+            columns: ["venue_booking_id"]
+            isOneToOne: false
+            referencedRelation: "venue_bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_installments: {
+        Row: {
+          amount: number
+          created_at: string
+          due_date: string
+          id: string
+          installment_number: number
+          paid_at: string | null
+          payment_intent_id: string | null
+          payment_plan_id: string
+          status: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          due_date: string
+          id?: string
+          installment_number: number
+          paid_at?: string | null
+          payment_intent_id?: string | null
+          payment_plan_id: string
+          status?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          due_date?: string
+          id?: string
+          installment_number?: number
+          paid_at?: string | null
+          payment_intent_id?: string | null
+          payment_plan_id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_installments_payment_plan_id_fkey"
+            columns: ["payment_plan_id"]
+            isOneToOne: false
+            referencedRelation: "payment_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_methods: {
+        Row: {
+          brand: string | null
+          created_at: string
+          id: string
+          is_default: boolean | null
+          last4: string | null
+          stripe_payment_method_id: string
+          type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          brand?: string | null
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          last4?: string | null
+          stripe_payment_method_id: string
+          type: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          brand?: string | null
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          last4?: string | null
+          stripe_payment_method_id?: string
+          type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      payment_plans: {
+        Row: {
+          created_at: string
+          id: string
+          installment_amount: number
+          installments: number
+          interest_rate: number | null
+          next_payment_date: string | null
+          order_id: string
+          plan_type: string
+          status: string | null
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          installment_amount: number
+          installments?: number
+          interest_rate?: number | null
+          next_payment_date?: string | null
+          order_id: string
+          plan_type: string
+          status?: string | null
+          total_amount: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          installment_amount?: number
+          installments?: number
+          interest_rate?: number | null
+          next_payment_date?: string | null
+          order_id?: string
+          plan_type?: string
+          status?: string | null
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      platform_analytics: {
+        Row: {
+          active_users: number
+          conversion_rate: number
+          created_at: string
+          date: string
+          id: string
+          new_events: number
+          new_users: number
+          retention_rate: number
+          total_bookings: number
+          total_events: number
+          total_revenue: number
+          total_users: number
+          total_venues: number
+          updated_at: string
+        }
+        Insert: {
+          active_users?: number
+          conversion_rate?: number
+          created_at?: string
+          date?: string
+          id?: string
+          new_events?: number
+          new_users?: number
+          retention_rate?: number
+          total_bookings?: number
+          total_events?: number
+          total_revenue?: number
+          total_users?: number
+          total_venues?: number
+          updated_at?: string
+        }
+        Update: {
+          active_users?: number
+          conversion_rate?: number
+          created_at?: string
+          date?: string
+          id?: string
+          new_events?: number
+          new_users?: number
+          retention_rate?: number
+          total_bookings?: number
+          total_events?: number
+          total_revenue?: number
+          total_users?: number
+          total_venues?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      privacy_settings: {
+        Row: {
+          created_at: string | null
+          id: string
+          show_bio: boolean | null
+          show_interests: boolean | null
+          show_linkedin: boolean | null
+          show_location: boolean | null
+          show_skills: boolean | null
+          show_website: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          show_bio?: boolean | null
+          show_interests?: boolean | null
+          show_linkedin?: boolean | null
+          show_location?: boolean | null
+          show_skills?: boolean | null
+          show_website?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          show_bio?: boolean | null
+          show_interests?: boolean | null
+          show_linkedin?: boolean | null
+          show_location?: boolean | null
+          show_skills?: boolean | null
+          show_website?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          experience_level: string | null
+          full_name: string | null
+          github_url: string | null
+          handle: string | null
+          hourly_rate: number | null
+          id: string
+          interests: string[] | null
+          is_mentor: boolean | null
+          linkedin_url: string | null
+          location: string | null
+          mentor_bio: string | null
+          mentor_expertise: string[] | null
+          portfolio_url: string | null
+          resume_url: string | null
+          skills: string[] | null
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          experience_level?: string | null
+          full_name?: string | null
+          github_url?: string | null
+          handle?: string | null
+          hourly_rate?: number | null
+          id?: string
+          interests?: string[] | null
+          is_mentor?: boolean | null
+          linkedin_url?: string | null
+          location?: string | null
+          mentor_bio?: string | null
+          mentor_expertise?: string[] | null
+          portfolio_url?: string | null
+          resume_url?: string | null
+          skills?: string[] | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          experience_level?: string | null
+          full_name?: string | null
+          github_url?: string | null
+          handle?: string | null
+          hourly_rate?: number | null
+          id?: string
+          interests?: string[] | null
+          is_mentor?: boolean | null
+          linkedin_url?: string | null
+          location?: string | null
+          mentor_bio?: string | null
+          mentor_expertise?: string[] | null
+          portfolio_url?: string | null
+          resume_url?: string | null
+          skills?: string[] | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          created_at: string
+          endpoint: string
+          id: string
+          is_active: boolean
+          keys: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          endpoint: string
+          id?: string
+          is_active?: boolean
+          keys: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          endpoint?: string
+          id?: string
+          is_active?: boolean
+          keys?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      rate_limits: {
+        Row: {
+          action_type: string
+          created_at: string
+          id: string
+          identifier: string
+          request_count: number
+          window_start: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          id?: string
+          identifier: string
+          request_count?: number
+          window_start?: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          id?: string
+          identifier?: string
+          request_count?: number
+          window_start?: string
+        }
+        Relationships: []
+      }
+      saved_jobs: {
+        Row: {
+          id: string
+          job_id: string
+          saved_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          job_id: string
+          saved_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          job_id?: string
+          saved_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_jobs_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_searches: {
+        Row: {
+          alert_frequency: string | null
+          created_at: string | null
+          filters: Json | null
+          id: string
+          is_alert: boolean | null
+          name: string
+          query: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          alert_frequency?: string | null
+          created_at?: string | null
+          filters?: Json | null
+          id?: string
+          is_alert?: boolean | null
+          name: string
+          query: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          alert_frequency?: string | null
+          created_at?: string | null
+          filters?: Json | null
+          id?: string
+          is_alert?: boolean | null
+          name?: string
+          query?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      saved_searches_enhanced: {
+        Row: {
+          alert_frequency: string | null
+          created_at: string
+          filters: Json | null
+          id: string
+          is_alert: boolean | null
+          name: string
+          query: string
+          search_type: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_frequency?: string | null
+          created_at?: string
+          filters?: Json | null
+          id?: string
+          is_alert?: boolean | null
+          name: string
+          query: string
+          search_type?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_frequency?: string | null
+          created_at?: string
+          filters?: Json | null
+          id?: string
+          is_alert?: boolean | null
+          name?: string
+          query?: string
+          search_type?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      search_analytics: {
+        Row: {
+          clicked_result_id: string | null
+          created_at: string
+          filters: Json | null
+          id: string
+          query: string
+          results_count: number | null
+          search_duration_ms: number | null
+          session_id: string
+          user_id: string | null
+        }
+        Insert: {
+          clicked_result_id?: string | null
+          created_at?: string
+          filters?: Json | null
+          id?: string
+          query: string
+          results_count?: number | null
+          search_duration_ms?: number | null
+          session_id: string
+          user_id?: string | null
+        }
+        Update: {
+          clicked_result_id?: string | null
+          created_at?: string
+          filters?: Json | null
+          id?: string
+          query?: string
+          results_count?: number | null
+          search_duration_ms?: number | null
+          session_id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      security_exclusions: {
+        Row: {
+          created_at: string | null
+          excluded_by: string | null
+          id: string
+          reason: string
+          warning_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          excluded_by?: string | null
+          id?: string
+          reason: string
+          warning_type: string
+        }
+        Update: {
+          created_at?: string | null
+          excluded_by?: string | null
+          id?: string
+          reason?: string
+          warning_type?: string
+        }
+        Relationships: []
+      }
+      social_interactions: {
+        Row: {
+          created_at: string
+          id: string
+          interaction_type: string
+          metadata: Json | null
+          target_id: string
+          target_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          interaction_type: string
+          metadata?: Json | null
+          target_id: string
+          target_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          interaction_type?: string
+          metadata?: Json | null
+          target_id?: string
+          target_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_behavior_analytics: {
+        Row: {
+          bookings_made: number
+          created_at: string
+          date: string
+          events_created: number
+          events_viewed: number
+          id: string
+          messages_sent: number
+          page_views: number
+          search_queries: number
+          sessions: number
+          time_spent_minutes: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bookings_made?: number
+          created_at?: string
+          date?: string
+          events_created?: number
+          events_viewed?: number
+          id?: string
+          messages_sent?: number
+          page_views?: number
+          search_queries?: number
+          sessions?: number
+          time_spent_minutes?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bookings_made?: number
+          created_at?: string
+          date?: string
+          events_created?: number
+          events_viewed?: number
+          id?: string
+          messages_sent?: number
+          page_views?: number
+          search_queries?: number
+          sessions?: number
+          time_spent_minutes?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+          id: string
+          reason: string | null
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
+      user_connections: {
+        Row: {
+          connected_user_id: string
+          created_at: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          connected_user_id: string
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          connected_user_id?: string
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_suspensions: {
+        Row: {
+          created_at: string
+          end_date: string | null
+          id: string
+          is_permanent: boolean
+          moderator_id: string
+          reason: string
+          start_date: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          is_permanent?: boolean
+          moderator_id: string
+          reason: string
+          start_date?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          is_permanent?: boolean
+          moderator_id?: string
+          reason?: string
+          start_date?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      users: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          id: string
+          name: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      venue_analytics: {
+        Row: {
+          average_rating: number | null
+          booking_conversions: number
+          booking_requests: number
+          created_at: string
+          date: string
+          id: string
+          occupancy_rate: number
+          owner_id: string
+          revenue: number
+          unique_views: number
+          updated_at: string
+          venue_id: string
+          views: number
+        }
+        Insert: {
+          average_rating?: number | null
+          booking_conversions?: number
+          booking_requests?: number
+          created_at?: string
+          date?: string
+          id?: string
+          occupancy_rate?: number
+          owner_id: string
+          revenue?: number
+          unique_views?: number
+          updated_at?: string
+          venue_id: string
+          views?: number
+        }
+        Update: {
+          average_rating?: number | null
+          booking_conversions?: number
+          booking_requests?: number
+          created_at?: string
+          date?: string
+          id?: string
+          occupancy_rate?: number
+          owner_id?: string
+          revenue?: number
+          unique_views?: number
+          updated_at?: string
+          venue_id?: string
+          views?: number
+        }
+        Relationships: []
+      }
+      venue_bookings: {
+        Row: {
+          created_at: string
+          end_date: string
+          event_type: string | null
+          guest_count: number
+          id: string
+          message: string | null
+          owner_notes: string | null
+          payment_status: string | null
+          requires_payment: boolean | null
+          special_requests: string | null
+          start_date: string
+          status: string
+          stripe_session_id: string | null
+          total_amount: number | null
+          updated_at: string
+          user_id: string
+          venue_id: string
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          event_type?: string | null
+          guest_count: number
+          id?: string
+          message?: string | null
+          owner_notes?: string | null
+          payment_status?: string | null
+          requires_payment?: boolean | null
+          special_requests?: string | null
+          start_date: string
+          status?: string
+          stripe_session_id?: string | null
+          total_amount?: number | null
+          updated_at?: string
+          user_id: string
+          venue_id: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          event_type?: string | null
+          guest_count?: number
+          id?: string
+          message?: string | null
+          owner_notes?: string | null
+          payment_status?: string | null
+          requires_payment?: boolean | null
+          special_requests?: string | null
+          start_date?: string
+          status?: string
+          stripe_session_id?: string | null
+          total_amount?: number | null
+          updated_at?: string
+          user_id?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_bookings_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venue_onboarding_status: {
+        Row: {
+          business_type: string | null
+          created_at: string
+          id: string
+          onboarding_completed: boolean | null
+          step_completed: string[] | null
+          stripe_account_id: string | null
+          tax_id: string | null
+          updated_at: string
+          user_id: string
+          venue_id: string | null
+        }
+        Insert: {
+          business_type?: string | null
+          created_at?: string
+          id?: string
+          onboarding_completed?: boolean | null
+          step_completed?: string[] | null
+          stripe_account_id?: string | null
+          tax_id?: string | null
+          updated_at?: string
+          user_id?: string
+          venue_id?: string | null
+        }
+        Update: {
+          business_type?: string | null
+          created_at?: string
+          id?: string
+          onboarding_completed?: boolean | null
+          step_completed?: string[] | null
+          stripe_account_id?: string | null
+          tax_id?: string | null
+          updated_at?: string
+          user_id?: string
+          venue_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_onboarding_status_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venue_payouts: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string | null
+          id: string
+          order_id: string | null
+          owner_id: string
+          payout_date: string | null
+          status: string | null
+          stripe_transfer_id: string | null
+          updated_at: string
+          venue_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string | null
+          id?: string
+          order_id?: string | null
+          owner_id: string
+          payout_date?: string | null
+          status?: string | null
+          stripe_transfer_id?: string | null
+          updated_at?: string
+          venue_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string | null
+          id?: string
+          order_id?: string | null
+          owner_id?: string
+          payout_date?: string | null
+          status?: string | null
+          stripe_transfer_id?: string | null
+          updated_at?: string
+          venue_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_payouts_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_payouts_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venues: {
+        Row: {
+          address: string
+          amenities: string[] | null
+          capacity: number | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          description: string | null
+          hourly_rate: number | null
+          id: string
+          images: string[] | null
+          latitude: number | null
+          longitude: number | null
+          name: string
+          opening_hours: Json | null
+          owner_id: string
+          status: string
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          amenities?: string[] | null
+          capacity?: number | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          hourly_rate?: number | null
+          id?: string
+          images?: string[] | null
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          opening_hours?: Json | null
+          owner_id: string
+          status?: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          amenities?: string[] | null
+          capacity?: number | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          hourly_rate?: number | null
+          id?: string
+          images?: string[] | null
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          opening_hours?: Json | null
+          owner_id?: string
+          status?: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      anonymize_user_data: {
+        Args: { target_user_id: string }
+        Returns: undefined
+      }
+      audit_payment_access: {
+        Args: {
+          p_action: string
+          p_metadata?: Json
+          p_payment_method_id: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
+      audit_payment_method_access: {
+        Args: {
+          p_context?: Json
+          p_operation: string
+          p_payment_method_id: string
+        }
+        Returns: undefined
+      }
+      calculate_daily_metrics: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      calculate_engagement_score: {
+        Args: {
+          p_comments?: number
+          p_rsvps: number
+          p_shares: number
+          p_views: number
+        }
+        Returns: number
+      }
+      check_rate_limit: {
+        Args: {
+          p_action_type: string
+          p_identifier: string
+          p_limit?: number
+          p_window_minutes?: number
+        }
+        Returns: boolean
+      }
+      create_activity_entry: {
+        Args: {
+          p_action_type: string
+          p_actor_id: string
+          p_metadata?: Json
+          p_target_id?: string
+          p_target_type: string
+          p_user_id: string
+        }
+        Returns: string
+      }
+      create_notification_with_activity: {
+        Args: {
+          p_action_type?: string
+          p_actor_id: string
+          p_message: string
+          p_related_id?: string
+          p_target_type?: string
+          p_title: string
+          p_type: string
+          p_user_id: string
+        }
+        Returns: string
+      }
+      current_user_has_role: {
+        Args: { check_role: Database["public"]["Enums"]["app_role"] }
+        Returns: boolean
+      }
+      decrypt_payment_metadata: {
+        Args: { encrypted_data: string }
+        Returns: string
+      }
+      decrypt_sensitive_data: {
+        Args: { encrypted_data: string; key_name?: string }
+        Returns: string
+      }
+      deep_sanitize_user_input: {
+        Args: { p_input: string; p_max_length?: number }
+        Returns: string
+      }
+      encrypt_payment_metadata: {
+        Args: { data: string }
+        Returns: string
+      }
+      encrypt_sensitive_data: {
+        Args: { data: string; key_name?: string }
+        Returns: string
+      }
+      get_basic_profile_info: {
+        Args: { target_user_id: string }
+        Returns: {
+          avatar_url: string
+          created_at: string
+          full_name: string
+          handle: string
+          id: string
+          user_id: string
+        }[]
+      }
+      get_event_with_privacy: {
+        Args: { event_id: string }
+        Returns: {
+          capacity: number
+          created_at: string
+          description: string
+          end_at: string
+          id: string
+          image_url: string
+          latitude: number
+          longitude: number
+          organizer_id: string
+          organizer_info: Json
+          start_at: string
+          status: string
+          tags: string[]
+          title: string
+          updated_at: string
+          venue_address: string
+          venue_name: string
+          visibility: string
+        }[]
+      }
+      get_masked_user_info: {
+        Args: { target_user_id: string }
+        Returns: {
+          avatar_url: string
+          contact_status: string
+          created_at: string
+          full_name: string
+          handle: string
+          id: string
+          user_id: string
+        }[]
+      }
+      get_masked_venue_contact: {
+        Args: { venue_id: string }
+        Returns: {
+          address: string
+          amenities: string[]
+          capacity: number
+          contact_masked: string
+          created_at: string
+          description: string
+          hourly_rate: number
+          id: string
+          images: string[]
+          latitude: number
+          longitude: number
+          name: string
+          opening_hours: Json
+          status: string
+          tags: string[]
+        }[]
+      }
+      get_payment_method_display_only: {
+        Args: { p_payment_method_id: string }
+        Returns: {
+          brand_display: string
+          id: string
+          is_default: boolean
+          last4_masked: string
+          type: string
+        }[]
+      }
+      get_profile_with_masked_email: {
+        Args: { target_user_id: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          created_at: string
+          full_name: string
+          handle: string
+          id: string
+          interests: string[]
+          linkedin_url: string
+          location: string
+          masked_contact: string
+          skills: string[]
+          user_id: string
+          website: string
+        }[]
+      }
+      get_profile_with_privacy: {
+        Args: { target_user_id: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          created_at: string
+          full_name: string
+          handle: string
+          id: string
+          interests: string[]
+          linkedin_url: string
+          location: string
+          skills: string[]
+          user_id: string
+          website: string
+        }[]
+      }
+      get_profile_with_privacy_safe: {
+        Args: { target_user_id: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          created_at: string
+          full_name: string
+          handle: string
+          id: string
+          interests: string[]
+          linkedin_url: string
+          location: string
+          skills: string[]
+          user_id: string
+          website: string
+        }[]
+      }
+      get_public_events: {
+        Args: { event_limit?: number; search_query?: string }
+        Returns: {
+          capacity: number
+          description: string
+          end_at: string
+          id: string
+          image_url: string
+          organizer_avatar: string
+          organizer_handle: string
+          organizer_name: string
+          start_at: string
+          tags: string[]
+          title: string
+          venue_area: string
+          venue_name: string
+        }[]
+      }
+      get_public_events_enhanced: {
+        Args: {
+          category_filter?: string[]
+          end_date?: string
+          event_limit?: number
+          latitude_center?: number
+          longitude_center?: number
+          max_price?: number
+          min_price?: number
+          radius_km?: number
+          search_query?: string
+          start_date?: string
+        }
+        Returns: {
+          capacity: number
+          categories: string[]
+          city: string
+          currency: string
+          description: string
+          end_at: string
+          id: string
+          image_url: string
+          latitude: number
+          longitude: number
+          organizer_avatar: string
+          organizer_handle: string
+          organizer_name: string
+          price_max: number
+          price_min: number
+          start_at: string
+          tags: string[]
+          title: string
+          venue_area: string
+          venue_name: string
+        }[]
+      }
+      get_public_profile: {
+        Args: { profile_user_id: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          created_at: string
+          full_name: string
+          handle: string
+          id: string
+          user_id: string
+        }[]
+      }
+      get_public_profile_safe: {
+        Args: { profile_user_id: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          created_at: string
+          full_name: string
+          handle: string
+          id: string
+          user_id: string
+        }[]
+      }
+      get_public_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          avatar_url: string
+          bio: string
+          created_at: string
+          full_name: string
+          handle: string
+          id: string
+          user_id: string
+        }[]
+      }
+      get_public_profiles_data: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          avatar_url: string
+          bio: string
+          created_at: string
+          full_name: string
+          handle: string
+          id: string
+          user_id: string
+        }[]
+      }
+      get_public_venues: {
+        Args: {
+          min_capacity?: number
+          search_query?: string
+          venue_limit?: number
+          venue_tags?: string[]
+        }
+        Returns: {
+          address: string
+          amenities: string[]
+          capacity: number
+          description: string
+          hourly_rate: number
+          id: string
+          images: string[]
+          latitude: number
+          longitude: number
+          name: string
+          opening_hours: Json
+          owner_avatar: string
+          owner_handle: string
+          owner_name: string
+          status: string
+          tags: string[]
+        }[]
+      }
+      get_security_protection_status: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          description: string
+          protection_type: string
+          status: string
+        }[]
+      }
+      get_user_analytics_masked: {
+        Args: { target_user_id?: string }
+        Returns: {
+          created_at: string
+          event_name: string
+          id: string
+          page_url: string
+          session_id: string
+        }[]
+      }
+      get_user_payment_methods_secure: {
+        Args: { target_user_id: string }
+        Returns: {
+          brand_display: string
+          created_at: string
+          id: string
+          is_default: boolean
+          last4_display: string
+          type: string
+        }[]
+      }
+      get_user_payment_methods_secure_v2: {
+        Args: { target_user_id?: string }
+        Returns: {
+          brand_display: string
+          created_at: string
+          id: string
+          is_default: boolean
+          last4_masked: string
+          type: string
+        }[]
+      }
+      get_user_privacy_setting: {
+        Args: { setting_name: string; target_user_id: string }
+        Returns: boolean
+      }
+      get_venue_public_info: {
+        Args: { venue_id: string }
+        Returns: {
+          address: string
+          amenities: string[]
+          capacity: number
+          created_at: string
+          description: string
+          hourly_rate: number
+          id: string
+          images: string[]
+          latitude: number
+          longitude: number
+          name: string
+          opening_hours: Json
+          owner_avatar: string
+          owner_handle: string
+          owner_name: string
+          status: string
+          tags: string[]
+        }[]
+      }
+      get_venue_with_contact: {
+        Args: { venue_id: string }
+        Returns: {
+          address: string
+          amenities: string[]
+          capacity: number
+          contact_email: string
+          contact_phone: string
+          created_at: string
+          description: string
+          hourly_rate: number
+          id: string
+          images: string[]
+          latitude: number
+          longitude: number
+          name: string
+          opening_hours: Json
+          owner_id: string
+          owner_info: Json
+          status: string
+          tags: string[]
+          updated_at: string
+        }[]
+      }
+      get_venue_with_contact_safe: {
+        Args: { venue_id: string }
+        Returns: {
+          address: string
+          amenities: string[]
+          capacity: number
+          contact_email: string
+          contact_phone: string
+          created_at: string
+          description: string
+          hourly_rate: number
+          id: string
+          images: string[]
+          latitude: number
+          longitude: number
+          name: string
+          opening_hours: Json
+          owner_id: string
+          owner_info: Json
+          status: string
+          tags: string[]
+          updated_at: string
+        }[]
+      }
+      get_venues_safe: {
+        Args: {
+          min_capacity?: number
+          search_query?: string
+          venue_limit?: number
+          venue_tags?: string[]
+        }
+        Returns: {
+          address: string
+          amenities: string[]
+          capacity: number
+          created_at: string
+          description: string
+          hourly_rate: number
+          id: string
+          images: string[]
+          latitude: number
+          longitude: number
+          name: string
+          opening_hours: Json
+          owner_avatar: string
+          owner_handle: string
+          owner_name: string
+          status: string
+          tags: string[]
+          updated_at: string
+        }[]
+      }
+      has_role: {
+        Args: {
+          check_role: Database["public"]["Enums"]["app_role"]
+          check_user_id: string
+        }
+        Returns: boolean
+      }
+      increment_job_view_count: {
+        Args: { job_uuid: string }
+        Returns: undefined
+      }
+      is_admin_or_moderator: {
+        Args: { check_user_id?: string }
+        Returns: boolean
+      }
+      is_user_blocked: {
+        Args: { blocked_id: string; blocker_id: string }
+        Returns: boolean
+      }
+      is_user_suspended: {
+        Args: { user_id: string }
+        Returns: boolean
+      }
+      log_sensitive_access: {
+        Args: {
+          p_action_type: string
+          p_new_data?: Json
+          p_old_data?: Json
+          p_record_id?: string
+          p_table_name: string
+        }
+        Returns: undefined
+      }
+      log_sensitive_data_access: {
+        Args: {
+          p_action_type: string
+          p_data_type?: string
+          p_record_id?: string
+          p_table_name: string
+        }
+        Returns: undefined
+      }
+      mask_sensitive_data: {
+        Args: { p_data: string; p_mask_type?: string }
+        Returns: string
+      }
+      process_offline_action: {
+        Args: { p_action_data: Json; p_action_type: string; p_user_id: string }
+        Returns: boolean
+      }
+      secure_payment_audit: {
+        Args: {
+          p_details?: Json
+          p_operation: string
+          p_payment_method_id?: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
+      track_event_view: {
+        Args: { p_event_id: string; p_is_unique?: boolean; p_user_id?: string }
+        Returns: undefined
+      }
+      validate_payment_method_data: {
+        Args: {
+          p_brand?: string
+          p_last4?: string
+          p_stripe_payment_method_id: string
+          p_user_id: string
+        }
+        Returns: boolean
+      }
+      validate_payment_method_ownership: {
+        Args: { p_payment_method_id: string; p_user_id: string }
+        Returns: boolean
+      }
+    }
+    Enums: {
+      app_role: "admin" | "moderator" | "user"
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
+  },
+} as const

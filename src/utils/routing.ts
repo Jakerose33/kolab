@@ -1,0 +1,45 @@
+// src/utils/routing.ts
+import { useParams, useSearchParams } from 'react-router-dom';
+
+export const isValidRouteId = (v?: string | null): boolean => {
+  if (!v || v === 'undefined' || v === 'null' || v.trim() === '') return false;
+  // Accept numeric IDs or UUID-like strings (16+ hex chars)
+  return /^\d+$/.test(v) || /^[0-9a-f-]{16,}$/i.test(v);
+};
+
+export function useRouteId(name: string): string | null {
+  const params = useParams();
+  const id = params[name] ?? null;
+  return isValidRouteId(id) ? (id as string) : null;
+}
+
+// Hook for extracting query parameters
+export function useRouteQuery(name: string): string | null {
+  const [searchParams] = useSearchParams();
+  return searchParams.get(name) || null;
+}
+
+// For cards: only build links when the id is valid
+export type EventLike = Record<string, any>;
+export function getEventLink(e: EventLike): string | null {
+  const raw = String(e?.id ?? e?.eventId ?? e?.uuid ?? e?.slug ?? '');
+  return isValidRouteId(raw) ? `/events/${raw}` : null;
+}
+
+export type VenueLike = Record<string, any>;
+export function getVenueLink(v: VenueLike): string | null {
+  const raw = String(v?.id ?? v?.venueId ?? v?.uuid ?? v?.slug ?? '');
+  return isValidRouteId(raw) ? `/venues/${raw}` : null;
+}
+
+// Helper for auth routes with mode support
+export function getAuthLink(mode?: string): string {
+  return mode ? `/auth?mode=${encodeURIComponent(mode)}` : '/auth';
+}
+
+// Helper for events routes with query support
+export function getEventsLink(query?: Record<string, string>): string {
+  if (!query) return '/events';
+  const params = new URLSearchParams(query);
+  return `/events?${params.toString()}`;
+}

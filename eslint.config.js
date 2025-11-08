@@ -1,89 +1,29 @@
-// ESLint 9 (Flat Config) — Vite + React + TypeScript + a11y + Hooks + Prettier
-import js from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import reactPlugin from 'eslint-plugin-react';
-import reactHooks from 'eslint-plugin-react-hooks';
-import jsxA11y from 'eslint-plugin-jsx-a11y';
-import prettier from 'eslint-config-prettier';
-import globals from 'globals';
+import js from "@eslint/js";
+import globals from "globals";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+import tseslint from "typescript-eslint";
 
-export default [
-  // Ignore build + vendor
+export default tseslint.config(
+  { ignores: ["dist"] },
   {
-    ignores: ['dist/**', 'node_modules/**', 'supabase/generated/**'],
-  },
-
-  // Browser app code (React + TS)
-  {
-    files: ['src/**/*.{ts,tsx,js,jsx}'],
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    files: ["**/*.{ts,tsx}"],
     languageOptions: {
-      parser: tseslint.parser,
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-      // ✅ Proper browser globals (window, document, etc.)
-      globals: {
-        ...globals.browser,
-      },
+      ecmaVersion: 2020,
+      globals: globals.browser,
     },
     plugins: {
-      '@typescript-eslint': tseslint.plugin,
-      react: reactPlugin,
-      'react-hooks': reactHooks,
-      'jsx-a11y': jsxA11y,
-    },
-    settings: {
-      react: { version: 'detect' },
+      "react-hooks": reactHooks,
+      "react-refresh": reactRefresh,
     },
     rules: {
-      // Baseline JS recommendations
-      ...js.configs.recommended.rules,
-
-      // React + a11y + hooks
-      ...(reactPlugin.configs?.recommended?.rules ?? {}),
-      ...(jsxA11y.configs?.recommended?.rules ?? {}),
-      ...(reactHooks.configs?.recommended?.rules ?? {}),
-
-      // Project prefs
-      'react/react-in-jsx-scope': 'off',
-      'no-unused-vars': 'warn',
-      'no-console': 'warn',
-
-      // TS: soften for now so you can get green
-      '@typescript-eslint/no-explicit-any': 'warn',
+      ...reactHooks.configs.recommended.rules,
+      "react-refresh/only-export-components": [
+        "warn",
+        { allowConstantExport: true },
+      ],
+      "@typescript-eslint/no-unused-vars": "off",
     },
-  },
-
-  // Node-side code (scripts, config files, Supabase functions, etc.)
-  {
-    files: [
-      '*.cjs',
-      '*.mjs',
-      '*.js',
-      'vite.config.*',
-      'postcss.config.*',
-      'tailwind.config.*',
-      'supabase/**/*.{ts,js}',
-      'scripts/**/*.{ts,js}',
-    ],
-    ignores: ['supabase/generated/**'],
-    languageOptions: {
-      parser: tseslint.parser,
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-      // ✅ Proper node globals (process, __dirname, etc.)
-      globals: {
-        ...globals.node,
-      },
-    },
-    plugins: {
-      '@typescript-eslint': tseslint.plugin,
-    },
-    rules: {
-      ...js.configs.recommended.rules,
-      '@typescript-eslint/no-explicit-any': 'warn',
-    },
-  },
-
-  // Prettier keeps formatting conflicts out of ESLint
-  prettier,
-];
+  }
+);

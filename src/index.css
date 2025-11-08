@@ -1,3 +1,680 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Kolab Design System - Modern Collaborative Platform */
+
+@layer base {
+  :root {
+    /* Stone Island Inspired - Monochromatic Palette */
+    --primary: 0 0% 8%;             /* Deep charcoal */
+    --primary-foreground: 0 0% 98%;
+    --primary-hover: 0 0% 15%;
+    --primary-light: 0 0% 90%;
+    
+    --secondary: 0 0% 95%;          /* Light grey */
+    --secondary-foreground: 0 0% 8%;
+    
+    --accent: 210 100% 56%;         /* Minimal blue accent */
+    --accent-foreground: 0 0% 98%;
+    
+    /* Surface Colors */
+    --background: 0 0% 100%;
+    --background-secondary: 0 0% 98%;
+    --foreground: 0 0% 8%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 8%;
+    --card-hover: 0 0% 97%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 8%;
+    
+    /* Interactive Elements */
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 45%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 0 0% 90%;
+    --input: 0 0% 96%;
+    --ring: 0 0% 8%;
+    
+    /* Sidebar Colors */
+    --sidebar: 0 0% 98%;
+    --sidebar-foreground: 0 0% 15%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-primary: 0 0% 8%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 0 0% 95%;
+    --sidebar-accent-foreground: 0 0% 8%;
+    
+    /* Gradients - Vibrant and dynamic */
+    --gradient-primary: linear-gradient(135deg, hsl(280 100% 70%), hsl(260 100% 75%), hsl(240 100% 80%));
+    --gradient-accent: linear-gradient(135deg, hsl(210 100% 56%), hsl(210 80% 48%));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 98%));
+    --gradient-hero: linear-gradient(135deg, hsl(280 100% 70%) 0%, hsl(260 100% 75%) 25%, hsl(240 100% 80%) 50%, hsl(200 100% 75%) 75%, hsl(40 100% 70%) 100%);
+    
+    /* Enhanced Shadow System */
+    --shadow-glow: 0 0 32px hsl(var(--primary) / 0.25);
+    --shadow-elegant: 0 8px 32px -8px rgba(0, 0, 0, 0.12);
+    --shadow-soft: 0 2px 8px -2px rgba(0, 0, 0, 0.08);
+    --shadow-medium: 0 4px 16px -4px rgba(0, 0, 0, 0.12);
+    --shadow-strong: 0 8px 32px -8px rgba(0, 0, 0, 0.16);
+    --shadow-premium: 0 20px 64px -12px rgba(0, 0, 0, 0.2);
+    
+    --radius: 0.25rem;
+    
+    /* Enhanced Typography System - Variable fonts with optical sizing */
+    --font-sans: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
+    --font-display: 'Playfair Display Variable', 'Playfair Display', serif;
+    --font-heading: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
+    --font-body: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
+    --font-accent: 'Inter Variable', 'Inter', sans-serif;
+    
+    /* Typography Scale */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
+    --text-4xl: 2.25rem;
+    --text-5xl: 3rem;
+    --text-6xl: 3.75rem;
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Accessibility enhancements */
+.enhanced-focus *:focus {
+  outline: 3px solid hsl(var(--primary)) !important;
+  outline-offset: 2px !important;
+}
+
+.keyboard-navigation *:focus {
+  outline: 2px solid hsl(var(--primary)) !important;
+  outline-offset: 1px !important;
+}
+
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+.dyslexia-font * {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', cursive !important;
+}
+
+/* Color blind support */
+.protanopia {
+  filter: url(#protanopia-filter);
+}
+
+.deuteranopia {
+  filter: url(#deuteranopia-filter);
+}
+
+.tritanopia {
+  filter: url(#tritanopia-filter);
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Touch-friendly interactions */
+@media (hover: none) and (pointer: coarse) {
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 12px;
+  }
+  
+  .touch-friendly {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+  .dark {
+    --background: 220 18% 6%;
+    --background-secondary: 220 16% 8%;
+    --foreground: 220 14% 96%;
+    
+    --card: 220 16% 8%;
+    --card-foreground: 220 14% 96%;
+    --card-hover: 220 16% 10%;
+    
+    --popover: 220 16% 8%;
+    --popover-foreground: 220 14% 96%;
+    
+    --primary: 0 84% 60%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 0 70% 50%;
+    --primary-light: 0 60% 25%;
+    
+    --secondary: 220 16% 12%;
+    --secondary-foreground: 220 14% 80%;
+    
+    --accent: 45 93% 55%;
+    --accent-foreground: 220 18% 6%;
+    
+    --muted: 220 16% 12%;
+    --muted-foreground: 220 9% 65%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 220 16% 15%;
+    --input: 220 16% 15%;
+    --ring: 0 84% 60%;
+    
+    /* Dark Sidebar Colors */
+    --sidebar: 220 16% 8%;
+    --sidebar-foreground: 220 14% 85%;
+    --sidebar-border: 220 16% 15%;
+    --sidebar-primary: 220 14% 96%;
+    --sidebar-primary-foreground: 220 16% 8%;
+    --sidebar-accent: 220 16% 12%;
+    --sidebar-accent-foreground: 220 14% 85%;
+    
+    /* Dark gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(0 84% 60%), hsl(0 70% 50%));
+    --gradient-accent: linear-gradient(135deg, hsl(45 93% 55%), hsl(35 90% 60%));
+    --gradient-subtle: linear-gradient(180deg, hsl(220 18% 6%), hsl(220 16% 8%));
+    
+    --shadow-glow: 0 0 20px hsl(0 84% 60% / 0.4);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    font-feature-settings: 'cv11', 'ss01';
+    font-variation-settings: 'opsz' auto, 'wght' 400;
+    font-optical-sizing: auto;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  /* Enhanced Component Utility Classes */
+  .kolab-card {
+    @apply bg-card/80 border border-border/30 rounded-xl backdrop-blur-md shadow-soft transition-all duration-500 hover:shadow-elegant hover:border-primary/30 hover:bg-card/90;
+  }
+
+  .kolab-card-premium {
+    @apply bg-gradient-to-br from-card/90 to-card/60 border border-border/20 rounded-2xl backdrop-blur-lg shadow-premium transition-all duration-700 hover:shadow-glow hover:border-primary/40;
+  }
+
+  .kolab-button-primary {
+    @apply bg-gradient-primary text-primary-foreground font-semibold py-3 px-8 rounded-xl transition-all duration-300 hover:opacity-90 hover:shadow-glow hover:scale-[1.02] active:scale-[0.98];
+  }
+
+  .kolab-button-secondary {
+    @apply bg-secondary/80 border border-border/40 text-secondary-foreground font-medium py-3 px-8 rounded-xl transition-all duration-300 hover:bg-secondary/90 hover:border-primary/30 hover:shadow-soft;
+  }
+
+  .kolab-button-ghost {
+    @apply bg-transparent border border-transparent text-foreground/80 font-medium py-3 px-6 rounded-lg transition-all duration-300 hover:bg-muted/50 hover:text-foreground;
+  }
+
+  /* Typography Classes - Magazine-style with optical sizing */
+  .kolab-display-text {
+    @apply font-display font-bold text-6xl lg:text-8xl leading-none tracking-tighter bg-gradient-to-br from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent;
+    font-variation-settings: 'opsz' 72, 'wght' 800;
+    font-optical-sizing: auto;
+  }
+
+  .kolab-hero-text {
+    @apply font-heading font-bold text-4xl lg:text-6xl xl:text-7xl leading-tight tracking-tight text-foreground;
+    font-variation-settings: 'opsz' 48, 'wght' 700;
+    font-optical-sizing: auto;
+  }
+
+  .kolab-heading-large {
+    @apply font-heading font-bold text-3xl lg:text-4xl leading-tight tracking-tight text-foreground;
+    font-variation-settings: 'opsz' 32, 'wght' 700;
+    font-optical-sizing: auto;
+  }
+
+  .kolab-heading-medium {
+    @apply font-heading font-semibold text-xl lg:text-2xl leading-snug tracking-normal text-foreground;
+    font-variation-settings: 'opsz' 24, 'wght' 600;
+    font-optical-sizing: auto;
+  }
+
+  .kolab-heading-small {
+    @apply font-heading font-semibold text-lg leading-snug tracking-normal text-foreground;
+    font-variation-settings: 'opsz' 18, 'wght' 600;
+    font-optical-sizing: auto;
+  }
+
+  .kolab-body-large {
+    @apply font-body text-lg leading-relaxed text-foreground/80;
+    font-variation-settings: 'opsz' 18, 'wght' 400;
+    font-optical-sizing: auto;
+  }
+
+  .kolab-body-text {
+    @apply font-body text-base leading-relaxed text-foreground/80;
+    font-variation-settings: 'opsz' 16, 'wght' 400;
+    font-optical-sizing: auto;
+  }
+
+  .kolab-caption {
+    @apply font-body text-sm leading-normal text-muted-foreground;
+    font-variation-settings: 'opsz' 14, 'wght' 400;
+    font-optical-sizing: auto;
+  }
+
+  .kolab-accent-text {
+    @apply font-accent font-medium text-sm uppercase tracking-wider text-primary;
+    font-variation-settings: 'opsz' 14, 'wght' 500;
+    font-optical-sizing: auto;
+  }
+
+  /* Layout Utilities */
+  .kolab-container {
+    @apply container mx-auto px-4 lg:px-8;
+  }
+
+  .kolab-gradient-bg {
+    @apply bg-gradient-subtle;
+  }
+
+  .kolab-glass {
+    @apply bg-background/60 backdrop-blur-md border border-border/30;
+  }
+
+  .kolab-shadow-glow {
+    @apply shadow-glow;
+  }
+}
+
+/* Enhanced accessibility - Respect motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+    transform: none !important;
+  }
+  
+  /* Disable parallax and complex motions */
+  [data-parallax],
+  [data-scroll-animation] {
+    transform: none !important;
+    animation: none !important;
+  }
+  
+  /* Provide fade alternatives for complex animations */
+  .motion-safe\:animate-bounce {
+    animation: none;
+    opacity: 1;
+  }
+  
+  .motion-safe\:animate-pulse {
+    animation: none;
+    opacity: 0.8;
+  }
+}
+
+/* Focus styles for better keyboard navigation */
+.focus\:ring-2:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --border: 0 0% 20%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+  }
+  
+  .dark {
+    --border: 0 0% 80%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+  }
+}
+
+/* Responsive typography */
+@media (max-width: 640px) {
+  .text-4xl {
+    font-size: 2rem;
+    line-height: 2.5rem;
+  }
+  
+  .text-5xl {
+    font-size: 2.5rem;
+    line-height: 3rem;
+  }
+  
+  .text-7xl {
+    font-size: 3rem;
+    line-height: 3.5rem;
+  }
+}
+
+/* Improved touch targets for mobile */
+@media (max-width: 768px) {
+  button, 
+  [role="button"], 
+  input[type="submit"], 
+  input[type="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Skip link for accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Content Security Policy styles */
+.csp-violation {
+  @apply text-destructive text-sm;
+}
+
+/* Security hardening - prevent information disclosure */
+.error-boundary {
+  @apply border border-destructive/20 bg-destructive/5 p-4 rounded-lg;
+}
+
+/* Performance optimization */
+.lazy-image {
+  @apply transition-opacity duration-300;
+}
+
+.lazy-image[data-loaded="false"] {
+  @apply opacity-0;
+}
+
+.lazy-image[data-loaded="true"] {
+  @apply opacity-100;
+}
+
+/* Performance-by-default with content-visibility */
+.performance-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
+.performance-auto-large {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
+.performance-auto-small {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 300px;
+}
+
+/* Performance optimization for grids */
+.grid-performance {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400px;
+}
+
+/* Specific performance classes for different sections */
+.editorial-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
+.events-grid {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
+.venue-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400px;
+}
+
+/* Scroll-driven animation keyframes */
+@keyframes parallax-hero {
+  from { 
+    transform: translateY(0) scale(1.05); 
+    opacity: 1;
+  }
+  to { 
+    transform: translateY(-50px) scale(1); 
+    opacity: 0.8;
+  }
+}
+
+@keyframes fade-up-scroll {
+  from { 
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes strip-slide {
+  from { transform: translateX(0); }
+  to { transform: translateX(-20px); }
+}
+
+/* Micro-interaction springs */
+@keyframes bounce-scale {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+@keyframes spring-press {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+/* Scroll-driven animations classes */
+.scroll-parallax {
+  animation: parallax-hero linear;
+  animation-timeline: scroll(root);
+  animation-range: 0% 100vh;
+}
+
+.scroll-fade-up {
+  animation: fade-up-scroll linear;
+  animation-timeline: view();
+  animation-range: entry 0% entry 80%;
+}
+
+.scroll-strip {
+  animation: strip-slide linear;
+  animation-timeline: view();
+  animation-range: entry 0% exit 100%;
+}
+
+/* Container queries for responsive layouts */
+.container-responsive {
+  container-type: inline-size;
+}
+
+@container (max-width: 500px) {
+  .container-responsive .grid-responsive {
+    grid-template-columns: 1fr;
+  }
+}
+
+@container (min-width: 501px) and (max-width: 800px) {
+  .container-responsive .grid-responsive {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@container (min-width: 801px) {
+  .container-responsive .grid-responsive {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Micro-interactions */
+.micro-bounce {
+  transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.micro-bounce:active {
+  animation: bounce-scale 0.2s ease-out;
+}
+
+.micro-spring {
+  transition: all 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.micro-spring:active {
+  animation: spring-press 0.15s ease-out;
+}
+
+.micro-rsvp {
+  transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.micro-rsvp.pressed {
+  animation: bounce-scale 0.25s ease-out;
+}
+
+/* Reduced motion alternatives for scroll animations */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-parallax,
+  .scroll-fade-up,
+  .scroll-strip {
+    animation: none !important;
+  }
+  
+  .scroll-fade-up {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .scroll-parallax {
+    transform: translateY(0) scale(1) !important;
+    opacity: 1 !important;
+  }
+  
+  .scroll-strip {
+    transform: translateX(0) !important;
+  }
+}
+
+/* CSS Scroll Snap utilities */
+.scroll-snap-x-mandatory {
+  scroll-snap-type: x mandatory;
+}
+
+.scroll-snap-y-mandatory {
+  scroll-snap-type: y mandatory;
+}
+
+.scroll-snap-align-start {
+  scroll-snap-align: start;
+}
+
+.scroll-snap-align-center {
+  scroll-snap-align: center;
+}
+
+.scroll-snap-align-end {
+  scroll-snap-align: end;
+}
+
+/* Smooth momentum scrolling */
+.scroll-smooth {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbars but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Snap carousel indicator animations */
+.snap-indicator {
+  transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.snap-indicator.active {
+  transform: scale(1.25);
+}
+
+/* Accessibility: Respect motion preferences for scroll snap */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-smooth {
+    scroll-behavior: auto;
+  }
+  
+  .scroll-snap-x-mandatory,
+  .scroll-snap-y-mandatory {
+    scroll-snap-type: none;
+  }
+}
